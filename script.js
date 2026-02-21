@@ -67,13 +67,13 @@ function updateArrowVisibility() {
       : 'none';
 }
 
-function showPage(pageId) {
+function showPage(pageId, navId) {
   document
     .querySelectorAll('.page')
     .forEach((p) => p.classList.remove('active'));
   const target = document.getElementById('page-' + pageId);
   if (target) target.classList.add('active');
-  syncNav(pageId);
+  syncNav(navId || pageId);
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -117,8 +117,68 @@ function showDeityPage(key) {
   <button class="tab-btn" onclick="showTab('chalisa', this)">📖 चालीसा</button>
   <button class="tab-btn" onclick="showTab('mantra', this)">🕉️ मंत्र</button>`;
 
-  // Build mantra HTML
-  const mantraHtml = (deity.mantras || [])
+  // Render contents
+  const content = document.getElementById('deityContent');
+  if (!content) return;
+
+  content.innerHTML = `
+  <div id="tab-about" class="text-content active">
+    <div class="lyrics-box about-content">${renderAbout(deity.about)}</div>
+  </div>
+  <div id="tab-aarti" class="text-content">
+    <div class="lyrics-box">${renderLyrics(deity.aarti)}</div>
+  </div>
+  <div id="tab-chalisa" class="text-content">
+    <div class="lyrics-box">${renderLyrics(deity.chalisa)}</div>
+  </div>
+  <div id="tab-mantra" class="text-content">
+    <div class="mantra-grid">${renderMantras(deity.mantras, key)}</div>
+  </div>`;
+
+  showPage('deity', key);
+}
+
+function renderAbout(data) {
+  if (typeof data === 'string') return data;
+  if (!Array.isArray(data)) return 'विवरण जल्द ही आ रहा है...';
+
+  return data.map(section => {
+    let contentHtml = '';
+    if (section.content) {
+      contentHtml = `<p>${section.content}</p>`;
+    } else if (section.items) {
+      contentHtml = `<ul>${section.items.map(item => `
+        <li><strong>${item.label}:</strong> ${item.text}</li>
+      `).join('')}</ul>`;
+    }
+    return `
+      <div class="info-section">
+        <h3>${section.title}</h3>
+        ${contentHtml}
+      </div>`;
+  }).join('');
+}
+
+function renderLyrics(data) {
+  if (typeof data === 'string') return data;
+  if (!data || !data.lines) return 'जल्द ही आ रहा है...';
+
+  const titleHtml = data.title ? `<div class="title-line">${data.title}</div>` : '';
+  const linesHtml = data.lines.map(line => {
+    if (line.type === 'refrain') {
+      return `<div class="refrain">${line.text}</div>`;
+    } else if (line.type === 'stanza') {
+      const refrainHtml = line.refrain ? `<div class="refrain">${line.refrain}</div>` : '';
+      return `<div class="stanza">${line.text}${refrainHtml}</div>`;
+    }
+    return line.text;
+  }).join('');
+
+  return `${titleHtml}${linesHtml}`;
+}
+
+function renderMantras(mantras, key) {
+  return (mantras || [])
     .map(
       (m, i) => `
   <div class="mantra-card">
@@ -130,31 +190,6 @@ function showDeityPage(key) {
   </div>`,
     )
     .join('');
-
-  // Show page first
-  document
-    .querySelectorAll('.page')
-    .forEach((p) => p.classList.remove('active'));
-  document.getElementById('page-deity').classList.add('active');
-
-  // Build content
-  const content = document.getElementById('deityContent');
-  if (!content) return;
-  content.innerHTML = `
-  <div id="tab-about" class="text-content active">
-    <div class="lyrics-box about-content">${deity.about || 'विवरण जल्द ही आ रहा है...'}</div>
-  </div>
-  <div id="tab-aarti" class="text-content">
-    <div class="lyrics-box">${deity.aarti}</div>
-  </div>
-  <div id="tab-chalisa" class="text-content">
-    <div class="lyrics-box">${deity.chalisa}</div>
-  </div>
-  <div id="tab-mantra" class="text-content">
-    <div class="mantra-grid">${mantraHtml}</div>
-  </div>`;
-  syncNav(key);
-  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function showTab(tabId, btn) {
