@@ -44,6 +44,29 @@ function buildHomeGrid() {
 }
 
 // ============ NAVIGATION ============
+function scrollNav(direction) {
+  const container = document.querySelector('.nav-inner-wrapper');
+  const scrollAmount = 200;
+  container.scrollBy({
+    left: direction * scrollAmount,
+    behavior: 'smooth',
+  });
+}
+
+function updateArrowVisibility() {
+  const container = document.querySelector('.nav-inner-wrapper');
+  const leftArrow = document.querySelector('.nav-arrow.left');
+  const rightArrow = document.querySelector('.nav-arrow.right');
+
+  if (!container || !leftArrow || !rightArrow) return;
+
+  leftArrow.style.display = container.scrollLeft > 5 ? 'flex' : 'none';
+  rightArrow.style.display =
+    container.scrollLeft + container.clientWidth < container.scrollWidth - 5
+      ? 'flex'
+      : 'none';
+}
+
 function showPage(pageId) {
   document
     .querySelectorAll('.page')
@@ -66,6 +89,7 @@ function syncNav(pageId) {
       });
     }
   });
+  updateArrowVisibility();
 }
 
 function showDeityPage(key) {
@@ -173,6 +197,13 @@ function copyMantra(btn, idx, key) {
 window.addEventListener('load', () => {
   createParticles();
   buildHomeGrid();
+  updateArrowVisibility();
+
+  const navWrapper = document.querySelector('.nav-inner-wrapper');
+  if (navWrapper) {
+    navWrapper.addEventListener('scroll', updateArrowVisibility);
+  }
+
   setTimeout(() => {
     document.getElementById('loader').classList.add('hidden');
   }, 1800);

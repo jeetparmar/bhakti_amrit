@@ -53,50 +53,54 @@
   </header>
 
   <nav id="mainNav">
-    <div class="nav-inner">
-      <button class="nav-btn active" onclick="showPage('home')" data-page="home">
-        🏠 मुख्य पृष्ठ
-      </button>
-      <button class="nav-btn" onclick="showDeityPage('ganesh')" data-page="ganesh">
-        🐘 श्री गणेश
-      </button>
-      <button class="nav-btn" onclick="showDeityPage('shiva')" data-page="shiva">
-        🔱 श्री शिव
-      </button>
-      <button class="nav-btn" onclick="showDeityPage('durga')" data-page="durga">
-        🌸 श्री दुर्गा
-      </button>
-      <button class="nav-btn" onclick="showDeityPage('lakshmi')" data-page="lakshmi">
-        🪷 श्री लक्ष्मी
-      </button>
-      <button class="nav-btn" onclick="showDeityPage('saraswati')" data-page="saraswati">
-        🎵 श्री सरस्वती
-      </button>
-      <button class="nav-btn" onclick="showDeityPage('vishnu')" data-page="vishnu">
-        ✨ श्री विष्णु
-      </button>
-      <button class="nav-btn" onclick="showDeityPage('ram')" data-page="ram">
-        🏹 श्री राम
-      </button>
-      <button class="nav-btn" onclick="showDeityPage('krishna')" data-page="krishna">
-        🪈 श्री कृष्ण
-      </button>
-      <button class="nav-btn" onclick="showDeityPage('hanuman')" data-page="hanuman">
-        🙏 श्री हनुमान
-      </button>
-      <button class="nav-btn" onclick="showDeityPage('surya')" data-page="surya">
-        ☀️ श्री सूर्य
-      </button>
-      <button class="nav-btn" onclick="showDeityPage('kali')" data-page="kali">
-        ⚡ श्री काली
-      </button>
-      <button class="nav-btn" onclick="showDeityPage('khatu_shyam')" data-page="khatu_shyam">
-        🏹 श्री खाटू श्याम
-      </button>
-      <button class="nav-btn" onclick="showDeityPage('shani')" data-page="shani">
-        ⚖️ श्री शनि देव
-      </button>
+    <button class="nav-arrow left" onclick="scrollNav(-1)" aria-label="Scroll Left">‹</button>
+    <div class="nav-inner-wrapper">
+      <div class="nav-inner" id="navInner">
+        <button class="nav-btn active" onclick="showPage('home')" data-page="home">
+          🏠 मुख्य पृष्ठ
+        </button>
+        <button class="nav-btn" onclick="showDeityPage('ganesh')" data-page="ganesh">
+          🐘 श्री गणेश
+        </button>
+        <button class="nav-btn" onclick="showDeityPage('shiva')" data-page="shiva">
+          🔱 श्री शिव
+        </button>
+        <button class="nav-btn" onclick="showDeityPage('durga')" data-page="durga">
+          🌸 श्री दुर्गा
+        </button>
+        <button class="nav-btn" onclick="showDeityPage('lakshmi')" data-page="lakshmi">
+          🪷 श्री लक्ष्मी
+        </button>
+        <button class="nav-btn" onclick="showDeityPage('saraswati')" data-page="saraswati">
+          🎵 श्री सरस्वती
+        </button>
+        <button class="nav-btn" onclick="showDeityPage('vishnu')" data-page="vishnu">
+          ✨ श्री विष्णु
+        </button>
+        <button class="nav-btn" onclick="showDeityPage('ram')" data-page="ram">
+          🏹 श्री राम
+        </button>
+        <button class="nav-btn" onclick="showDeityPage('krishna')" data-page="krishna">
+          🪈 श्री कृष्ण
+        </button>
+        <button class="nav-btn" onclick="showDeityPage('hanuman')" data-page="hanuman">
+          🙏 श्री हनुमान
+        </button>
+        <button class="nav-btn" onclick="showDeityPage('surya')" data-page="surya">
+          ☀️ श्री सूर्य
+        </button>
+        <button class="nav-btn" onclick="showDeityPage('kali')" data-page="kali">
+          ⚡ श्री काली
+        </button>
+        <button class="nav-btn" onclick="showDeityPage('khatu_shyam')" data-page="khatu_shyam">
+          🏹 श्री खाटू श्याम
+        </button>
+        <button class="nav-btn" onclick="showDeityPage('shani')" data-page="shani">
+          ⚖️ श्री शनि देव
+        </button>
+      </div>
     </div>
+    <button class="nav-arrow right" onclick="scrollNav(1)" aria-label="Scroll Right">›</button>
   </nav>
 
   <div class="main-container">
