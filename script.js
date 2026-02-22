@@ -85,6 +85,78 @@ function getValidDeityImage(path) {
 let activeHomeType = 'all';
 let activeHomeNavId = 'home';
 let activeHomeSearchQuery = '';
+let activeDeityKey = '';
+let activeDeityTab = 'about';
+const validDeityTabs = ['about', 'aarti', 'chalisa', 'mantra', 'temples'];
+
+const homeTypeToNavId = {
+  all: 'home',
+  'देव': 'type-dev',
+  'देवी': 'type-devi',
+  'अवतार': 'type-avatar',
+  'ग्रह देव': 'type-grah-dev',
+  'लोक देव': 'type-lok-dev',
+};
+
+function getNavIdByHomeType(typeId = 'all') {
+  return homeTypeToNavId[typeId] || 'home';
+}
+
+function getSafeHomeType(typeId = 'all') {
+  return Object.prototype.hasOwnProperty.call(homeTypeToNavId, typeId) ? typeId : 'all';
+}
+
+function getSafeDeityTab(tabId = 'about') {
+  return validDeityTabs.includes(tabId) ? tabId : 'about';
+}
+
+function updateUrlState({
+  typeId = activeHomeType,
+  deityKey = '',
+  tabId = activeDeityTab,
+  replace = false,
+} = {}) {
+  const url = new URL(window.location.href);
+  url.search = '';
+  const safeType = getSafeHomeType(typeId);
+  const safeDeity = deityKey && deities[deityKey] ? deityKey : '';
+  const safeTab = getSafeDeityTab(tabId);
+
+  if (safeType !== 'all') url.searchParams.set('type', safeType);
+  if (safeDeity) {
+    url.searchParams.set('deity', safeDeity);
+    url.searchParams.set('tab', safeTab);
+  }
+
+  const method = replace ? 'replaceState' : 'pushState';
+  history[method](
+    {
+      typeId: safeType,
+      deityKey: safeDeity || null,
+      tabId: safeDeity ? safeTab : null,
+    },
+    '',
+    `${url.pathname}${url.search}`,
+  );
+}
+
+function applyUrlState() {
+  const params = new URLSearchParams(window.location.search);
+  const rawType = params.get('type') || 'all';
+  const typeId = getSafeHomeType(rawType);
+  const navId = getNavIdByHomeType(typeId);
+  const deityKey = params.get('deity') || '';
+  const tabId = getSafeDeityTab(params.get('tab') || 'about');
+
+  if (deityKey && deities[deityKey]) {
+    activeHomeType = typeId;
+    activeHomeNavId = navId;
+    showDeityPage(deityKey, { skipUrl: true, initialTab: tabId });
+    return;
+  }
+
+  showHomeByType(typeId, navId, { skipUrl: true });
+}
 
 function buildHomeGrid() {
   renderHomeGrid(activeHomeType, activeHomeSearchQuery);
@@ -151,19 +223,27 @@ function renderHomeGrid(filter = activeHomeType, searchQuery = activeHomeSearchQ
     .join('');
 }
 
-function showHomeByType(typeId = 'all', navId = 'home') {
-  activeHomeType = typeId;
-  activeHomeNavId = navId;
-  showPage('home', navId);
+function showHomeByType(typeId = 'all', navId = 'home', options = {}) {
+  const safeType = getSafeHomeType(typeId);
+  const safeNavId = navId || getNavIdByHomeType(safeType);
+  activeHomeType = safeType;
+  activeHomeNavId = safeNavId;
+  activeDeityKey = '';
+  activeDeityTab = 'about';
+  showPage('home', safeNavId);
   const grid = document.getElementById('homeGrid');
   if (!grid) return;
   grid.style.opacity = '0';
   grid.style.transform = 'translateY(12px)';
   setTimeout(() => {
-    renderHomeGrid(typeId, activeHomeSearchQuery);
+    renderHomeGrid(safeType, activeHomeSearchQuery);
     grid.style.opacity = '1';
     grid.style.transform = 'translateY(0)';
   }, 180);
+
+  if (!options.skipUrl) {
+    updateUrlState({ typeId: safeType, deityKey: '' });
+  }
 }
 
 function setupHomeSearch() {
@@ -269,9 +349,11 @@ function syncNav(pageId) {
   updateArrowVisibility();
 }
 
-function showDeityPage(key) {
+function showDeityPage(key, options = {}) {
   const deity = deities[key];
   if (!deity) return;
+  activeDeityKey = key;
+  activeDeityTab = getSafeDeityTab(options.initialTab || 'about');
 
   // Build header
   const imgSrc = getValidDeityImage(deity.img);
@@ -290,44 +372,48 @@ function showDeityPage(key) {
   // Build tabs
   const tabs = document.getElementById('deityTabs');
   tabs.innerHTML = `
-  <button class="tab-btn active" onclick="showTab('about', this)">🚩 परिचय</button>
-  <button class="tab-btn" onclick="showTab('aarti', this)">🪔 आरती</button>
-  <button class="tab-btn" onclick="showTab('chalisa', this)">📖 चालीसा</button>
-  <button class="tab-btn" onclick="showTab('mantra', this)">🕉️ मंत्र</button>
-  <button class="tab-btn" onclick="showTab('temples', this)">🛕 मंदिर</button>`;
+  <button class="tab-btn ${activeDeityTab === 'about' ? 'active' : ''}" onclick="showTab('about', this)">🚩 परिचय</button>
+  <button class="tab-btn ${activeDeityTab === 'aarti' ? 'active' : ''}" onclick="showTab('aarti', this)">🪔 आरती</button>
+  <button class="tab-btn ${activeDeityTab === 'chalisa' ? 'active' : ''}" onclick="showTab('chalisa', this)">📖 चालीसा</button>
+  <button class="tab-btn ${activeDeityTab === 'mantra' ? 'active' : ''}" onclick="showTab('mantra', this)">🕉️ मंत्र</button>
+  <button class="tab-btn ${activeDeityTab === 'temples' ? 'active' : ''}" onclick="showTab('temples', this)">🛕 मंदिर</button>`;
 
   // Render contents
   const content = document.getElementById('deityContent');
   if (!content) return;
 
   content.innerHTML = `
-  <div id="tab-about" class="text-content active">
+  <div id="tab-about" class="text-content ${activeDeityTab === 'about' ? 'active' : ''}">
     <div class="deity-tab-wrap deity-tab-wrap-no-padding">
       <div class="lyrics-box about-content">${renderAbout(deity.about)}</div>
     </div>
   </div>
-  <div id="tab-aarti" class="text-content">
+  <div id="tab-aarti" class="text-content ${activeDeityTab === 'aarti' ? 'active' : ''}">
     <div class="deity-tab-wrap">
       <div class="lyrics-box">${renderLyrics(deity.aarti)}</div>
     </div>
   </div>
-  <div id="tab-chalisa" class="text-content">
+  <div id="tab-chalisa" class="text-content ${activeDeityTab === 'chalisa' ? 'active' : ''}">
     <div class="deity-tab-wrap">
       <div class="lyrics-box">${renderLyrics(deity.chalisa)}</div>
     </div>
   </div>
-  <div id="tab-mantra" class="text-content">
+  <div id="tab-mantra" class="text-content ${activeDeityTab === 'mantra' ? 'active' : ''}">
     <div class="deity-tab-wrap">
       <div class="mantra-grid">${renderMantras(deity.mantras, key)}</div>
     </div>
   </div>
-  <div id="tab-temples" class="text-content">
+  <div id="tab-temples" class="text-content ${activeDeityTab === 'temples' ? 'active' : ''}">
     <div class="deity-tab-wrap">
       ${renderDeityTemples(key)}
     </div>
   </div>`;
 
   showPage('deity', activeHomeNavId);
+
+  if (!options.skipUrl) {
+    updateUrlState({ typeId: activeHomeType, deityKey: key, tabId: activeDeityTab });
+  }
 }
 
 function renderAbout(data) {
@@ -385,6 +471,7 @@ function renderMantras(mantras, key) {
 }
 
 function showTab(tabId, btn) {
+  const safeTab = getSafeDeityTab(tabId);
   const content = document.getElementById('deityContent');
   if (!content) return;
   content
@@ -393,9 +480,13 @@ function showTab(tabId, btn) {
   document
     .querySelectorAll('.tabs .tab-btn')
     .forEach((b) => b.classList.remove('active'));
-  const target = document.getElementById('tab-' + tabId);
+  const target = document.getElementById('tab-' + safeTab);
   if (target) target.classList.add('active');
-  btn.classList.add('active');
+  if (btn) btn.classList.add('active');
+  activeDeityTab = safeTab;
+  if (activeDeityKey) {
+    updateUrlState({ typeId: activeHomeType, deityKey: activeDeityKey, tabId: safeTab });
+  }
 }
 
 function copyMantra(btn, idx, key) {
@@ -1512,4 +1603,18 @@ window.addEventListener('load', () => {
   setTimeout(() => {
     document.getElementById('loader').classList.add('hidden');
   }, 1800);
+});
+
+window.addEventListener('popstate', () => {
+  applyUrlState();
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  applyUrlState();
+  updateUrlState({
+    typeId: activeHomeType,
+    deityKey: activeDeityKey,
+    tabId: activeDeityTab,
+    replace: true,
+  });
 });
