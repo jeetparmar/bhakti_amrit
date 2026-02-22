@@ -134,9 +134,13 @@ function updateArrowVisibility() {
 
   if (!container || !leftArrow || !rightArrow) return;
 
+  const canScroll =
+    container.scrollWidth > container.clientWidth + 5;
+
+  container.classList.toggle('is-scrollable', canScroll);
   leftArrow.style.display = container.scrollLeft > 5 ? 'flex' : 'none';
-  rightArrow.style.display =
-    container.scrollLeft + container.clientWidth < container.scrollWidth - 5
+  rightArrow.style.display = canScroll
+    && container.scrollLeft + container.clientWidth < container.scrollWidth - 5
       ? 'flex'
       : 'none';
 }
@@ -1209,6 +1213,8 @@ const templesData = [
 // ============ TEMPLES PAGE ============
 const templeCategories = [
   { id: 'all', label: '✨ सभी', emoji: '🛕' },
+  { id: 'india', label: '🇮🇳 भारत', emoji: '🇮🇳' },
+  { id: 'outside_india', label: '🌍 विदेश', emoji: '🌍' },
   { id: 'Jyotirlinga', label: '🔱 ज्योतिर्लिंग', emoji: '🔱' },
   { id: 'Char Dham', label: '🙏 चार धाम', emoji: '🙏' },
   { id: 'Shakti Peeth', label: '🌺 शक्ति पीठ', emoji: '🌺' },
@@ -1216,6 +1222,23 @@ const templeCategories = [
   { id: 'Heritage', label: '🏛️ धरोहर', emoji: '🏛️' },
 ];
 let activeTempleFilter = 'all';
+
+function isOutsideIndiaTemple(temple) {
+  const text = `${temple.state || ''} ${temple.location || ''}`.toLowerCase();
+  return (
+    text.includes('usa')
+    || text.includes('uk')
+    || text.includes('england')
+    || text.includes('australia')
+    || text.includes('south africa')
+    || text.includes('thailand')
+    || text.includes('nepal')
+    || text.includes('pakistan')
+    || text.includes('united kingdom')
+    || text.includes('नेपाल')
+    || text.includes('पाकिस्तान')
+  );
+}
 
 function buildTemplesPage() {
   // Build filters
@@ -1235,7 +1258,14 @@ function buildTemplesPage() {
 function renderTemples(filter) {
   activeTempleFilter = filter;
   const grid = document.getElementById('templesGrid');
-  const filtered = filter === 'all' ? templesData : templesData.filter(t => t.type === filter);
+  const filtered =
+    filter === 'all'
+      ? templesData
+      : filter === 'india'
+        ? templesData.filter(t => !isOutsideIndiaTemple(t))
+        : filter === 'outside_india'
+          ? templesData.filter(t => isOutsideIndiaTemple(t))
+          : templesData.filter(t => t.type === filter);
   grid.innerHTML = filtered.map((temple, idx) => `
     <div class="temple-card" onclick="openTempleModal('${temple.id}')" style="animation-delay:${idx * 0.06}s; background:${temple.gradient}; --temple-color:${temple.color};">
       <div class="temple-card-top">

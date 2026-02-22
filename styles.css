@@ -178,6 +178,9 @@ nav {
   /* Firefox */
   -ms-overflow-style: none;
   /* IE/Edge */
+}
+
+.nav-inner-wrapper.is-scrollable {
   mask-image: linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent);
   -webkit-mask-image: linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent);
 }
@@ -190,8 +193,12 @@ nav {
 .nav-inner {
   display: flex;
   gap: 8px;
-  padding: 4px 20px;
+  padding: 4px 0;
   align-items: center;
+}
+
+.nav-inner-wrapper.is-scrollable .nav-inner {
+  padding: 4px 6px;
 }
 
 .nav-arrow {
@@ -232,6 +239,10 @@ nav {
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+.nav-btn-home {
+  flex-shrink: 0;
 }
 
 .nav-icon {
