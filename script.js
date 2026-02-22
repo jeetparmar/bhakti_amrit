@@ -145,6 +145,17 @@ function updateArrowVisibility() {
       : 'none';
 }
 
+function updateSiteTitleByLang() {
+  const titleEl = document.getElementById('siteTitle');
+  if (!titleEl) return;
+
+  const lang = (document.documentElement.getAttribute('lang') || '').toLowerCase();
+  const isEnglish = lang.startsWith('en');
+  titleEl.textContent = isEnglish
+    ? (titleEl.dataset.titleEn || 'Bhakti Amrit')
+    : (titleEl.dataset.titleHi || 'भक्ति अमृत');
+}
+
 function showPage(pageId, navId) {
   document
     .querySelectorAll('.page')
@@ -1360,6 +1371,13 @@ window.addEventListener('load', () => {
   createParticles();
   buildHomeGrid();
   updateArrowVisibility();
+  updateSiteTitleByLang();
+
+  const htmlObserver = new MutationObserver(updateSiteTitleByLang);
+  htmlObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['lang'],
+  });
 
   const navWrapper = document.querySelector('.nav-inner-wrapper');
   if (navWrapper) {
