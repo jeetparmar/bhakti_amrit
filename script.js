@@ -25,7 +25,7 @@ function buildHomeGrid() {
     card.className = 'deity-card';
     card.onclick = () => showDeityPage(key);
     const imgHtml = deity.img
-      ? `<img class="deity-img" src="${deity.img}" alt="${deity.name}" onerror="this.parentNode.querySelector('.deity-img-fallback').style.display='flex'; this.style.display='none';">
+      ? `<img class="deity-img" src="${deity.img}" alt="${deity.name}" loading="lazy" decoding="async" onerror="this.parentNode.querySelector('.deity-img-fallback').style.display='flex'; this.style.display='none';">
      <div class="deity-img-fallback" style="display:none">${deity.emoji}</div>`
       : `<div class="deity-img-fallback">${deity.emoji}</div>`;
     card.innerHTML = `
@@ -98,7 +98,7 @@ function showDeityPage(key) {
 
   // Build header
   const imgHtml = deity.img
-    ? `<img class="deity-portrait" src="${deity.img}" alt="${deity.name}" onerror="this.nextElementSibling.style.display='flex'; this.style.display='none';">
+    ? `<img class="deity-portrait" src="${deity.img}" alt="${deity.name}" loading="lazy" decoding="async" onerror="this.nextElementSibling.style.display='flex'; this.style.display='none';">
    <div class="deity-portrait-emoji" style="display:none">${deity.emoji}</div>`
     : `<div class="deity-portrait-emoji">${deity.emoji}</div>`;
 
