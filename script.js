@@ -18,29 +18,103 @@ function createParticles() {
 }
 
 // ============ BUILD HOME GRID ============
+const deityTypeMap = {
+  ganesh: 'देव',
+  shiva: 'देव',
+  durga: 'देवी',
+  lakshmi: 'देवी',
+  saraswati: 'देवी',
+  vishnu: 'देव',
+  ram: 'अवतार',
+  krishna: 'अवतार',
+  hanuman: 'देव',
+  surya: 'ग्रह देव',
+  kali: 'देवी',
+  khatu_shyam: 'लोक देव',
+  shani: 'ग्रह देव',
+};
+
+const deityCategories = [
+  { id: 'all', label: '✨ सभी' },
+  { id: 'देव', label: '🕉️ देव' },
+  { id: 'देवी', label: '🌺 देवी' },
+  { id: 'अवतार', label: '🏹 अवतार' },
+  { id: 'ग्रह देव', label: '🪐 ग्रह देव' },
+  { id: 'लोक देव', label: '🎠 लोक देव' },
+];
+
+let activeDeityFilter = 'all';
+
+function getDeityType(key) {
+  return deityTypeMap[key] || 'देव';
+}
+
 function buildHomeGrid() {
+  const filtersEl = document.getElementById('deityFilters');
+  if (filtersEl && filtersEl.innerHTML === '') {
+    filtersEl.innerHTML = deityCategories
+      .map(
+        (cat) => `
+      <button
+        class="deity-filter-btn ${cat.id === 'all' ? 'active' : ''}"
+        onclick="filterDeities('${cat.id}', this)"
+        data-category="${cat.id}"
+      >${cat.label}</button>
+    `,
+      )
+      .join('');
+  }
+  renderHomeGrid('all');
+}
+
+function renderHomeGrid(filter) {
+  activeDeityFilter = filter;
   const grid = document.getElementById('homeGrid');
-  for (const [key, deity] of Object.entries(deities)) {
-    const card = document.createElement('div');
-    card.className = 'deity-card';
-    card.onclick = () => showDeityPage(key);
-    const imgHtml = deity.img
-      ? `<img class="deity-img" src="${deity.img}" alt="${deity.name}" loading="lazy" decoding="async" onerror="this.parentNode.querySelector('.deity-img-fallback').style.display='flex'; this.style.display='none';">
+  if (!grid) return;
+
+  const filtered = Object.entries(deities).filter(([key]) =>
+    filter === 'all' ? true : getDeityType(key) === filter,
+  );
+
+  grid.innerHTML = filtered
+    .map(([key, deity]) => {
+      const deityType = getDeityType(key);
+      const imgHtml = deity.img
+        ? `<img class="deity-img" src="${deity.img}" alt="${deity.name}" loading="lazy" decoding="async" onerror="this.parentNode.querySelector('.deity-img-fallback').style.display='flex'; this.style.display='none';">
      <div class="deity-img-fallback" style="display:none">${deity.emoji}</div>`
-      : `<div class="deity-img-fallback">${deity.emoji}</div>`;
-    card.innerHTML = `
+        : `<div class="deity-img-fallback">${deity.emoji}</div>`;
+      return `
+    <div class="deity-card" onclick="showDeityPage('${key}')">
     ${imgHtml}
     <div class="deity-info">
       <span class="deity-name">${deity.name}</span>
       <span class="deity-meta">${deity.desc}</span>
+      <span class="deity-type-badge">${deityType}</span>
       <div class="deity-tags">
         <span class="tag tag-aarti">आरती</span>
         <span class="tag tag-chalisa">चालीसा</span>
         <span class="tag tag-mantra">मंत्र</span>
       </div>
+    </div>
     </div>`;
-    grid.appendChild(card);
-  }
+    })
+    .join('');
+}
+
+function filterDeities(category, btn) {
+  document
+    .querySelectorAll('.deity-filter-btn')
+    .forEach((b) => b.classList.remove('active'));
+  btn.classList.add('active');
+  const grid = document.getElementById('homeGrid');
+  if (!grid) return;
+  grid.style.opacity = '0';
+  grid.style.transform = 'translateY(12px)';
+  setTimeout(() => {
+    renderHomeGrid(category);
+    grid.style.opacity = '1';
+    grid.style.transform = 'translateY(0)';
+  }, 180);
 }
 
 // ============ NAVIGATION ============
@@ -125,19 +199,29 @@ function showDeityPage(key) {
 
   content.innerHTML = `
   <div id="tab-about" class="text-content active">
-    <div class="lyrics-box about-content">${renderAbout(deity.about)}</div>
+    <div class="deity-tab-wrap deity-tab-wrap-no-padding">
+      <div class="lyrics-box about-content">${renderAbout(deity.about)}</div>
+    </div>
   </div>
   <div id="tab-aarti" class="text-content">
-    <div class="lyrics-box">${renderLyrics(deity.aarti)}</div>
+    <div class="deity-tab-wrap">
+      <div class="lyrics-box">${renderLyrics(deity.aarti)}</div>
+    </div>
   </div>
   <div id="tab-chalisa" class="text-content">
-    <div class="lyrics-box">${renderLyrics(deity.chalisa)}</div>
+    <div class="deity-tab-wrap">
+      <div class="lyrics-box">${renderLyrics(deity.chalisa)}</div>
+    </div>
   </div>
   <div id="tab-mantra" class="text-content">
-    <div class="mantra-grid">${renderMantras(deity.mantras, key)}</div>
+    <div class="deity-tab-wrap">
+      <div class="mantra-grid">${renderMantras(deity.mantras, key)}</div>
+    </div>
   </div>
   <div id="tab-temples" class="text-content">
-    ${renderDeityTemples(key)}
+    <div class="deity-tab-wrap">
+      ${renderDeityTemples(key)}
+    </div>
   </div>`;
 
   showPage('deity', key);
@@ -285,22 +369,20 @@ function renderDeityTemples(deityKey) {
         <p class="temple-desc">${temple.desc}</p>
       </div>
       <div class="temple-card-footer">
-        <span class="temple-map-cta">🗺️ मानचित्र देखें</span>
+        <span class="temple-map-cta">ℹ️ विवरण देखें</span>
         <span class="temple-arrow">→</span>
       </div>
     </div>
   `).join('');
 
   return `
-    <div class="deity-temples-wrap">
-      <div class="deity-temples-intro">
-        <span class="deity-temples-count">${related.length} मंदिर</span> इस देवता से संबंधित प्रसिद्ध तीर्थ स्थल
-      </div>
-      <div class="temples-grid deity-temples-grid">${cards}</div>
-      <button class="deity-temples-all-btn" onclick="showPage('temples')">
-        🛕 सभी प्रसिद्ध मंदिर देखें
-      </button>
-    </div>`;
+    <div class="deity-temples-intro">
+      <span class="deity-temples-count">${related.length} मंदिर</span> इस देवता से संबंधित प्रसिद्ध तीर्थ स्थल
+    </div>
+    <div class="temples-grid deity-temples-grid">${cards}</div>
+    <button class="deity-temples-all-btn" onclick="showPage('temples')">
+      🛕 सभी प्रसिद्ध मंदिर देखें
+    </button>`;
 }
 
 // ============ TEMPLES DATA ============
@@ -320,7 +402,6 @@ const templesData = [
     bestTime: 'मई–जून, सितंबर–अक्टूबर',
     location: 'रुद्रप्रयाग, उत्तराखंड',
     mapQuery: 'Kedarnath+Temple+Uttarakhand',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Kedarnath+Temple,Uttarakhand&zoom=14',
     color: '#4FC3F7',
     gradient: 'linear-gradient(135deg, rgba(79,195,247,0.15), rgba(30,136,229,0.08))',
   },
@@ -338,7 +419,6 @@ const templesData = [
     bestTime: 'अक्टूबर–मार्च',
     location: 'प्रभास पाटन, सोमनाथ, गुजरात',
     mapQuery: 'Somnath+Temple+Gujarat',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Somnath+Temple,Gujarat&zoom=14',
     color: '#81C784',
     gradient: 'linear-gradient(135deg, rgba(129,199,132,0.15), rgba(56,142,60,0.08))',
   },
@@ -356,7 +436,6 @@ const templesData = [
     bestTime: 'मार्च–मई, अक्टूबर–नवंबर',
     location: 'कटरा, जम्मू, J&K',
     mapQuery: 'Vaishno+Devi+Temple+Katra',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Vaishno+Devi+Temple,Katra,Jammu&zoom=13',
     color: '#F48FB1',
     gradient: 'linear-gradient(135deg, rgba(244,143,177,0.15), rgba(194,24,91,0.08))',
   },
@@ -374,7 +453,6 @@ const templesData = [
     bestTime: 'सितंबर–फरवरी (ब्रह्मोत्सव में)',
     location: 'तिरुमाला, चित्तूर, आंध्र प्रदेश',
     mapQuery: 'Tirupati+Balaji+Temple+Andhra+Pradesh',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Tirumala+Tirupati+Devasthanams&zoom=14',
     color: '#FFD54F',
     gradient: 'linear-gradient(135deg, rgba(255,213,79,0.15), rgba(255,160,0,0.08))',
   },
@@ -392,7 +470,6 @@ const templesData = [
     bestTime: 'अक्टूबर–मार्च',
     location: 'रामनाथपुरम, तमिलनाडु',
     mapQuery: 'Ramanathaswamy+Temple+Rameswaram',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Ramanathaswamy+Temple,Rameswaram&zoom=14',
     color: '#80DEEA',
     gradient: 'linear-gradient(135deg, rgba(128,222,234,0.15), rgba(0,151,167,0.08))',
   },
@@ -410,7 +487,6 @@ const templesData = [
     bestTime: 'नवंबर–मार्च, देव दीपावली',
     location: 'वाराणसी, उत्तर प्रदेश',
     mapQuery: 'Kashi+Vishwanath+Temple+Varanasi',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Kashi+Vishwanath+Temple,Varanasi&zoom=15',
     color: '#FFAB91',
     gradient: 'linear-gradient(135deg, rgba(255,171,145,0.15), rgba(230,74,25,0.08))',
   },
@@ -428,7 +504,6 @@ const templesData = [
     bestTime: 'जुलाई में रथयात्रा, अक्टूबर–फरवरी',
     location: 'पुरी, ओडिशा',
     mapQuery: 'Jagannath+Temple+Puri+Odisha',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Jagannath+Temple,Puri,Odisha&zoom=15',
     color: '#CE93D8',
     gradient: 'linear-gradient(135deg, rgba(206,147,216,0.15), rgba(106,27,154,0.08))',
   },
@@ -446,7 +521,6 @@ const templesData = [
     bestTime: 'अक्टूबर–मार्च, जन्माष्टमी',
     location: 'द्वारका, गुजरात',
     mapQuery: 'Dwarkadhish+Temple+Dwarka+Gujarat',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Dwarkadhish+Temple,Dwarka,Gujarat&zoom=15',
     color: '#A5D6A7',
     gradient: 'linear-gradient(135deg, rgba(165,214,167,0.15), rgba(27,94,32,0.08))',
   },
@@ -464,7 +538,6 @@ const templesData = [
     bestTime: 'जन्माष्टमी, अक्टूबर–मार्च',
     location: 'मथुरा, उत्तर प्रदेश',
     mapQuery: 'Shri+Krishna+Janmabhoomi+Temple+Mathura',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Shri+Krishna+Janmabhoomi+Temple,Mathura&zoom=15',
     color: '#64B5F6',
     gradient: 'linear-gradient(135deg, rgba(100,181,246,0.15), rgba(25,118,210,0.08))',
   },
@@ -482,7 +555,6 @@ const templesData = [
     bestTime: 'जन्माष्टमी, होली, कार्तिक मास',
     location: 'वृंदावन, उत्तर प्रदेश',
     mapQuery: 'Banke+Bihari+Temple+Vrindavan',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Banke+Bihari+Temple,Vrindavan&zoom=15',
     color: '#9575CD',
     gradient: 'linear-gradient(135deg, rgba(149,117,205,0.15), rgba(81,45,168,0.08))',
   },
@@ -500,7 +572,6 @@ const templesData = [
     bestTime: 'नवंबर–फरवरी, कृष्ण जन्माष्टमी',
     location: 'उडुपी, कर्नाटक',
     mapQuery: 'Udupi+Sri+Krishna+Temple+Karnataka',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Udupi+Sri+Krishna+Temple,Karnataka&zoom=15',
     color: '#4DB6AC',
     gradient: 'linear-gradient(135deg, rgba(77,182,172,0.15), rgba(0,121,107,0.08))',
   },
@@ -518,7 +589,6 @@ const templesData = [
     bestTime: 'नवंबर–फरवरी, एकादशी उत्सव',
     location: 'गुरुवायूर, त्रिशूर, केरल',
     mapQuery: 'Guruvayur+Sri+Krishna+Temple+Kerala',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Guruvayur+Sri+Krishna+Temple,Kerala&zoom=15',
     color: '#AED581',
     gradient: 'linear-gradient(135deg, rgba(174,213,129,0.15), rgba(85,139,47,0.08))',
   },
@@ -536,7 +606,6 @@ const templesData = [
     bestTime: 'जन्माष्टमी, वर्ष भर',
     location: 'राजाजीनगर, बेंगलुरु, कर्नाटक',
     mapQuery: 'ISKCON+Temple+Bangalore',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=ISKCON+Temple,Bangalore&zoom=15',
     color: '#90CAF9',
     gradient: 'linear-gradient(135deg, rgba(144,202,249,0.15), rgba(21,101,192,0.08))',
   },
@@ -554,7 +623,6 @@ const templesData = [
     bestTime: 'Janmashtami, Sunday festivals',
     location: 'London, United Kingdom',
     mapQuery: 'ISKCON+Sri+Sri+Radha+London+Temple',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=ISKCON+Sri+Sri+Radha+London+Temple&zoom=14',
     color: '#F48FB1',
     gradient: 'linear-gradient(135deg, rgba(244,143,177,0.15), rgba(173,20,87,0.08))',
   },
@@ -572,7 +640,6 @@ const templesData = [
     bestTime: 'Janmashtami, summer festivals',
     location: 'Watford, England',
     mapQuery: 'Bhaktivedanta+Manor+Watford',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Bhaktivedanta+Manor,Watford&zoom=14',
     color: '#CE93D8',
     gradient: 'linear-gradient(135deg, rgba(206,147,216,0.15), rgba(123,31,162,0.08))',
   },
@@ -590,7 +657,6 @@ const templesData = [
     bestTime: 'Janmashtami, weekend festivals',
     location: 'Spanish Fork, Utah, USA',
     mapQuery: 'ISKCON+Sri+Sri+Radha+Krishna+Temple+Spanish+Fork+Utah',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=ISKCON+Sri+Sri+Radha+Krishna+Temple,Spanish+Fork+Utah&zoom=13',
     color: '#81D4FA',
     gradient: 'linear-gradient(135deg, rgba(129,212,250,0.15), rgba(2,136,209,0.08))',
   },
@@ -608,7 +674,6 @@ const templesData = [
     bestTime: 'Janmashtami, major Vaishnava festivals',
     location: 'Durban, South Africa',
     mapQuery: 'Sri+Sri+Radha+Radhanath+Temple+Durban',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Sri+Sri+Radha+Radhanath+Temple,Durban&zoom=14',
     color: '#FFAB91',
     gradient: 'linear-gradient(135deg, rgba(255,171,145,0.15), rgba(216,67,21,0.08))',
   },
@@ -626,7 +691,6 @@ const templesData = [
     bestTime: 'Janmashtami, major festival days',
     location: 'Bangkok, Thailand',
     mapQuery: 'Sri+Krishna+Mandir+Wat+Kanchanapisek+Thailand',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Sri+Krishna+Mandir+Wat+Kanchanapisek,Thailand&zoom=13',
     color: '#FFCC80',
     gradient: 'linear-gradient(135deg, rgba(255,204,128,0.15), rgba(239,108,0,0.08))',
   },
@@ -644,7 +708,6 @@ const templesData = [
     bestTime: 'Janmashtami, Gaura Purnima',
     location: 'Sydney, New South Wales, Australia',
     mapQuery: 'ISKCON+Sri+Sri+Radha+Krishna+Temple+Sydney',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=ISKCON+Sri+Sri+Radha+Krishna+Temple,Sydney&zoom=13',
     color: '#B39DDB',
     gradient: 'linear-gradient(135deg, rgba(179,157,219,0.15), rgba(94,53,177,0.08))',
   },
@@ -662,7 +725,6 @@ const templesData = [
     bestTime: 'सितंबर–मार्च, गुरु पूर्णिमा पर',
     location: 'शिर्डी, अहमदनगर, महाराष्ट्र',
     mapQuery: 'Shirdi+Sai+Baba+Temple+Maharashtra',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Shirdi+Sai+Baba+Temple,Maharashtra&zoom=14',
     color: '#FFE082',
     gradient: 'linear-gradient(135deg, rgba(255,224,130,0.15), rgba(245,127,23,0.08))',
   },
@@ -680,7 +742,6 @@ const templesData = [
     bestTime: 'अक्टूबर–मार्च, मीनाक्षी तिरुकल्याणम उत्सव',
     location: 'मदुरई, तमिलनाडु',
     mapQuery: 'Meenakshi+Amman+Temple+Madurai',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Meenakshi+Amman+Temple,Madurai&zoom=15',
     color: '#F48FB1',
     gradient: 'linear-gradient(135deg, rgba(244,143,177,0.15), rgba(136,14,79,0.08))',
   },
@@ -698,7 +759,6 @@ const templesData = [
     bestTime: 'पूरे वर्ष, गणेश चतुर्थी पर',
     location: 'प्रभादेवी, मुंबई, महाराष्ट्र',
     mapQuery: 'Siddhivinayak+Temple+Mumbai',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Siddhivinayak+Temple,Mumbai&zoom=15',
     color: '#FFCC80',
     gradient: 'linear-gradient(135deg, rgba(255,204,128,0.15), rgba(230,81,0,0.08))',
   },
@@ -716,7 +776,6 @@ const templesData = [
     bestTime: 'मई–जून, सितंबर–अक्टूबर',
     location: 'चमोली, उत्तराखंड',
     mapQuery: 'Badrinath+Temple+Uttarakhand',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Badrinath+Temple,Uttarakhand&zoom=14',
     color: '#B39DDB',
     gradient: 'linear-gradient(135deg, rgba(179,157,219,0.15), rgba(69,39,160,0.08))',
   },
@@ -734,7 +793,6 @@ const templesData = [
     bestTime: 'अक्टूबर–मार्च, फरवरी में नृत्य महोत्सव',
     location: 'छतरपुर, मध्य प्रदेश',
     mapQuery: 'Khajuraho+Temples+Madhya+Pradesh',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Khajuraho+Temples,Madhya+Pradesh&zoom=14',
     color: '#BCAAA4',
     gradient: 'linear-gradient(135deg, rgba(188,170,164,0.15), rgba(78,52,46,0.08))',
   },
@@ -752,7 +810,6 @@ const templesData = [
     bestTime: 'अक्टूबर–मार्च, गुरुपर्व पर',
     location: 'अमृतसर, पंजाब',
     mapQuery: 'Golden+Temple+Amritsar+Punjab',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Golden+Temple,Amritsar,Punjab&zoom=16',
     color: '#FFD700',
     gradient: 'linear-gradient(135deg, rgba(255,215,0,0.15), rgba(184,134,11,0.1))',
   },
@@ -770,7 +827,6 @@ const templesData = [
     bestTime: 'नवंबर–फरवरी, कोणार्क नृत्य महोत्सव',
     location: 'पुरी, ओडिशा',
     mapQuery: 'Konark+Sun+Temple+Odisha',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Konark+Sun+Temple,Odisha&zoom=14',
     color: '#FFAB40',
     gradient: 'linear-gradient(135deg, rgba(255,171,64,0.15), rgba(230,81,0,0.08))',
   },
@@ -788,7 +844,6 @@ const templesData = [
     bestTime: 'गणेशोत्सव, अगस्त–सितंबर',
     location: 'पुणे, महाराष्ट्र',
     mapQuery: 'Dagdusheth+Halwai+Ganapati+Temple+Pune',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Dagdusheth+Halwai+Ganapati+Temple,Pune&zoom=15',
     color: '#FFCC80',
     gradient: 'linear-gradient(135deg, rgba(255,204,128,0.15), rgba(230,81,0,0.08))',
   },
@@ -806,7 +861,6 @@ const templesData = [
     bestTime: 'गणेश चतुर्थी, वर्ष भर',
     location: 'मोरगांव, पुणे, महाराष्ट्र',
     mapQuery: 'Mayureshwar+Temple+Morgaon',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Mayureshwar+Temple,Morgaon&zoom=15',
     color: '#FFE082',
     gradient: 'linear-gradient(135deg, rgba(255,224,130,0.15), rgba(245,127,23,0.08))',
   },
@@ -824,7 +878,6 @@ const templesData = [
     bestTime: 'Ganesh Chaturthi, weekend darshan',
     location: 'Flushing, New York, USA',
     mapQuery: 'Sri+Maha+Vallabha+Ganapati+Devasthanam+New+York',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Sri+Maha+Vallabha+Ganapati+Devasthanam,New+York&zoom=14',
     color: '#90CAF9',
     gradient: 'linear-gradient(135deg, rgba(144,202,249,0.15), rgba(21,101,192,0.08))',
   },
@@ -842,7 +895,6 @@ const templesData = [
     bestTime: 'महाशिवरात्रि, अक्टूबर–मार्च',
     location: 'काठमांडू, नेपाल',
     mapQuery: 'Pashupatinath+Temple+Kathmandu',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Pashupatinath+Temple,Kathmandu&zoom=15',
     color: '#B39DDB',
     gradient: 'linear-gradient(135deg, rgba(179,157,219,0.15), rgba(94,53,177,0.08))',
   },
@@ -860,7 +912,6 @@ const templesData = [
     bestTime: 'अंबुबाची मेला, अक्टूबर–मार्च',
     location: 'गुवाहाटी, असम',
     mapQuery: 'Kamakhya+Temple+Guwahati+Assam',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Kamakhya+Temple,Guwahati,Assam&zoom=14',
     color: '#F06292',
     gradient: 'linear-gradient(135deg, rgba(240,98,146,0.15), rgba(173,20,87,0.08))',
   },
@@ -878,7 +929,6 @@ const templesData = [
     bestTime: 'नवरात्रि, अक्टूबर–मार्च',
     location: 'अमृतसर, पंजाब',
     mapQuery: 'Durgiana+Temple+Amritsar',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Durgiana+Temple,Amritsar&zoom=15',
     color: '#FF8A80',
     gradient: 'linear-gradient(135deg, rgba(255,138,128,0.15), rgba(198,40,40,0.08))',
   },
@@ -896,7 +946,6 @@ const templesData = [
     bestTime: 'नवरात्रि, वर्ष भर',
     location: 'कोल्हापुर, महाराष्ट्र',
     mapQuery: 'Mahalaxmi+Temple+Kolhapur',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Mahalaxmi+Temple,Kolhapur&zoom=15',
     color: '#FFD54F',
     gradient: 'linear-gradient(135deg, rgba(255,213,79,0.15), rgba(255,160,0,0.08))',
   },
@@ -914,7 +963,6 @@ const templesData = [
     bestTime: 'शुक्रवार, त्योहार और वर्ष भर',
     location: 'बेसेंट नगर, चेन्नई, तमिलनाडु',
     mapQuery: 'Ashtalakshmi+Temple+Chennai',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Ashtalakshmi+Temple,Chennai&zoom=15',
     color: '#FFCC80',
     gradient: 'linear-gradient(135deg, rgba(255,204,128,0.15), rgba(239,108,0,0.08))',
   },
@@ -932,7 +980,6 @@ const templesData = [
     bestTime: 'मौसम अनुसार यात्रा',
     location: 'नीलम वैली, पाकिस्तान प्रशासित कश्मीर',
     mapQuery: 'Sharda+Peeth+Neelum+Valley',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Sharda+Peeth,Neelum+Valley&zoom=13',
     color: '#B39DDB',
     gradient: 'linear-gradient(135deg, rgba(179,157,219,0.15), rgba(69,39,160,0.08))',
   },
@@ -950,7 +997,6 @@ const templesData = [
     bestTime: 'वसंत पंचमी, नवंबर–फरवरी',
     location: 'बसरा, निर्मल, तेलंगाना',
     mapQuery: 'Gnana+Saraswati+Temple+Basar+Telangana',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Gnana+Saraswati+Temple,Basar,Telangana&zoom=15',
     color: '#80DEEA',
     gradient: 'linear-gradient(135deg, rgba(128,222,234,0.15), rgba(0,151,167,0.08))',
   },
@@ -968,7 +1014,6 @@ const templesData = [
     bestTime: 'दिसंबर–फरवरी, वैकुंठ एकादशी',
     location: 'श्रीरंगम, तिरुचिरापल्ली, तमिलनाडु',
     mapQuery: 'Sri+Ranganathaswamy+Temple+Srirangam',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Sri+Ranganathaswamy+Temple,Srirangam&zoom=15',
     color: '#A5D6A7',
     gradient: 'linear-gradient(135deg, rgba(165,214,167,0.15), rgba(46,125,50,0.08))',
   },
@@ -986,7 +1031,6 @@ const templesData = [
     bestTime: 'राम नवमी, अक्टूबर–मार्च',
     location: 'अयोध्या, उत्तर प्रदेश',
     mapQuery: 'Shri+Ram+Janmabhoomi+Mandir+Ayodhya',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Shri+Ram+Janmabhoomi+Mandir,Ayodhya&zoom=15',
     color: '#FFAB91',
     gradient: 'linear-gradient(135deg, rgba(255,171,145,0.15), rgba(230,74,25,0.08))',
   },
@@ -1004,7 +1048,6 @@ const templesData = [
     bestTime: 'राम नवमी, वर्ष भर',
     location: 'पंचवटी, नासिक, महाराष्ट्र',
     mapQuery: 'Kala+Ram+Temple+Nashik',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Kala+Ram+Temple,Nashik&zoom=15',
     color: '#BCAAA4',
     gradient: 'linear-gradient(135deg, rgba(188,170,164,0.15), rgba(78,52,46,0.08))',
   },
@@ -1022,7 +1065,6 @@ const templesData = [
     bestTime: 'हनुमान जयंती, अक्टूबर–मार्च',
     location: 'अयोध्या, उत्तर प्रदेश',
     mapQuery: 'Hanumangarhi+Temple+Ayodhya',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Hanumangarhi+Temple,Ayodhya&zoom=15',
     color: '#FFCC80',
     gradient: 'linear-gradient(135deg, rgba(255,204,128,0.15), rgba(230,81,0,0.08))',
   },
@@ -1040,7 +1082,6 @@ const templesData = [
     bestTime: 'हनुमान जयंती, आश्विन/चैत्र मेले',
     location: 'सालासर, चूरू, राजस्थान',
     mapQuery: 'Salasar+Balaji+Temple+Rajasthan',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Salasar+Balaji+Temple,Rajasthan&zoom=14',
     color: '#FFE082',
     gradient: 'linear-gradient(135deg, rgba(255,224,130,0.15), rgba(245,127,23,0.08))',
   },
@@ -1058,7 +1099,6 @@ const templesData = [
     bestTime: 'मंगलवार-शनिवार, हनुमान जयंती',
     location: 'वाराणसी, उत्तर प्रदेश',
     mapQuery: 'Sankat+Mochan+Hanuman+Temple+Varanasi',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Sankat+Mochan+Hanuman+Temple,Varanasi&zoom=15',
     color: '#FFAB91',
     gradient: 'linear-gradient(135deg, rgba(255,171,145,0.15), rgba(216,67,21,0.08))',
   },
@@ -1076,7 +1116,6 @@ const templesData = [
     bestTime: 'अक्टूबर–फरवरी, मोढेरा नृत्य महोत्सव',
     location: 'मोडेरा, गुजरात',
     mapQuery: 'Modhera+Sun+Temple+Gujarat',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Modhera+Sun+Temple,Gujarat&zoom=15',
     color: '#FFB74D',
     gradient: 'linear-gradient(135deg, rgba(255,183,77,0.15), rgba(230,81,0,0.08))',
   },
@@ -1094,7 +1133,6 @@ const templesData = [
     bestTime: 'काली पूजा, नवरात्रि',
     location: 'कोलकाता, पश्चिम बंगाल',
     mapQuery: 'Kalighat+Kali+Temple+Kolkata',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Kalighat+Kali+Temple,Kolkata&zoom=15',
     color: '#BA68C8',
     gradient: 'linear-gradient(135deg, rgba(186,104,200,0.15), rgba(106,27,154,0.08))',
   },
@@ -1112,7 +1150,6 @@ const templesData = [
     bestTime: 'काली पूजा, सर्दियों में दर्शन',
     location: 'दक्षिणेश्वर, कोलकाता, पश्चिम बंगाल',
     mapQuery: 'Dakshineswar+Kali+Temple+Kolkata',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Dakshineswar+Kali+Temple,Kolkata&zoom=15',
     color: '#9575CD',
     gradient: 'linear-gradient(135deg, rgba(149,117,205,0.15), rgba(81,45,168,0.08))',
   },
@@ -1130,7 +1167,6 @@ const templesData = [
     bestTime: 'फाल्गुन मेला, वर्ष भर',
     location: 'खाटू, सीकर, राजस्थान',
     mapQuery: 'Khatu+Shyam+Ji+Temple+Rajasthan',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Khatu+Shyam+Ji+Temple,Rajasthan&zoom=15',
     color: '#CE93D8',
     gradient: 'linear-gradient(135deg, rgba(206,147,216,0.15), rgba(123,31,162,0.08))',
   },
@@ -1148,7 +1184,6 @@ const templesData = [
     bestTime: 'शनिवार, शनि अमावस्या',
     location: 'शिंगणापुर, अहमदनगर, महाराष्ट्र',
     mapQuery: 'Shani+Shingnapur+Temple+Maharashtra',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Shani+Shingnapur+Temple,Maharashtra&zoom=15',
     color: '#90A4AE',
     gradient: 'linear-gradient(135deg, rgba(144,164,174,0.15), rgba(55,71,79,0.08))',
   },
@@ -1166,7 +1201,6 @@ const templesData = [
     bestTime: 'शनिवार, अमावस्या',
     location: 'कोकिलावन, मथुरा, उत्तर प्रदेश',
     mapQuery: 'Shani+Temple+Kokilavan+Mathura',
-    mapEmbed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Shani+Temple+Kokilavan,Mathura&zoom=15',
     color: '#78909C',
     gradient: 'linear-gradient(135deg, rgba(120,144,156,0.15), rgba(38,50,56,0.08))',
   },
@@ -1221,7 +1255,7 @@ function renderTemples(filter) {
         </div>
       </div>
       <div class="temple-card-footer">
-        <span class="temple-map-cta">🗺️ मानचित्र देखें</span>
+        <span class="temple-map-cta">ℹ️ विवरण देखें</span>
         <span class="temple-arrow">→</span>
       </div>
     </div>
@@ -1253,7 +1287,6 @@ function openTempleModal(id) {
         <span class="temple-modal-type">${temple.type}</span>
       </div>
     </div>`;
-  document.getElementById('templeMapFrame').src = temple.mapEmbed;
   document.getElementById('templeModalInfo').innerHTML = `
     <div class="temple-info-grid">
       <div class="temple-info-card">
@@ -1290,8 +1323,6 @@ function closeTempleModal(e) {
   const modal = document.getElementById('templeMapModal');
   modal.classList.remove('active');
   document.body.style.overflow = '';
-  // Clear iframe to stop map loading
-  setTimeout(() => { document.getElementById('templeMapFrame').src = ''; }, 300);
 }
 
 // ============ INIT ============
