@@ -918,3 +918,528 @@ footer {
     opacity: 0;
   }
 }
+
+/* ============ TEMPLES PAGE ============ */
+.temples-header {
+  margin-bottom: 30px;
+}
+
+.temple-filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.temple-filter-btn {
+  background: rgba(255, 248, 231, 0.05);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  color: rgba(255, 248, 231, 0.75);
+  font-family: 'Tiro Devanagari Hindi', serif;
+  font-size: 0.88rem;
+  padding: 7px 18px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+
+.temple-filter-btn.active,
+.temple-filter-btn:hover {
+  background: linear-gradient(135deg, var(--saffron), var(--gold));
+  color: var(--dark);
+  border-color: transparent;
+  font-weight: 700;
+  box-shadow: 0 4px 15px rgba(255, 107, 0, 0.35);
+  transform: translateY(-2px);
+}
+
+.temples-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 22px;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.temple-card {
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 20px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: templeCardIn 0.5s ease both;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+@keyframes templeCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.temple-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  border-color: var(--temple-color, var(--gold));
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.4),
+    0 0 0 1px var(--temple-color, rgba(212, 175, 55, 0.3)),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.temple-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 18px 0;
+}
+
+.temple-emoji-badge {
+  font-size: 2.4rem;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
+  transition: transform 0.3s ease;
+}
+
+.temple-card:hover .temple-emoji-badge {
+  transform: scale(1.15) rotate(-5deg);
+}
+
+.temple-type-badge {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--temple-color, var(--gold));
+  color: var(--temple-color, var(--gold));
+  font-family: 'EB Garamond', serif;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.temple-card-body {
+  padding: 14px 18px 12px;
+  flex: 1;
+}
+
+.temple-name {
+  font-size: 1.15rem;
+  color: var(--temple-color, var(--gold));
+  font-family: 'Cinzel Decorative', cursive;
+  font-weight: 700;
+  margin-bottom: 3px;
+  line-height: 1.35;
+  text-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+}
+
+.temple-name-en {
+  font-size: 0.72rem;
+  color: rgba(255, 248, 231, 0.4);
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  margin-bottom: 10px;
+}
+
+.temple-location-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.temple-location-pin {
+  font-size: 0.8rem;
+}
+
+.temple-state {
+  font-size: 0.78rem;
+  color: rgba(255, 248, 231, 0.6);
+  font-family: 'EB Garamond', serif;
+}
+
+.temple-desc {
+  font-size: 0.85rem;
+  color: rgba(255, 248, 231, 0.75);
+  line-height: 1.65;
+  margin-bottom: 12px;
+}
+
+.temple-deity-badge {
+  display: inline-flex;
+  font-size: 0.75rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px dashed rgba(255, 248, 231, 0.2);
+  color: rgba(255, 248, 231, 0.6);
+}
+
+.temple-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  border-top: 1px solid rgba(212, 175, 55, 0.12);
+  background: rgba(0, 0, 0, 0.2);
+  transition: background 0.3s;
+}
+
+.temple-card:hover .temple-card-footer {
+  background: rgba(var(--temple-color, 212, 175, 55), 0.08);
+}
+
+.temple-map-cta {
+  font-size: 0.8rem;
+  color: var(--temple-color, var(--gold));
+  font-family: 'EB Garamond', serif;
+}
+
+.temple-arrow {
+  font-size: 1.1rem;
+  color: var(--temple-color, var(--gold));
+  transition: transform 0.3s;
+}
+
+.temple-card:hover .temple-arrow {
+  transform: translateX(5px);
+}
+
+/* ============ TEMPLE MODAL ============ */
+.temple-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 5, 0, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.temple-modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.temple-modal {
+  background: linear-gradient(160deg,
+      rgba(30, 15, 0, 0.97) 0%,
+      rgba(20, 8, 0, 0.99) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 24px;
+  width: 100%;
+  max-width: 860px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow:
+    0 40px 80px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(255, 107, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transform: scale(0.92) translateY(20px);
+  transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.temple-modal-overlay.active .temple-modal {
+  transform: scale(1) translateY(0);
+}
+
+.temple-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  color: var(--gold);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: all 0.2s;
+}
+
+.temple-modal-close:hover {
+  background: rgba(212, 175, 55, 0.2);
+  transform: scale(1.1) rotate(90deg);
+}
+
+.temple-modal-hero {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 28px 28px 20px;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+}
+
+.temple-modal-emoji {
+  font-size: 3.5rem;
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.6));
+  flex-shrink: 0;
+}
+
+.temple-modal-hero h2 {
+  font-family: 'Cinzel Decorative', cursive;
+  font-size: clamp(1.1rem, 3vw, 1.6rem);
+  color: var(--temple-color, var(--gold));
+  line-height: 1.3;
+  margin-bottom: 4px;
+}
+
+.temple-modal-hero p {
+  font-size: 0.85rem;
+  color: rgba(255, 248, 231, 0.45);
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+}
+
+.temple-modal-type {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--temple-color, var(--gold));
+  color: var(--temple-color, var(--gold));
+  font-family: 'EB Garamond', serif;
+}
+
+.temple-modal-body {
+  padding: 0 28px 28px;
+}
+
+.temple-map-container {
+  margin: 22px 0;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  background: rgba(20, 10, 0, 0.8);
+  position: relative;
+}
+
+.temple-map-container iframe {
+  width: 100%;
+  height: 300px;
+  display: block;
+  border: none;
+  filter: saturate(0.9) brightness(0.95);
+}
+
+.temple-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.temple-info-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: rgba(255, 248, 231, 0.04);
+  border: 1px solid rgba(212, 175, 55, 0.12);
+  border-radius: 14px;
+  padding: 14px 16px;
+  transition: all 0.25s;
+}
+
+.temple-info-card:hover {
+  background: rgba(255, 248, 231, 0.07);
+  border-color: rgba(212, 175, 55, 0.25);
+  transform: translateY(-2px);
+}
+
+.temple-info-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.temple-info-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255, 248, 231, 0.35);
+  font-family: 'EB Garamond', serif;
+  margin-bottom: 4px;
+}
+
+.temple-info-val {
+  font-size: 0.88rem;
+  color: rgba(255, 248, 231, 0.85);
+  line-height: 1.4;
+}
+
+.temple-history {
+  background: rgba(212, 175, 55, 0.04);
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.temple-history-title {
+  font-size: 0.85rem;
+  color: var(--gold);
+  font-family: 'Cinzel Decorative', cursive;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+
+.temple-history p {
+  font-size: 0.92rem;
+  color: rgba(255, 248, 231, 0.75);
+  line-height: 1.75;
+  font-family: 'EB Garamond', serif;
+}
+
+.temple-gmaps-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 28px;
+  border-radius: 30px;
+  background: linear-gradient(135deg, var(--saffron), var(--gold));
+  color: var(--dark);
+  font-weight: 700;
+  font-family: 'Tiro Devanagari Hindi', serif;
+  text-decoration: none;
+  font-size: 0.95rem;
+  box-shadow: 0 6px 20px rgba(255, 107, 0, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.temple-gmaps-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(255, 107, 0, 0.5);
+  background: linear-gradient(135deg, #ff8c00, #ffcf40);
+}
+
+.deity-temples-empty {
+  background: linear-gradient(145deg, rgba(255, 107, 0, 0.08), rgba(212, 175, 55, 0.05));
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 16px;
+  padding: 22px 20px;
+  text-align: center;
+}
+
+.deity-temples-empty-icon {
+  font-size: 2.2rem;
+  margin-bottom: 10px;
+  filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.35));
+}
+
+.deity-temples-empty p {
+  margin: 0;
+  color: rgba(255, 248, 231, 0.8);
+  font-size: 0.98rem;
+  line-height: 1.7;
+  font-family: 'Tiro Devanagari Hindi', serif;
+}
+
+.deity-temples-intro {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  color: rgba(255, 248, 231, 0.72);
+  font-size: 0.92rem;
+  text-align: center;
+}
+
+.deity-temples-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  background: rgba(212, 175, 55, 0.12);
+  color: var(--gold);
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.deity-temples-all-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: fit-content;
+  margin: 22px auto 0;
+  padding: 12px 24px;
+  border-radius: 30px;
+  border: none;
+  background: linear-gradient(135deg, var(--saffron), var(--gold));
+  color: var(--dark);
+  font-weight: 700;
+  font-family: 'Tiro Devanagari Hindi', serif;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(255, 107, 0, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.deity-temples-all-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(255, 107, 0, 0.5);
+  background: linear-gradient(135deg, #ff8c00, #ffcf40);
+}
+
+/* Temple page responsive */
+@media (max-width: 600px) {
+  .temples-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .temple-modal-hero {
+    flex-direction: column;
+    text-align: center;
+    padding: 24px 20px 16px;
+  }
+
+  .temple-modal-body {
+    padding: 0 16px 20px;
+  }
+
+  .temple-map-container iframe {
+    height: 220px;
+  }
+
+  .temple-info-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .deity-temples-all-btn {
+    width: 100%;
+    padding: 12px 16px;
+  }
+
+  .deity-temples-intro {
+    font-size: 0.88rem;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+}

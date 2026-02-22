@@ -98,6 +98,9 @@
         <button class="nav-btn" onclick="showDeityPage('shani')" data-page="shani">
           <img src="icons/shani.webp" alt="शनि देव" class="nav-icon"> श्री शनि देव
         </button>
+        <button class="nav-btn" onclick="showPage('temples')" data-page="temples">
+          <span class="nav-icon-emoji">🛕</span> प्रसिद्ध मंदिर
+        </button>
       </div>
     </div>
     <button class="nav-arrow right" onclick="scrollNav(1)" aria-label="Scroll Right">›</button>
@@ -121,6 +124,31 @@
       <div class="content-header" id="deityHeader"></div>
       <div class="tabs" id="deityTabs"></div>
       <div id="deityContent"></div>
+    </div>
+
+    <!-- TEMPLES PAGE -->
+    <div id="page-temples" class="page">
+      <div class="temples-header">
+        <div class="section-title"><span class="diya">🛕</span> प्रसिद्ध हिंदू मंदिर</div>
+        <div class="section-subtitle">भारत के प्रसिद्ध तीर्थ स्थल — मानचित्र पर देखें और जानिए विस्तार से</div>
+        <div class="temple-filters" id="templeFilters"></div>
+      </div>
+      <div class="temples-grid" id="templesGrid"></div>
+    </div>
+  </div>
+
+  <!-- Temple Map Modal -->
+  <div id="templeMapModal" class="temple-modal-overlay" onclick="closeTempleModal(event)">
+    <div class="temple-modal">
+      <button class="temple-modal-close" onclick="closeTempleModal()">✕</button>
+      <div class="temple-modal-header" id="templeModalHeader"></div>
+      <div class="temple-modal-body">
+        <div class="temple-map-container">
+          <iframe id="templeMapFrame" src="" frameborder="0" allowfullscreen loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+        <div class="temple-modal-info" id="templeModalInfo"></div>
+      </div>
     </div>
   </div>
 
