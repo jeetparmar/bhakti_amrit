@@ -74,30 +74,12 @@ function getDeityType(key) {
   return deityTypeMap[key] || 'देव';
 }
 
-const availableIconPaths = new Set([
-  'icons/batuk_bhairav.webp',
-  'icons/bhairav.webp',
-  'icons/brahma.webp',
-  'icons/durga.webp',
-  'icons/ganesh.webp',
-  'icons/gopal.webp',
-  'icons/hanuman.webp',
-  'icons/kali.webp',
-  'icons/khatu_shyam.webp',
-  'icons/krishna.webp',
-  'icons/lakshmi.webp',
-  'icons/navgrah.webp',
-  'icons/ram.webp',
-  'icons/saraswati.webp',
-  'icons/shani.webp',
-  'icons/shiv.webp',
-  'icons/surya.webp',
-  'icons/vishnu.webp',
-]);
-
 function getValidDeityImage(path) {
   if (!path) return '';
-  return availableIconPaths.has(path) ? path : '';
+  const normalized = String(path).trim().replace(/^\.?\//, '');
+  if (!normalized.startsWith('icons/')) return '';
+  if (!normalized.toLowerCase().endsWith('.webp')) return '';
+  return normalized;
 }
 
 let activeHomeType = 'all';
@@ -143,11 +125,12 @@ function renderHomeGrid(filter = activeHomeType, searchQuery = activeHomeSearchQ
   }
 
   grid.innerHTML = filtered
-    .map(([key, deity]) => {
+    .map(([key, deity], index) => {
       const deityType = getDeityType(key);
       const imgSrc = getValidDeityImage(deity.img);
+      const isPriorityImage = index < 6;
       const imgHtml = imgSrc
-        ? `<img class="deity-img" src="${imgSrc}" alt="${deity.name}" loading="lazy" decoding="async" onerror="this.parentNode.querySelector('.deity-img-fallback').style.display='flex'; this.style.display='none';">
+        ? `<img class="deity-img" src="${imgSrc}" alt="${deity.name}" loading="${isPriorityImage ? 'eager' : 'lazy'}" fetchpriority="${isPriorityImage ? 'high' : 'low'}" width="240" height="240" decoding="async" onerror="this.parentNode.querySelector('.deity-img-fallback').style.display='flex'; this.style.display='none';">
      <div class="deity-img-fallback" style="display:none">${deity.emoji}</div>`
         : `<div class="deity-img-fallback">${deity.emoji}</div>`;
       return `
@@ -293,7 +276,7 @@ function showDeityPage(key) {
   // Build header
   const imgSrc = getValidDeityImage(deity.img);
   const imgHtml = imgSrc
-    ? `<img class="deity-portrait" src="${imgSrc}" alt="${deity.name}" loading="lazy" decoding="async" onerror="this.nextElementSibling.style.display='flex'; this.style.display='none';">
+    ? `<img class="deity-portrait" src="${imgSrc}" alt="${deity.name}" loading="eager" fetchpriority="high" width="100" height="100" decoding="async" onerror="this.nextElementSibling.style.display='flex'; this.style.display='none';">
    <div class="deity-portrait-emoji" style="display:none">${deity.emoji}</div>`
     : `<div class="deity-portrait-emoji">${deity.emoji}</div>`;
 
