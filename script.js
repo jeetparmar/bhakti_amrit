@@ -70,53 +70,84 @@ const deityTypeMap = {
   rani_sati: 'देवी',
 };
 
-const deityCategories = [
-  { id: 'all', label: '✨ सभी' },
-  { id: 'देव', label: '🕉️ देव' },
-  { id: 'देवी', label: '🌺 देवी' },
-  { id: 'अवतार', label: '🏹 अवतार' },
-  { id: 'ग्रह देव', label: '🪐 ग्रह देव' },
-  { id: 'लोक देव', label: '🎠 लोक देव' },
-];
-
-let activeDeityFilter = 'all';
-
 function getDeityType(key) {
   return deityTypeMap[key] || 'देव';
 }
 
-function buildHomeGrid() {
-  const filtersEl = document.getElementById('deityFilters');
-  if (filtersEl && filtersEl.innerHTML === '') {
-    filtersEl.innerHTML = deityCategories
-      .map(
-        (cat) => `
-      <button
-        class="deity-filter-btn ${cat.id === 'all' ? 'active' : ''}"
-        onclick="filterDeities('${cat.id}', this)"
-        data-category="${cat.id}"
-      >${cat.label}</button>
-    `,
-      )
-      .join('');
-  }
-  renderHomeGrid('all');
+const availableIconPaths = new Set([
+  'icons/batuk_bhairav.webp',
+  'icons/bhairav.webp',
+  'icons/brahma.webp',
+  'icons/durga.webp',
+  'icons/ganesh.webp',
+  'icons/gopal.webp',
+  'icons/hanuman.webp',
+  'icons/kali.webp',
+  'icons/khatu_shyam.webp',
+  'icons/krishna.webp',
+  'icons/lakshmi.webp',
+  'icons/navgrah.webp',
+  'icons/ram.webp',
+  'icons/saraswati.webp',
+  'icons/shani.webp',
+  'icons/shiv.webp',
+  'icons/surya.webp',
+  'icons/vishnu.webp',
+]);
+
+function getValidDeityImage(path) {
+  if (!path) return '';
+  return availableIconPaths.has(path) ? path : '';
 }
 
-function renderHomeGrid(filter) {
-  activeDeityFilter = filter;
+let activeHomeType = 'all';
+let activeHomeNavId = 'home';
+let activeHomeSearchQuery = '';
+
+function buildHomeGrid() {
+  renderHomeGrid(activeHomeType, activeHomeSearchQuery);
+}
+
+function escapeHtml(value = '') {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function renderHomeGrid(filter = activeHomeType, searchQuery = activeHomeSearchQuery) {
   const grid = document.getElementById('homeGrid');
   if (!grid) return;
+  const normalizedQuery = searchQuery.trim().toLowerCase();
 
-  const filtered = Object.entries(deities).filter(([key]) =>
-    filter === 'all' ? true : getDeityType(key) === filter,
+  const filtered = Object.entries(deities).filter(([key, deity]) =>
+    (filter === 'all' ? true : getDeityType(key) === filter)
+    && (
+      !normalizedQuery
+      || `${key} ${deity.name} ${deity.desc} ${getDeityType(key)}`.toLowerCase().includes(normalizedQuery)
+    ),
   );
+
+  if (!filtered.length) {
+    const queryText = normalizedQuery ? ` "${escapeHtml(searchQuery.trim())}"` : '';
+    grid.innerHTML = `
+      <div class="home-empty-state">
+        <div class="home-empty-icon">🔍</div>
+        <div class="home-empty-title">कोई परिणाम नहीं मिला${queryText}</div>
+        <div class="home-empty-subtitle">दूसरा नाम लिखें या ऊपर की श्रेणी बदलकर देखें</div>
+      </div>
+    `;
+    return;
+  }
 
   grid.innerHTML = filtered
     .map(([key, deity]) => {
       const deityType = getDeityType(key);
-      const imgHtml = deity.img
-        ? `<img class="deity-img" src="${deity.img}" alt="${deity.name}" loading="lazy" decoding="async" onerror="this.parentNode.querySelector('.deity-img-fallback').style.display='flex'; this.style.display='none';">
+      const imgSrc = getValidDeityImage(deity.img);
+      const imgHtml = imgSrc
+        ? `<img class="deity-img" src="${imgSrc}" alt="${deity.name}" loading="lazy" decoding="async" onerror="this.parentNode.querySelector('.deity-img-fallback').style.display='flex'; this.style.display='none';">
      <div class="deity-img-fallback" style="display:none">${deity.emoji}</div>`
         : `<div class="deity-img-fallback">${deity.emoji}</div>`;
       return `
@@ -137,20 +168,49 @@ function renderHomeGrid(filter) {
     .join('');
 }
 
-function filterDeities(category, btn) {
-  document
-    .querySelectorAll('.deity-filter-btn')
-    .forEach((b) => b.classList.remove('active'));
-  btn.classList.add('active');
+function showHomeByType(typeId = 'all', navId = 'home') {
+  activeHomeType = typeId;
+  activeHomeNavId = navId;
+  showPage('home', navId);
   const grid = document.getElementById('homeGrid');
   if (!grid) return;
   grid.style.opacity = '0';
   grid.style.transform = 'translateY(12px)';
   setTimeout(() => {
-    renderHomeGrid(category);
+    renderHomeGrid(typeId, activeHomeSearchQuery);
     grid.style.opacity = '1';
     grid.style.transform = 'translateY(0)';
   }, 180);
+}
+
+function setupHomeSearch() {
+  const searchInput = document.getElementById('homeSearchInput');
+  const clearBtn = document.getElementById('homeSearchClear');
+  if (!searchInput) return;
+
+  const syncClearButton = () => {
+    if (!clearBtn) return;
+    clearBtn.classList.toggle('visible', searchInput.value.trim().length > 0);
+  };
+
+  searchInput.value = activeHomeSearchQuery;
+  syncClearButton();
+
+  searchInput.addEventListener('input', (event) => {
+    activeHomeSearchQuery = event.target.value;
+    renderHomeGrid(activeHomeType, activeHomeSearchQuery);
+    syncClearButton();
+  });
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      activeHomeSearchQuery = '';
+      searchInput.value = '';
+      renderHomeGrid(activeHomeType, activeHomeSearchQuery);
+      syncClearButton();
+      searchInput.focus();
+    });
+  }
 }
 
 // ============ NAVIGATION ============
@@ -231,8 +291,9 @@ function showDeityPage(key) {
   if (!deity) return;
 
   // Build header
-  const imgHtml = deity.img
-    ? `<img class="deity-portrait" src="${deity.img}" alt="${deity.name}" loading="lazy" decoding="async" onerror="this.nextElementSibling.style.display='flex'; this.style.display='none';">
+  const imgSrc = getValidDeityImage(deity.img);
+  const imgHtml = imgSrc
+    ? `<img class="deity-portrait" src="${imgSrc}" alt="${deity.name}" loading="lazy" decoding="async" onerror="this.nextElementSibling.style.display='flex'; this.style.display='none';">
    <div class="deity-portrait-emoji" style="display:none">${deity.emoji}</div>`
     : `<div class="deity-portrait-emoji">${deity.emoji}</div>`;
 
@@ -283,7 +344,7 @@ function showDeityPage(key) {
     </div>
   </div>`;
 
-  showPage('deity', key);
+  showPage('deity', activeHomeNavId);
 }
 
 function renderAbout(data) {
@@ -1449,6 +1510,7 @@ function closeTempleModal(e) {
 // ============ INIT ============
 window.addEventListener('load', () => {
   createParticles();
+  setupHomeSearch();
   buildHomeGrid();
   updateArrowVisibility();
   updateSiteTitleByLang();

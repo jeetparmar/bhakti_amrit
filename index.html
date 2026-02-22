@@ -1,170 +1,275 @@
 <!doctype html>
 <html lang="hi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>भक्ति अमृत - Bhakti Amrit</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi:ital@0;1&family=Cinzel+Decorative:wght@400;700;900&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>भक्ति अमृत - Bhakti Amrit</title>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi:ital@0;1&family=Cinzel+Decorative:wght@400;700;900&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap"
-    rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
-</head>
-
-<body>
-  <!-- Loader -->
-  <div class="loader" id="loader">
-    <div class="loader-om">🕉️</div>
-    <div class="loader-text">भक्ति अमृत में आपका स्वागत है...</div>
-  </div>
-
-  <!-- Mandala SVG -->
-  <svg class="mandala-bg" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="200" cy="200" r="190" stroke="#D4AF37" stroke-width="1" />
-    <circle cx="200" cy="200" r="160" stroke="#D4AF37" stroke-width="0.5" />
-    <circle cx="200" cy="200" r="130" stroke="#FF6B00" stroke-width="0.5" />
-    <circle cx="200" cy="200" r="100" stroke="#D4AF37" stroke-width="1" />
-    <circle cx="200" cy="200" r="70" stroke="#D4AF37" stroke-width="0.5" />
-    <circle cx="200" cy="200" r="40" stroke="#FF6B00" stroke-width="1" />
-    <line x1="10" y1="200" x2="390" y2="200" stroke="#D4AF37" stroke-width="0.5" />
-    <line x1="200" y1="10" x2="200" y2="390" stroke="#D4AF37" stroke-width="0.5" />
-    <line x1="55" y1="55" x2="345" y2="345" stroke="#D4AF37" stroke-width="0.3" />
-    <line x1="345" y1="55" x2="55" y2="345" stroke="#D4AF37" stroke-width="0.3" />
-    <polygon points="200,20 230,180 380,200 230,220 200,380 170,220 20,200 170,180" stroke="#FF6B00" stroke-width="0.5"
-      fill="none" />
-    <polygon points="200,50 225,175 350,200 225,225 200,350 175,225 50,200 175,175" stroke="#D4AF37" stroke-width="0.3"
-      fill="none" />
-  </svg>
-
-  <!-- Floating particles -->
-  <div id="particles"></div>
-
-  <header>
-    <span class="om-symbol">🕉️</span>
-    <h1 id="siteTitle" data-title-hi="भक्ति अमृत" data-title-en="Bhakti Amrit">भक्ति अमृत</h1>
-    <p id="siteSubtitle"
-      data-subtitle-hi="॥ दैनिक साधना का संपूर्ण साथी — आरती, चालीसा, मंत्र, देव परिचय और तीर्थ मार्गदर्शन एक ही स्थान पर ॥"
-      data-subtitle-en="Your complete daily sadhana companion - Aarti, Chalisa, Mantras, deity stories, and temple guidance in one place.">
-      ॥ दैनिक साधना का संपूर्ण साथी — आरती, चालीसा, मंत्र, देव परिचय और तीर्थ मार्गदर्शन एक ही स्थान पर ॥
-    </p>
-    <div class="header-divider">
-      <div class="divider-line"></div>
-      <div class="divider-dot"></div>
-      <div class="divider-dot" style="background: var(--gold)"></div>
-      <div class="divider-dot"></div>
-      <div class="divider-line"></div>
+  <body>
+    <!-- Loader -->
+    <div class="loader" id="loader">
+      <div class="loader-om">🕉️</div>
+      <div class="loader-text">भक्ति अमृत में आपका स्वागत है...</div>
     </div>
-  </header>
 
-  <nav id="mainNav">
-    <button class="nav-btn nav-btn-home active" onclick="showPage('home')" data-page="home">
-      <span class="nav-icon-emoji">🏠</span> मुख्य पृष्ठ
-    </button>
-    <button class="nav-arrow left" onclick="scrollNav(-1)" aria-label="Scroll Left">‹</button>
-    <div class="nav-inner-wrapper">
-      <div class="nav-inner" id="navInner">
-        <button class="nav-btn" onclick="showDeityPage('ganesh')" data-page="ganesh">
-          <img src="icons/ganesh.webp" alt="गणेश" class="nav-icon"> श्री गणेश
+    <!-- Mandala SVG -->
+    <svg
+      class="mandala-bg"
+      viewBox="0 0 400 400"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <circle cx="200" cy="200" r="190" stroke="#D4AF37" stroke-width="1" />
+      <circle cx="200" cy="200" r="160" stroke="#D4AF37" stroke-width="0.5" />
+      <circle cx="200" cy="200" r="130" stroke="#FF6B00" stroke-width="0.5" />
+      <circle cx="200" cy="200" r="100" stroke="#D4AF37" stroke-width="1" />
+      <circle cx="200" cy="200" r="70" stroke="#D4AF37" stroke-width="0.5" />
+      <circle cx="200" cy="200" r="40" stroke="#FF6B00" stroke-width="1" />
+      <line
+        x1="10"
+        y1="200"
+        x2="390"
+        y2="200"
+        stroke="#D4AF37"
+        stroke-width="0.5"
+      />
+      <line
+        x1="200"
+        y1="10"
+        x2="200"
+        y2="390"
+        stroke="#D4AF37"
+        stroke-width="0.5"
+      />
+      <line
+        x1="55"
+        y1="55"
+        x2="345"
+        y2="345"
+        stroke="#D4AF37"
+        stroke-width="0.3"
+      />
+      <line
+        x1="345"
+        y1="55"
+        x2="55"
+        y2="345"
+        stroke="#D4AF37"
+        stroke-width="0.3"
+      />
+      <polygon
+        points="200,20 230,180 380,200 230,220 200,380 170,220 20,200 170,180"
+        stroke="#FF6B00"
+        stroke-width="0.5"
+        fill="none"
+      />
+      <polygon
+        points="200,50 225,175 350,200 225,225 200,350 175,225 50,200 175,175"
+        stroke="#D4AF37"
+        stroke-width="0.3"
+        fill="none"
+      />
+    </svg>
+
+    <!-- Floating particles -->
+    <div id="particles"></div>
+
+    <header>
+      <span class="om-symbol">🕉️</span>
+      <h1
+        id="siteTitle"
+        data-title-hi="भक्ति अमृत"
+        data-title-en="Bhakti Amrit"
+      >
+        भक्ति अमृत
+      </h1>
+      <p
+        id="siteSubtitle"
+        data-subtitle-hi="॥ दैनिक साधना का संपूर्ण साथी — आरती, चालीसा, मंत्र, देव परिचय और तीर्थ मार्गदर्शन एक ही स्थान पर ॥"
+        data-subtitle-en="Your complete daily sadhana companion - Aarti, Chalisa, Mantras, deity stories, and temple guidance in one place."
+      >
+        ॥ दैनिक साधना का संपूर्ण साथी — आरती, चालीसा, मंत्र, देव परिचय और तीर्थ
+        मार्गदर्शन एक ही स्थान पर ॥
+      </p>
+      <div class="header-divider">
+        <div class="divider-line"></div>
+        <div class="divider-dot"></div>
+        <div class="divider-dot" style="background: var(--gold)"></div>
+        <div class="divider-dot"></div>
+        <div class="divider-line"></div>
+      </div>
+    </header>
+
+    <nav id="mainNav">
+      <button
+        class="nav-btn nav-btn-home active"
+        onclick="showHomeByType('all', 'home')"
+        data-page="home"
+      >
+        <span class="nav-icon-emoji">🏠</span> मुख्य पृष्ठ
+      </button>
+      <button
+        class="nav-arrow left"
+        onclick="scrollNav(-1)"
+        aria-label="Scroll Left"
+      >
+        ‹
+      </button>
+      <div class="nav-inner-wrapper">
+        <div class="nav-inner" id="navInner">
+          <button
+            class="nav-btn"
+            onclick="showHomeByType('देव', 'type-dev')"
+            data-page="type-dev"
+          >
+            <span class="nav-icon-emoji">🕉️</span> देव
+          </button>
+          <button
+            class="nav-btn"
+            onclick="showHomeByType('देवी', 'type-devi')"
+            data-page="type-devi"
+          >
+            <span class="nav-icon-emoji">🌺</span> देवी
+          </button>
+          <button
+            class="nav-btn"
+            onclick="showHomeByType('अवतार', 'type-avatar')"
+            data-page="type-avatar"
+          >
+            <span class="nav-icon-emoji">🏹</span> अवतार
+          </button>
+          <button
+            class="nav-btn"
+            onclick="showHomeByType('ग्रह देव', 'type-grah-dev')"
+            data-page="type-grah-dev"
+          >
+            <span class="nav-icon-emoji">🪐</span> ग्रह देव
+          </button>
+          <button
+            class="nav-btn"
+            onclick="showHomeByType('लोक देव', 'type-lok-dev')"
+            data-page="type-lok-dev"
+          >
+            <span class="nav-icon-emoji">🎠</span> लोक देव
+          </button>
+          <button
+            class="nav-btn"
+            onclick="showPage('temples')"
+            data-page="temples"
+          >
+            <span class="nav-icon-emoji">🛕</span> प्रसिद्ध मंदिर
+          </button>
+        </div>
+      </div>
+      <button
+        class="nav-arrow right"
+        onclick="scrollNav(1)"
+        aria-label="Scroll Right"
+      >
+        ›
+      </button>
+    </nav>
+
+    <div class="main-container">
+      <!-- HOME PAGE -->
+      <div id="page-home" class="page active">
+        <div class="section-title">
+          <span class="diya">🪔</span> देव-देवी संग्रह
+        </div>
+        <div class="section-subtitle">
+          किसी भी देवता का नाम चुनें और उनकी आरती, चालीसा व मंत्र पढ़ें
+        </div>
+        <div class="home-search-wrap">
+          <div class="home-search-input-wrap">
+            <span class="home-search-icon" aria-hidden="true">🔎</span>
+            <input
+              id="homeSearchInput"
+              class="home-search-input"
+              type="search"
+              placeholder="देवता का नाम लिखें..."
+              autocomplete="off"
+            />
+            <button
+              id="homeSearchClear"
+              class="home-search-clear"
+              type="button"
+              aria-label="Clear search"
+              title="Clear search"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+        <div class="home-grid" id="homeGrid"></div>
+      </div>
+
+      <!-- DEITY PAGES (generated dynamically) -->
+      <div id="page-deity" class="page">
+        <button
+          class="back-btn"
+          onclick="showHomeByType(activeHomeType, activeHomeNavId)"
+        >
+          ← वापस जाएं
         </button>
-        <button class="nav-btn" onclick="showDeityPage('shiva')" data-page="shiva">
-          <img src="icons/shiv.webp" alt="शिव" class="nav-icon"> श्री शिव
-        </button>
-        <button class="nav-btn" onclick="showDeityPage('durga')" data-page="durga">
-          <img src="icons/durga.webp" alt="दुर्गा" class="nav-icon"> श्री दुर्गा
-        </button>
-        <button class="nav-btn" onclick="showDeityPage('lakshmi')" data-page="lakshmi">
-          <img src="icons/lakshmi.webp" alt="लक्ष्मी" class="nav-icon"> श्री लक्ष्मी
-        </button>
-        <button class="nav-btn" onclick="showDeityPage('saraswati')" data-page="saraswati">
-          <img src="icons/saraswati.webp" alt="सरस्वती" class="nav-icon"> श्री सरस्वती
-        </button>
-        <button class="nav-btn" onclick="showDeityPage('vishnu')" data-page="vishnu">
-          <img src="icons/vishnu.webp" alt="विष्णु" class="nav-icon"> श्री विष्णु
-        </button>
-        <button class="nav-btn" onclick="showDeityPage('ram')" data-page="ram">
-          <img src="icons/ram.webp" alt="राम" class="nav-icon"> श्री राम
-        </button>
-        <button class="nav-btn" onclick="showDeityPage('krishna')" data-page="krishna">
-          <img src="icons/krishna.webp" alt="कृष्ण" class="nav-icon"> श्री कृष्ण
-        </button>
-        <button class="nav-btn" onclick="showDeityPage('hanuman')" data-page="hanuman">
-          <img src="icons/hanuman.webp" alt="हनुमान" class="nav-icon"> श्री हनुमान
-        </button>
-        <button class="nav-btn" onclick="showDeityPage('surya')" data-page="surya">
-          <img src="icons/surya.webp" alt="सूर्य" class="nav-icon"> श्री सूर्य
-        </button>
-        <button class="nav-btn" onclick="showDeityPage('kali')" data-page="kali">
-          <img src="icons/kali.webp" alt="काली" class="nav-icon"> श्री काली
-        </button>
-        <button class="nav-btn" onclick="showDeityPage('khatu_shyam')" data-page="khatu_shyam">
-          <img src="icons/khatu_shyam.webp" alt="खाटू श्याम" class="nav-icon"> श्री खाटू श्याम
-        </button>
-        <button class="nav-btn" onclick="showDeityPage('shani')" data-page="shani">
-          <img src="icons/shani.webp" alt="शनि देव" class="nav-icon"> श्री शनि देव
-        </button>
-        <button class="nav-btn" onclick="showPage('temples')" data-page="temples">
-          <span class="nav-icon-emoji">🛕</span> प्रसिद्ध मंदिर
-        </button>
+        <div class="content-header" id="deityHeader"></div>
+        <div class="tabs" id="deityTabs"></div>
+        <div id="deityContent"></div>
+      </div>
+
+      <!-- TEMPLES PAGE -->
+      <div id="page-temples" class="page">
+        <div class="temples-header">
+          <div class="section-title">
+            <span class="diya">🛕</span> प्रसिद्ध हिंदू मंदिर
+          </div>
+          <div class="section-subtitle">
+            भारत के प्रसिद्ध तीर्थ स्थल — मानचित्र पर देखें और जानिए विस्तार से
+          </div>
+          <div class="temple-filters" id="templeFilters"></div>
+        </div>
+        <div class="temples-grid" id="templesGrid"></div>
       </div>
     </div>
-    <button class="nav-arrow right" onclick="scrollNav(1)" aria-label="Scroll Right">›</button>
-  </nav>
 
-  <div class="main-container">
-    <!-- HOME PAGE -->
-    <div id="page-home" class="page active">
-      <div class="section-title">
-        <span class="diya">🪔</span> देव-देवी संग्रह
-      </div>
-      <div class="section-subtitle">
-        किसी भी देवता का नाम चुनें और उनकी आरती, चालीसा व मंत्र पढ़ें
-      </div>
-      <div class="deity-filters" id="deityFilters"></div>
-      <div class="home-grid" id="homeGrid"></div>
-    </div>
-
-    <!-- DEITY PAGES (generated dynamically) -->
-    <div id="page-deity" class="page">
-      <button class="back-btn" onclick="showPage('home')">← वापस जाएं</button>
-      <div class="content-header" id="deityHeader"></div>
-      <div class="tabs" id="deityTabs"></div>
-      <div id="deityContent"></div>
-    </div>
-
-    <!-- TEMPLES PAGE -->
-    <div id="page-temples" class="page">
-      <div class="temples-header">
-        <div class="section-title"><span class="diya">🛕</span> प्रसिद्ध हिंदू मंदिर</div>
-        <div class="section-subtitle">भारत के प्रसिद्ध तीर्थ स्थल — मानचित्र पर देखें और जानिए विस्तार से</div>
-        <div class="temple-filters" id="templeFilters"></div>
-      </div>
-      <div class="temples-grid" id="templesGrid"></div>
-    </div>
-  </div>
-
-  <!-- Temple Map Modal -->
-  <div id="templeMapModal" class="temple-modal-overlay" onclick="closeTempleModal(event)">
-    <div class="temple-modal">
-      <button class="temple-modal-close" onclick="closeTempleModal()">✕</button>
-      <div class="temple-modal-header" id="templeModalHeader"></div>
-      <div class="temple-modal-body">
-        <div class="temple-modal-info" id="templeModalInfo"></div>
+    <!-- Temple Map Modal -->
+    <div
+      id="templeMapModal"
+      class="temple-modal-overlay"
+      onclick="closeTempleModal(event)"
+    >
+      <div class="temple-modal">
+        <button class="temple-modal-close" onclick="closeTempleModal()">
+          ✕
+        </button>
+        <div class="temple-modal-header" id="templeModalHeader"></div>
+        <div class="temple-modal-body">
+          <div class="temple-modal-info" id="templeModalInfo"></div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <footer>
-    <div class="header-divider" style="justify-content: center; margin-bottom: 10px">
-      <div class="divider-line" style="width: 60px"></div>
-      <div class="divider-dot"></div>
-      <div class="divider-line" style="width: 60px"></div>
-    </div>
-    ॥ जय जय श्री हरि ॥ — सभी देवी-देवताओं को समर्पित <br />
-    <span style="font-size: 0.8rem; opacity: 0.5">Divine Aarti Sangrah © 2025</span>
-  </footer>
+    <footer>
+      <div
+        class="header-divider"
+        style="justify-content: center; margin-bottom: 10px"
+      >
+        <div class="divider-line" style="width: 60px"></div>
+        <div class="divider-dot"></div>
+        <div class="divider-line" style="width: 60px"></div>
+      </div>
+      ॥ जय जय श्री हरि ॥ — सभी देवी-देवताओं को समर्पित <br />
+      <span style="font-size: 0.8rem; opacity: 0.5"
+        >Divine Aarti Sangrah © 2025</span
+      >
+    </footer>
 
-  <script src="data.js"></script>
-  <script src="script.js"></script>
-</body>
-
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+  </body>
 </html>
