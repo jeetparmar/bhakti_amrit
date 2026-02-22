@@ -147,13 +147,21 @@ function updateArrowVisibility() {
 
 function updateSiteTitleByLang() {
   const titleEl = document.getElementById('siteTitle');
-  if (!titleEl) return;
-
   const lang = (document.documentElement.getAttribute('lang') || '').toLowerCase();
   const isEnglish = lang.startsWith('en');
-  titleEl.textContent = isEnglish
-    ? (titleEl.dataset.titleEn || 'Bhakti Amrit')
-    : (titleEl.dataset.titleHi || 'भक्ति अमृत');
+
+  if (titleEl) {
+    titleEl.textContent = isEnglish
+      ? (titleEl.dataset.titleEn || 'Bhakti Amrit')
+      : (titleEl.dataset.titleHi || 'भक्ति अमृत');
+  }
+
+  const subtitleEl = document.getElementById('siteSubtitle');
+  if (subtitleEl) {
+    subtitleEl.textContent = isEnglish
+      ? (subtitleEl.dataset.subtitleEn || '')
+      : (subtitleEl.dataset.subtitleHi || '');
+  }
 }
 
 function showPage(pageId, navId) {
