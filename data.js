@@ -6,7 +6,7 @@ const deities = {
         emoji: '🐘',
         color: '#FF6B00',
         desc: 'विघ्नहर्ता, प्रथम पूज्य',
-        img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/30/Lord_Ganesha_at_Sripuram.jpg/800px-Lord_Ganesha_at_Sripuram.jpg',
+        img: 'icons/ganesh.png',
         about: [
             {
                 title: 'भगवान श्री गणेश का परिचय',
@@ -98,7 +98,7 @@ const deities = {
         emoji: '🔱',
         color: '#4169E1',
         desc: 'महादेव, भोलेनाथ, संहारक',
-        img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Lord_Nataraja_in_copper.jpg/800px-Lord_Nataraja_in_copper.jpg',
+        img: 'icons/shiv.png',
         about: [
             {
                 title: 'भगवान शिव (महादेव) का परिचय',
@@ -195,7 +195,7 @@ const deities = {
         emoji: '🌸',
         color: '#FF1493',
         desc: 'आदिशक्ति, महामाया, सिंहवाहिनी',
-        img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Durga%2C_Tanjore_painting.jpg/800px-Durga%2C_Tanjore_painting.jpg',
+        img: 'icons/durga.png',
         about: [
             {
                 title: 'माता दुर्गा (आदिशक्ति) का परिचय',
@@ -290,7 +290,7 @@ const deities = {
         emoji: '🪷',
         color: '#FFD700',
         desc: 'धनदात्री, कमलावासिनी, समृद्धि की देवी',
-        img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Lakshmi_at_Tirumala.jpg/800px-Lakshmi_at_Tirumala.jpg',
+        img: 'icons/lakshmi.png',
         about: [
             {
                 title: 'माता लक्ष्मी का परिचय',
@@ -378,7 +378,7 @@ const deities = {
         emoji: '🎵',
         color: '#FFFFFF',
         desc: 'विद्यादायिनी, वागदेवी, वीणावादिनी',
-        img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Ravi_Varma-Saraswathi.jpg/800px-Ravi_Varma-Saraswathi.jpg',
+        img: 'icons/saraswati.png',
         about: [
             {
                 title: 'माता सरस्वती (विद्या की देवी) का परिचय',
@@ -460,7 +460,7 @@ const deities = {
         emoji: '✨',
         color: '#0080FF',
         desc: 'पालनहार, नारायण, जगत के पालक',
-        img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Vishnu_as_the_Supreme_Being.jpg/800px-Vishnu_as_the_Supreme_Being.jpg',
+        img: 'icons/vishnu.png',
         about: [
             {
                 title: 'भगवान विष्णु (जगत के पालक) का परिचय',
@@ -543,7 +543,7 @@ const deities = {
         emoji: '🏹',
         color: '#00AA00',
         desc: 'मर्यादा पुरुषोत्तम, रघुकुल के भूषण',
-        img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Raja_Ravi_Varma_-_Rama_and_Lakshmana_Going_to_the_Svayambara.jpg/800px-Raja_Ravi_Varma_-_Rama_and_Lakshmana_Going_to_the_Svayambara.jpg',
+        img: 'icons/ram.png',
         about: [
             {
                 title: 'भगवान श्री राम (मर्यादा पुरुषोत्तम) का परिचय',
@@ -623,7 +623,7 @@ const deities = {
         emoji: '🪈',
         color: '#0000CD',
         desc: 'गोविन्द, मुरलीमनोहर, ब्रजबिहारी',
-        img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Sri_Krishna_The_Lord.jpg/800px-Sri_Krishna_The_Lord.jpg',
+        img: 'icons/krishna.png',
         about: [
             {
                 title: 'भगवान श्री कृष्ण (पूर्णावतार) का परिचय',
@@ -703,7 +703,7 @@ const deities = {
         emoji: '🙏',
         color: '#FF4500',
         desc: 'पवनपुत्र, बजरंगबली, राम भक्त शिरोमणि',
-        img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Hanuman_at_Prachin_Hanuman_Temple.jpg/800px-Hanuman_at_Hanuman_Temple.jpg',
+        img: 'icons/hanuman.png',
         about: [
             {
                 title: 'भगवान हनुमान (बजरंगबली) का परिचय',
@@ -796,7 +796,7 @@ const deities = {
         emoji: '☀️',
         color: '#FF8C00',
         desc: 'प्रत्यक्ष देव, जगत के नेत्र, ऊर्जा स्रोत',
-        img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/India_-_Kolkata_Sun_Temple_-_0898.jpg/800px-India_-_Kolkata_Sun_Temple_-_0898.jpg',
+        img: 'icons/surya.png',
         about: [
             {
                 title: 'भगवान सूर्य (जगत की आत्मा) का परिचय',
@@ -872,7 +872,7 @@ const deities = {
         emoji: '⚡',
         color: '#800080',
         desc: 'महाकाली, तारा, आद्यशक्ति की उग्र रूप',
-        img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Kali_idol_at_Dakshineswar_Kali_temple.jpg/800px-Kali_idol_at_Dakshineswar_Kali_temple.jpg',
+        img: 'icons/kali.png',
         about: [
             {
                 title: 'माता काली (महाकाली) का परिचय',
@@ -955,7 +955,7 @@ const deities = {
         emoji: '🏹',
         color: '#FF4500',
         desc: 'हारे का सहारा, मोर्वी नंदन, कलियुग के अवतारी',
-        img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Khatushyamji_Main_Temple.jpg/800px-Khatushyamji_Main_Temple.jpg',
+        img: 'icons/khatu_shyam.png',
         about: [
             {
                 title: 'भगवान खाटू श्याम (बर्बरीक) का परिचय',
@@ -1041,7 +1041,7 @@ const deities = {
         emoji: '⚖️',
         color: '#1a1a1a',
         desc: 'कर्म फल दाता, सूर्य पुत्र, न्याय के देवता',
-        img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Lord_Shani_Deity.jpg/800px-Lord_Shani_Deity.jpg',
+        img: 'icons/shani.png',
         about: [
             {
                 title: 'भगवान शनि देव (न्याय के अधिपति) का परिचय',
