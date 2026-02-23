@@ -300,8 +300,8 @@ function updateArrowVisibility() {
   leftArrow.style.display = container.scrollLeft > 5 ? 'flex' : 'none';
   rightArrow.style.display = canScroll
     && container.scrollLeft + container.clientWidth < container.scrollWidth - 5
-      ? 'flex'
-      : 'none';
+    ? 'flex'
+    : 'none';
 }
 
 function updateSiteTitleByLang() {
@@ -385,7 +385,7 @@ function showDeityPage(key, options = {}) {
   content.innerHTML = `
   <div id="tab-about" class="text-content ${activeDeityTab === 'about' ? 'active' : ''}">
     <div class="deity-tab-wrap deity-tab-wrap-no-padding">
-      <div class="lyrics-box about-content">${renderAbout(deity.about)}</div>
+      <div class="lyrics-box about-content">${renderAbout(aboutData[key])}</div>
     </div>
   </div>
   <div id="tab-aarti" class="text-content ${activeDeityTab === 'aarti' ? 'active' : ''}">
