@@ -1581,6 +1581,16 @@ function closeTempleModal(e) {
   document.body.style.overflow = '';
 }
 
+for (const key in aartiData) {
+  if (deities[key]) deities[key].aarti = aartiData[key];
+}
+for (const key in chalisaData) {
+  if (deities[key]) deities[key].chalisa = chalisaData[key];
+}
+for (const key in mantraData) {
+  if (deities[key]) deities[key].mantras = mantraData[key];
+}
+
 // ============ INIT ============
 window.addEventListener('load', () => {
   createParticles();
