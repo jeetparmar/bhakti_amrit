@@ -268,21 +268,45 @@
         <div class="divider-line" style="width: 60px"></div>
       </div>
       ॥ जय जय श्री हरि ॥ — सभी देवी-देवताओं को समर्पित <br />
-      <span style="font-size: 0.8rem; opacity: 0.5"
-        >Divine Aarti Sangrah © 2025</span
-      >
+      <div class="footer-links">
+        <a href="about.html">हमारे बारे में</a>
+        <span aria-hidden="true">•</span>
+        <a href="contact.html">संपर्क</a>
+        <span aria-hidden="true">•</span>
+        <a href="index.html">भक्ति अमृत © 2026</a>
+      </div>
     </footer>
 
     <div class="accessibility-controls">
       <button
+        class="quick-nav-btn"
+        type="button"
+        onclick="scrollDirectTop()"
+        data-tooltip="पेज की शुरुआत पर जाएं"
+        title="पेज की शुरुआत पर जाएं"
+        aria-label="पेज की शुरुआत पर जाएं"
+      >
+        ↑
+      </button>
+      <button
         class="font-size-btn"
         type="button"
         onclick="cycleFontSize()"
-        title="अक्षर का आकार बदलें"
-        aria-label="अक्षर का आकार बदलें"
+        title="पाठ का आकार बदलें"
+        aria-label="पाठ का आकार बदलें"
       >
         <span class="font-size-btn-mark" aria-hidden="true">A+</span>
         <span class="label">अक्षर आकार</span>
+      </button>
+      <button
+        class="quick-nav-btn"
+        type="button"
+        onclick="scrollDirectBottom()"
+        data-tooltip="पेज के अंत में जाएं"
+        title="पेज के अंत में जाएं"
+        aria-label="पेज के अंत में जाएं"
+      >
+        ↓
       </button>
     </div>
 

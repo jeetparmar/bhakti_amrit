@@ -327,6 +327,7 @@ nav {
   z-index: 1200;
   display: flex;
   align-items: center;
+  gap: 8px;
   isolation: isolate;
   animation: floatControl 4.2s ease-in-out infinite;
 }
@@ -346,14 +347,13 @@ nav {
   animation: controlPulse 2.1s ease-out infinite;
 }
 
+.quick-nav-btn,
 .font-size-btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
   border: 1px solid rgba(255, 248, 231, 0.4);
   background: linear-gradient(145deg, rgba(255, 248, 231, 0.18), rgba(212, 175, 55, 0.1));
   color: rgba(255, 248, 231, 0.9);
-  padding: 7px 12px;
   border-radius: 999px;
   cursor: pointer;
   font-family: 'Tiro Devanagari Hindi', serif;
@@ -369,6 +369,48 @@ nav {
   position: relative;
   overflow: hidden;
   animation: fontSizeBtnGlow 2.8s ease-in-out infinite alternate;
+}
+
+.quick-nav-btn {
+  justify-content: center;
+  padding: 7px 10px;
+  min-width: 40px;
+  font-size: 1rem;
+  line-height: 1;
+  overflow: visible;
+}
+
+.quick-nav-btn[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translate(-50%, 6px);
+  opacity: 0;
+  pointer-events: none;
+  background: rgba(26, 10, 0, 0.95);
+  color: var(--cream);
+  border: 1px solid rgba(212, 175, 55, 0.55);
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-family: 'Tiro Devanagari Hindi', serif;
+  font-size: 0.72rem;
+  line-height: 1.15;
+  white-space: nowrap;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 3;
+}
+
+.quick-nav-btn[data-tooltip]:hover::after,
+.quick-nav-btn[data-tooltip]:focus-visible::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.font-size-btn {
+  gap: 8px;
+  padding: 7px 12px;
 }
 
 .font-size-btn::before {
@@ -394,6 +436,7 @@ nav {
   color: rgba(255, 248, 231, 0.72);
 }
 
+.quick-nav-btn:hover,
 .font-size-btn:hover {
   border-color: rgba(255, 248, 231, 0.4);
   color: #fff8e7;
@@ -1185,6 +1228,27 @@ footer {
   z-index: 1;
 }
 
+.footer-links {
+  margin: 10px 0 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-style: normal;
+}
+
+.footer-links a {
+  color: rgba(255, 248, 231, 0.78);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.footer-links a:hover {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+  text-shadow: 0 0 12px rgba(212, 175, 55, 0.35);
+}
+
 /* SCROLLBAR */
 ::-webkit-scrollbar {
   width: 6px;
@@ -1249,6 +1313,11 @@ footer {
     padding: 7px 9px;
     min-width: 38px;
     justify-content: center;
+  }
+
+  .quick-nav-btn {
+    min-width: 36px;
+    padding: 7px 8px;
   }
 
   .font-size-btn .label {

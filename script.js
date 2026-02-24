@@ -1754,6 +1754,17 @@ function cycleFontSize() {
   );
 }
 
+function scrollDirectTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function scrollDirectBottom() {
+  window.scrollTo({
+    top: document.documentElement.scrollHeight,
+    behavior: 'smooth',
+  });
+}
+
 // ============ INIT ============
 window.addEventListener('load', () => {
   // Load saved font size
