@@ -111,9 +111,38 @@ function getNavIdByHomeType(typeId = 'all') {
 }
 
 function getSafeHomeType(typeId = 'all') {
-  return Object.prototype.hasOwnProperty.call(homeTypeToNavId, typeId)
-    ? typeId
-    : 'all';
+  const raw = String(typeId || 'all');
+  const decoded = (() => {
+    try {
+      return decodeURIComponent(raw);
+    } catch (error) {
+      return raw;
+    }
+  })();
+
+  const normalized = decoded
+    .replace(/\+/g, ' ')
+    .replace(/[_-]+/g, ' ')
+    .trim()
+    .replace(/\s+/g, ' ');
+
+  if (Object.prototype.hasOwnProperty.call(homeTypeToNavId, normalized)) {
+    return normalized;
+  }
+
+  const aliasMap = {
+    grah: 'ग्रह देव',
+    'grah dev': 'ग्रह देव',
+    'lok dev': 'लोक देव',
+    lok: 'लोक देव',
+    dev: 'देव',
+    devi: 'देवी',
+    avatar: 'अवतार',
+    ग्रहदेव: 'ग्रह देव',
+    लोकदेव: 'लोक देव',
+  };
+
+  return aliasMap[normalized.toLowerCase()] || 'all';
 }
 
 function getHomeSearchPlaceholder(typeId = activeHomeType) {
