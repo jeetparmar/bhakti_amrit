@@ -665,6 +665,9 @@ nav {
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .deity-card::before {
@@ -725,7 +728,13 @@ nav {
   padding: 15px;
   position: relative;
   z-index: 2;
-  background: linear-gradient(0deg, rgba(26, 10, 0, 0.9), transparent);
+  background: linear-gradient(180deg,
+      rgba(26, 10, 0, 0.82) 0%,
+      rgba(26, 10, 0, 0.94) 35%,
+      rgba(26, 10, 0, 0.94) 100%);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .deity-name {
@@ -733,6 +742,13 @@ nav {
   font-weight: bold;
   color: var(--gold);
   display: block;
+}
+
+.deity-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
   margin-bottom: 4px;
 }
 
@@ -743,7 +759,6 @@ nav {
 
 .deity-type-badge {
   display: inline-flex;
-  margin-top: 8px;
   font-size: 0.68rem;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -758,7 +773,8 @@ nav {
   display: flex;
   gap: 5px;
   flex-wrap: wrap;
-  margin-top: 8px;
+  margin-top: auto;
+  padding-top: 8px;
 }
 
 .tag {
