@@ -825,6 +825,16 @@ nav {
   box-shadow: 0 2px 8px rgba(125, 249, 255, 0.2);
 }
 
+.tag-katha {
+  border-color: #ffd36b;
+  color: #ffd36b;
+}
+
+.tag-katha:hover {
+  background: rgba(255, 211, 107, 0.15);
+  box-shadow: 0 2px 8px rgba(255, 211, 107, 0.2);
+}
+
 /* Mantra styles */
 .mantra-grid {
   display: grid;

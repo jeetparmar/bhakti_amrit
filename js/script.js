@@ -88,7 +88,14 @@ let activeHomeNavId = 'home';
 let activeHomeSearchQuery = '';
 let activeDeityKey = '';
 let activeDeityTab = 'about';
-const validDeityTabs = ['about', 'aarti', 'chalisa', 'mantra', 'temples'];
+const validDeityTabs = [
+  'about',
+  'aarti',
+  'chalisa',
+  'katha',
+  'mantra',
+  'temples',
+];
 
 const homeTypeToNavId = {
   all: 'home',
@@ -189,6 +196,9 @@ function escapeHtml(value = '') {
 
 function hasLyricsContent(data) {
   if (typeof data === 'string') return data.trim().length > 0;
+  if (data && typeof data.content === 'string') {
+    return data.content.trim().length > 0;
+  }
   return Boolean(data && Array.isArray(data.lines) && data.lines.length > 0);
 }
 
@@ -203,6 +213,7 @@ function getAvailableDeityTabs(key) {
   const tabs = ['about'];
   if (hasLyricsContent(deity.aarti)) tabs.push('aarti');
   if (hasLyricsContent(deity.chalisa)) tabs.push('chalisa');
+  if (hasLyricsContent(deity.katha)) tabs.push('katha');
   if (hasMantrasContent(deity.mantras)) tabs.push('mantra');
   tabs.push('temples');
   return tabs;
@@ -273,6 +284,11 @@ function renderHomeGrid(
           if (hasMantrasContent(deity.mantras)) {
             tags.push(
               `<span class="tag tag-mantra" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'mantra' })">मंत्र</span>`,
+            );
+          }
+          if (hasLyricsContent(deity.katha)) {
+            tags.push(
+              `<span class="tag tag-katha" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'katha' })">कथा</span>`,
             );
           }
           return tags.length ? `<div class="deity-tags">${tags.join('')}</div>` : '';
@@ -474,6 +490,9 @@ function showDeityPage(key, options = {}) {
     hasLyricsContent(deity.chalisa)
       ? `<button class="tab-btn ${activeDeityTab === 'chalisa' ? 'active' : ''}" onclick="showTab('chalisa', this)">📖 चालीसा</button>`
       : '',
+    hasLyricsContent(deity.katha)
+      ? `<button class="tab-btn ${activeDeityTab === 'katha' ? 'active' : ''}" onclick="showTab('katha', this)">📚 कथा</button>`
+      : '',
     hasMantrasContent(deity.mantras)
       ? `<button class="tab-btn ${activeDeityTab === 'mantra' ? 'active' : ''}" onclick="showTab('mantra', this)">🕉️ मंत्र</button>`
       : '',
@@ -500,6 +519,11 @@ function showDeityPage(key, options = {}) {
   <div id="tab-chalisa" class="text-content ${activeDeityTab === 'chalisa' ? 'active' : ''}">
     <div class="deity-tab-wrap">
       <div class="lyrics-box">${renderLyrics(deity.chalisa)}</div>
+    </div>
+  </div>
+  <div id="tab-katha" class="text-content ${activeDeityTab === 'katha' ? 'active' : ''}">
+    <div class="deity-tab-wrap">
+      <div class="lyrics-box">${renderLyrics(deity.katha)}</div>
     </div>
   </div>
   <div id="tab-mantra" class="text-content ${activeDeityTab === 'mantra' ? 'active' : ''}">
@@ -553,11 +577,16 @@ function renderAbout(data) {
 
 function renderLyrics(data) {
   if (typeof data === 'string') return data;
-  if (!data || !data.lines) return 'जल्द ही आ रहा है...';
+  if (!data) return 'जल्द ही आ रहा है...';
 
   const titleHtml = data.title
     ? `<div class="title-line">${data.title}</div>`
     : '';
+  if (typeof data.content === 'string' && data.content.trim().length > 0) {
+    return `${titleHtml}<div class="stanza">${data.content}</div>`;
+  }
+  if (!Array.isArray(data.lines) || !data.lines.length) return 'जल्द ही आ रहा है...';
+
   const linesHtml = data.lines
     .map((line) => {
       if (line.type === 'refrain') {
@@ -1822,6 +1851,9 @@ for (const key in chalisaData) {
 }
 for (const key in mantraData) {
   if (deities[key]) deities[key].mantras = mantraData[key];
+}
+for (const key in kathaData) {
+  if (deities[key]) deities[key].katha = kathaData[key];
 }
 
 // ============ ACCESSIBILITY ============
