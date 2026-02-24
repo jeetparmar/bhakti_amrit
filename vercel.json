@@ -1,6 +1,18 @@
 {
     "rewrites": [
         {
+            "source": "/:deity/css/:path*",
+            "destination": "/css/:path*"
+        },
+        {
+            "source": "/:deity/js/:path*",
+            "destination": "/js/:path*"
+        },
+        {
+            "source": "/:deity/icons/:path*",
+            "destination": "/icons/:path*"
+        },
+        {
             "source": "/:deity/:tab/css/:path*",
             "destination": "/css/:path*"
         },
