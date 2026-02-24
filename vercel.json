@@ -1,4 +1,10 @@
 {
+    "rewrites": [
+        {
+            "source": "/:deity/:tab",
+            "destination": "/index.html"
+        }
+    ],
     "redirects": [
         {
             "source": "/index.html",

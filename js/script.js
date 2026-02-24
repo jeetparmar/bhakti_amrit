@@ -133,6 +133,23 @@ function getSafeDeityTab(tabId = 'about') {
   return validDeityTabs.includes(tabId) ? tabId : 'about';
 }
 
+function getPathState() {
+  const segments = window.location.pathname
+    .split('/')
+    .filter(Boolean)
+    .map((segment) => decodeURIComponent(segment));
+
+  if (segments.length === 2) {
+    const [deityKey, tabId] = segments;
+    const safeTab = getSafeDeityTab(tabId);
+    if (deities[deityKey] && safeTab === tabId) {
+      return { deityKey, tabId: safeTab };
+    }
+  }
+
+  return { deityKey: '', tabId: 'about' };
+}
+
 function updateUrlState({
   typeId = activeHomeType,
   deityKey = '',
@@ -140,15 +157,17 @@ function updateUrlState({
   replace = false,
 } = {}) {
   const url = new URL(window.location.href);
-  url.search = '';
   const safeType = getSafeHomeType(typeId);
   const safeDeity = deityKey && deities[deityKey] ? deityKey : '';
   const safeTab = getSafeDeityTab(tabId);
 
-  if (safeType !== 'all') url.searchParams.set('type', safeType);
   if (safeDeity) {
-    url.searchParams.set('deity', safeDeity);
-    url.searchParams.set('tab', safeTab);
+    url.pathname = `/${encodeURIComponent(safeDeity)}/${encodeURIComponent(safeTab)}`;
+    url.search = '';
+  } else {
+    url.pathname = '/';
+    url.search = '';
+    if (safeType !== 'all') url.searchParams.set('type', safeType);
   }
 
   const method = replace ? 'replaceState' : 'pushState';
@@ -165,11 +184,16 @@ function updateUrlState({
 
 function applyUrlState() {
   const params = new URLSearchParams(window.location.search);
+  const pathState = getPathState();
+  const pathDeity = pathState.deityKey;
+  const pathTab = pathState.tabId;
   const rawType = params.get('type') || 'all';
   const typeId = getSafeHomeType(rawType);
   const navId = getNavIdByHomeType(typeId);
-  const deityKey = params.get('deity') || '';
-  const tabId = getSafeDeityTab(params.get('tab') || 'about');
+  const queryDeity = params.get('deity') || '';
+  const queryTab = getSafeDeityTab(params.get('tab') || 'about');
+  const deityKey = pathDeity || queryDeity;
+  const tabId = pathDeity ? pathTab : queryTab;
 
   if (deityKey && deities[deityKey]) {
     activeHomeType = typeId;
