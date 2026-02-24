@@ -1591,8 +1591,42 @@ for (const key in mantraData) {
   if (deities[key]) deities[key].mantras = mantraData[key];
 }
 
+// ============ ACCESSIBILITY ============
+let currentFontSizeMultiplier = 1;
+
+function cycleFontSize() {
+  const btn = document.querySelector('.font-size-btn');
+
+  if (currentFontSizeMultiplier === 1) {
+    currentFontSizeMultiplier = 1.2;
+    if (btn) btn.classList.add('active-scaling');
+  } else if (currentFontSizeMultiplier === 1.2) {
+    currentFontSizeMultiplier = 1.4;
+    if (btn) btn.classList.add('active-scaling');
+  } else {
+    currentFontSizeMultiplier = 1;
+    if (btn) btn.classList.remove('active-scaling');
+  }
+
+  document.documentElement.style.setProperty('--font-size-multiplier', currentFontSizeMultiplier);
+  localStorage.setItem('bhaktiFontSizeMultiplier', currentFontSizeMultiplier.toString());
+}
+
 // ============ INIT ============
 window.addEventListener('load', () => {
+  // Load saved font size
+  const savedMultiplier = localStorage.getItem('bhaktiFontSizeMultiplier');
+  if (savedMultiplier) {
+    currentFontSizeMultiplier = parseFloat(savedMultiplier);
+    document.documentElement.style.setProperty('--font-size-multiplier', currentFontSizeMultiplier);
+
+    // Set active state if scaled
+    if (currentFontSizeMultiplier > 1) {
+      const btn = document.querySelector('.font-size-btn');
+      if (btn) btn.classList.add('active-scaling');
+    }
+  }
+
   createParticles();
   setupHomeSearch();
   buildHomeGrid();
