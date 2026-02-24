@@ -548,25 +548,51 @@ nav {
 }
 
 .tag {
-  font-size: 0.65rem;
-  padding: 2px 8px;
+  font-size: 0.85rem;
+  padding: 3px 12px;
   border-radius: 20px;
-  border: 1px solid;
+  border: 1.5px solid;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: rgba(0, 0, 0, 0.4);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.tag:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .tag-aarti {
-  border-color: var(--saffron);
-  color: var(--saffron);
+  border-color: var(--saffron-light);
+  color: var(--saffron-light);
+}
+
+.tag-aarti:hover {
+  background: rgba(255, 107, 0, 0.15);
+  box-shadow: 0 2px 8px rgba(255, 107, 0, 0.2);
 }
 
 .tag-chalisa {
-  border-color: var(--lotus-pink);
-  color: var(--lotus-pink);
+  border-color: #ff9fb4;
+  color: #ff9fb4;
+}
+
+.tag-chalisa:hover {
+  background: rgba(255, 133, 161, 0.15);
+  box-shadow: 0 2px 8px rgba(255, 133, 161, 0.2);
 }
 
 .tag-mantra {
   border-color: #7df9ff;
   color: #7df9ff;
+}
+
+.tag-mantra:hover {
+  background: rgba(125, 249, 255, 0.15);
+  box-shadow: 0 2px 8px rgba(125, 249, 255, 0.2);
 }
 
 /* Mantra styles */
@@ -606,7 +632,7 @@ nav {
 }
 
 .mantra-type {
-  font-size: 0.7rem;
+  font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 2px;
   color: #7df9ff;
@@ -625,7 +651,7 @@ nav {
 }
 
 .mantra-text {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   line-height: 2;
   color: #fff8e7;
   font-weight: bold;
@@ -634,7 +660,7 @@ nav {
 }
 
 .mantra-meaning {
-  font-size: 0.9rem;
+  font-size: 1.1rem;
   color: rgba(255, 248, 231, 0.55);
   font-family: 'EB Garamond', serif;
   font-style: italic;
@@ -795,7 +821,7 @@ nav {
   border-radius: 16px;
   padding: 35px 40px;
   line-height: 2.2;
-  font-size: 1.15rem;
+  font-size: 1.35rem;
   color: var(--cream);
   position: relative;
   overflow: hidden;
@@ -866,6 +892,7 @@ nav {
   margin-bottom: 20px;
   color: rgba(255, 248, 231, 0.9);
   text-align: justify;
+  font-size: 1.15rem;
 }
 
 .about-content ul {
@@ -891,7 +918,7 @@ nav {
 .about-content strong {
   color: var(--gold);
   font-weight: bold;
-  font-size: 1.05rem;
+  font-size: 1.2rem;
 }
 
 .about-content .info-section {

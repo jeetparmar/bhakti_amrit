@@ -213,9 +213,9 @@ function renderHomeGrid(filter = activeHomeType, searchQuery = activeHomeSearchQ
       <span class="deity-meta">${deity.desc}</span>
       <span class="deity-type-badge">${deityType}</span>
       <div class="deity-tags">
-        <span class="tag tag-aarti">आरती</span>
-        <span class="tag tag-chalisa">चालीसा</span>
-        <span class="tag tag-mantra">मंत्र</span>
+        <span class="tag tag-aarti" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'aarti' })">आरती</span>
+        <span class="tag tag-chalisa" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'chalisa' })">चालीसा</span>
+        <span class="tag tag-mantra" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'mantra' })">मंत्र</span>
       </div>
     </div>
     </div>`;
