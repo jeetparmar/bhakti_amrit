@@ -268,32 +268,32 @@ function renderHomeGrid(
         <span class="deity-type-badge">${deityType}</span>
       </div>
       <span class="deity-meta">${deity.desc}</span>
-      ${
-        (() => {
-          const tags = [];
-          if (hasLyricsContent(deity.aarti)) {
-            tags.push(
-              `<span class="tag tag-aarti" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'aarti' })">आरती</span>`,
-            );
-          }
-          if (hasLyricsContent(deity.chalisa)) {
-            tags.push(
-              `<span class="tag tag-chalisa" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'chalisa' })">चालीसा</span>`,
-            );
-          }
-          if (hasMantrasContent(deity.mantras)) {
-            tags.push(
-              `<span class="tag tag-mantra" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'mantra' })">मंत्र</span>`,
-            );
-          }
-          if (hasLyricsContent(deity.katha)) {
-            tags.push(
-              `<span class="tag tag-katha" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'katha' })">कथा</span>`,
-            );
-          }
-          return tags.length ? `<div class="deity-tags">${tags.join('')}</div>` : '';
-        })()
-      }
+      ${(() => {
+        const tags = [];
+        if (hasLyricsContent(deity.aarti)) {
+          tags.push(
+            `<span class="tag tag-aarti" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'aarti' })">आरती</span>`,
+          );
+        }
+        if (hasLyricsContent(deity.chalisa)) {
+          tags.push(
+            `<span class="tag tag-chalisa" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'chalisa' })">चालीसा</span>`,
+          );
+        }
+        if (hasMantrasContent(deity.mantras)) {
+          tags.push(
+            `<span class="tag tag-mantra" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'mantra' })">मंत्र</span>`,
+          );
+        }
+        if (hasLyricsContent(deity.katha)) {
+          tags.push(
+            `<span class="tag tag-katha" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'katha' })">कथा</span>`,
+          );
+        }
+        return tags.length
+          ? `<div class="deity-tags">${tags.join('')}</div>`
+          : '';
+      })()}
     </div>
     </div>`;
     })
@@ -415,7 +415,7 @@ function updateTopHomeButton(pageId) {
     homeBtn.innerHTML = '<span class="nav-icon-emoji">↩️</span> वापस जाएं';
     homeBtn.setAttribute(
       'onclick',
-      "showHomeByType(activeHomeType, activeHomeNavId)",
+      'showHomeByType(activeHomeType, activeHomeNavId)',
     );
     return;
   }
@@ -585,7 +585,8 @@ function renderLyrics(data) {
   if (typeof data.content === 'string' && data.content.trim().length > 0) {
     return `${titleHtml}<div class="stanza">${data.content}</div>`;
   }
-  if (!Array.isArray(data.lines) || !data.lines.length) return 'जल्द ही आ रहा है...';
+  if (!Array.isArray(data.lines) || !data.lines.length)
+    return 'जल्द ही आ रहा है...';
 
   const linesHtml = data.lines
     .map((line) => {
