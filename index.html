@@ -169,6 +169,13 @@
           >
             <span class="nav-icon-emoji">🛕</span> प्रसिद्ध मंदिर
           </button>
+          <button
+            class="nav-btn"
+            onclick="showPage('festivals')"
+            data-page="festivals"
+          >
+            <span class="nav-icon-emoji">🎉</span> प्रसिद्ध त्योहार
+          </button>
         </div>
       </div>
       <button
@@ -240,7 +247,38 @@
         </div>
         <div class="temples-grid" id="templesGrid"></div>
       </div>
-    </div>
+      <!-- FESTIVALS PAGE -->
+      <div id="page-festivals" class="page">
+        <div class="temples-header">
+          <div class="section-title">
+            <span class="diya">🎉</span> प्रसिद्ध हिंदू त्योहार
+          </div>
+          <div class="section-subtitle">
+            प्रमुख पर्व, उनका महत्व और मुख्य अनुष्ठान
+          </div>
+          <div class="temple-filters" id="festivalFilters"></div>
+        </div>
+        <div class="temples-grid" id="festivalsGrid"></div>
+      </div>
+
+      </div>
+
+      <!-- Festival Modal -->
+      <div
+        id="festivalModal"
+        class="temple-modal-overlay"
+        onclick="closeFestivalModal(event)"
+      >
+        <div class="temple-modal">
+          <button class="temple-modal-close" onclick="closeFestivalModal()">
+            ✕
+          </button>
+          <div class="temple-modal-header" id="festivalModalHeader"></div>
+          <div class="temple-modal-body">
+            <div class="temple-modal-info" id="festivalModalInfo"></div>
+          </div>
+        </div>
+      </div>
 
     <!-- Temple Map Modal -->
     <div
@@ -317,6 +355,8 @@
     <script src="js/katha.js"></script>
     <script src="js/mantra.js"></script>
     <script src="js/data.js"></script>
+    <script src="js/temples.js"></script>
+    <script src="js/festivals.js"></script>
     <script src="js/script.js"></script>
   </body>
 </html>
