@@ -1195,44 +1195,61 @@ function scrollDirectBottom() {
 }
 
 // ============ INIT ============
+let isLoaderHidden = false;
+
+function hideLoader() {
+  if (isLoaderHidden) return;
+  const loader = document.getElementById('loader');
+  if (!loader) return;
+  loader.classList.add('hidden');
+  isLoaderHidden = true;
+}
+
 window.addEventListener('load', () => {
-  // Load saved font size
-  const savedMultiplier = localStorage.getItem('bhaktiFontSizeMultiplier');
-  if (savedMultiplier) {
-    currentFontSizeMultiplier = parseFloat(savedMultiplier);
-    document.documentElement.style.setProperty(
-      '--font-size-multiplier',
-      currentFontSizeMultiplier,
-    );
+  // Ensure the app is never stuck on the splash if any init task fails.
+  setTimeout(hideLoader, 1800);
 
-    // Set active state if scaled
-    if (currentFontSizeMultiplier > 1) {
-      const btn = document.querySelector('.font-size-btn');
-      if (btn) btn.classList.add('active-scaling');
+  try {
+    // Load saved font size
+    const savedMultiplier = localStorage.getItem('bhaktiFontSizeMultiplier');
+    if (savedMultiplier) {
+      currentFontSizeMultiplier = parseFloat(savedMultiplier);
+      document.documentElement.style.setProperty(
+        '--font-size-multiplier',
+        currentFontSizeMultiplier,
+      );
+
+      // Set active state if scaled
+      if (currentFontSizeMultiplier > 1) {
+        const btn = document.querySelector('.font-size-btn');
+        if (btn) btn.classList.add('active-scaling');
+      }
     }
+
+    createParticles();
+    setupHomeSearch();
+    buildHomeGrid();
+    updateArrowVisibility();
+    updateSiteTitleByLang();
+
+    const htmlObserver = new MutationObserver(updateSiteTitleByLang);
+    htmlObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['lang'],
+    });
+
+    const navWrapper = document.querySelector('.nav-inner-wrapper');
+    if (navWrapper) {
+      navWrapper.addEventListener('scroll', updateArrowVisibility);
+    }
+  } catch (error) {
+    console.error('App initialization failed:', error);
+    hideLoader();
   }
-
-  createParticles();
-  setupHomeSearch();
-  buildHomeGrid();
-  updateArrowVisibility();
-  updateSiteTitleByLang();
-
-  const htmlObserver = new MutationObserver(updateSiteTitleByLang);
-  htmlObserver.observe(document.documentElement, {
-    attributes: true,
-    attributeFilter: ['lang'],
-  });
-
-  const navWrapper = document.querySelector('.nav-inner-wrapper');
-  if (navWrapper) {
-    navWrapper.addEventListener('scroll', updateArrowVisibility);
-  }
-
-  setTimeout(() => {
-    document.getElementById('loader').classList.add('hidden');
-  }, 1800);
 });
+
+// Failsafe: hide splash even when `load` is delayed on slow/blocked networks.
+window.setTimeout(hideLoader, 5000);
 
 window.addEventListener('popstate', () => {
   applyUrlState();
