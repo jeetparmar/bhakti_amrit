@@ -9,49 +9,266 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="../css/styles.css" />
+    <style>
+      .about-page {
+        max-width: 1080px;
+        margin: 0 auto;
+        display: grid;
+        gap: 16px;
+      }
+
+      .about-hero {
+        border: 1px solid rgba(212, 175, 55, 0.32);
+        border-radius: 22px;
+        background: linear-gradient(
+          145deg,
+          rgba(26, 10, 0, 0.86),
+          rgba(74, 14, 14, 0.66)
+        );
+        padding: clamp(20px, 4vw, 36px);
+        box-shadow: 0 18px 34px rgba(0, 0, 0, 0.35);
+      }
+
+      .about-eyebrow {
+        display: inline-block;
+        color: var(--gold);
+        font-size: 0.8rem;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+
+      .about-hero h2 {
+        font-size: clamp(1.4rem, 4vw, 2.4rem);
+        color: var(--cream);
+        line-height: 1.28;
+      }
+
+      .about-hero p {
+        margin-top: 12px;
+        color: rgba(255, 248, 231, 0.9);
+        line-height: 1.8;
+      }
+
+      .about-metrics {
+        margin-top: 18px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 10px;
+      }
+
+      .about-metric {
+        border: 1px solid rgba(255, 248, 231, 0.2);
+        border-radius: 12px;
+        background: rgba(255, 248, 231, 0.06);
+        padding: 12px;
+      }
+
+      .about-metric strong {
+        display: block;
+        color: var(--gold);
+        font-size: 1.04rem;
+      }
+
+      .about-metric span {
+        color: rgba(255, 248, 231, 0.82);
+        font-size: 0.9rem;
+      }
+
+      .about-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 12px;
+      }
+
+      .about-card {
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        border-radius: 18px;
+        background: rgba(26, 10, 0, 0.72);
+        padding: 18px;
+      }
+
+      .about-card h3 {
+        color: var(--cream);
+        font-size: clamp(1.08rem, 2.8vw, 1.4rem);
+      }
+
+      .about-card p {
+        margin-top: 10px;
+        color: rgba(255, 248, 231, 0.86);
+        line-height: 1.75;
+      }
+
+      .about-points {
+        margin-top: 12px;
+        display: grid;
+        gap: 8px;
+      }
+
+      .about-point {
+        border: 1px solid rgba(255, 179, 71, 0.28);
+        background: rgba(255, 107, 0, 0.08);
+        border-radius: 12px;
+        padding: 10px;
+      }
+
+      .about-point strong {
+        color: #ffd08d;
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .about-point span {
+        color: rgba(255, 248, 231, 0.84);
+        font-size: 0.92rem;
+      }
+
+      .about-actions {
+        margin-top: 14px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .about-btn {
+        text-decoration: none;
+        padding: 9px 14px;
+        border-radius: 999px;
+        font-size: 0.9rem;
+        font-weight: 700;
+      }
+
+      .about-btn-primary {
+        color: #2b1300;
+        background: linear-gradient(120deg, #f1882b, #d4af37);
+      }
+
+      .about-btn-secondary {
+        color: var(--cream);
+        border: 1px solid rgba(255, 248, 231, 0.36);
+        background: rgba(255, 248, 231, 0.08);
+      }
+
+      @media (max-width: 840px) {
+        .about-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
   </head>
+
   <body>
     <header>
       <span class="om-symbol">🕉️</span>
-      <h1>भक्ति अमृत के बारे में</h1>
-      <p>इस भक्ति मंच के उद्देश्य और दृष्टि को जानें।</p>
+      <h1
+        id="siteTitle"
+        data-title-hi="भक्ति अमृत"
+        data-title-en="Bhakti Amrit"
+      >
+        भक्ति अमृत
+      </h1>
+      <p
+        id="siteSubtitle"
+        data-subtitle-hi="॥ दैनिक साधना का संपूर्ण साथी ॥"
+        data-subtitle-en="Your complete daily sadhana companion - Aarti, Chalisa, Mantras, deity stories, and temple guidance in one place."
+      >
+        ॥ दैनिक साधना का संपूर्ण साथी॥
+      </p>
       <div class="header-divider">
         <div class="divider-line"></div>
+        <div class="divider-dot"></div>
+        <div class="divider-dot" style="background: var(--gold)"></div>
         <div class="divider-dot"></div>
         <div class="divider-line"></div>
       </div>
     </header>
 
     <main class="main-container">
-      <section class="content-header" style="margin-bottom: 18px">
-        <div class="content-header-text">
-          <h2>हमारा उद्देश्य</h2>
+      <section class="about-page">
+        <article class="about-hero">
+          <span class="about-eyebrow">About Bhakti Amrit</span>
+          <h2>आधुनिक भक्तों के लिए सरल, स्पष्ट और विश्वसनीय भक्ति अनुभव</h2>
           <p>
-            भक्ति अमृत का लक्ष्य दैनिक साधना को सरल, सुंदर और सुलभ बनाना है।
-            यहां आरती, चालीसा, मंत्र, देव परिचय और मंदिर मार्गदर्शन एक ही स्थान
-            पर उपलब्ध है।
+            भक्ति अमृत का उद्देश्य पारंपरिक आध्यात्मिक सामग्री को डिजिटल रूप में
+            इस तरह प्रस्तुत करना है कि हर उम्र का उपयोगकर्ता इसे सहजता से पढ़,
+            समझ और अपनी दैनिक साधना में शामिल कर सके।
           </p>
-        </div>
-      </section>
 
-      <section class="lyrics-box" style="margin-bottom: 18px">
-        <div class="stanza">
-          यह प्रोजेक्ट उन भक्तों के लिए बनाया गया है जो बिना अनावश्यक जटिलता के
-          एक केंद्रित अनुभव चाहते हैं। हमारा प्रयास है कि आध्यात्मिक सामग्री
-          सटीक रहे और उपयोग अनुभव तेज व स्पष्ट बना रहे।
-        </div>
-      </section>
+          <div class="about-metrics">
+            <div class="about-metric">
+              <strong>एक मंच</strong>
+              <span>आरती, चालीसा, मंत्र, कथा और देव परिचय</span>
+            </div>
+            <div class="about-metric">
+              <strong>सरल उपयोग</strong>
+              <span>तेज नेविगेशन और स्पष्ट प्रस्तुति</span>
+            </div>
+            <div class="about-metric">
+              <strong>भक्ति केंद्रित</strong>
+              <span>अनावश्यक जटिलता से मुक्त अनुभव</span>
+            </div>
+          </div>
+        </article>
 
-      <section class="lyrics-box">
-        <div class="stanza">
-          यदि आपके पास नई सामग्री या सुधार के सुझाव हों, तो कृपया संपर्क पेज के
-          माध्यम से हमें बताएं।
+        <div class="about-grid">
+          <article class="about-card">
+            <h3>हमारा मिशन</h3>
+            <p>
+              हमारा फोकस एक ऐसे मंच पर है जहां भक्तों को विश्वसनीय सामग्री और
+              अच्छा उपयोग अनुभव दोनों मिलें। हम आध्यात्मिक गहराई को बनाए रखते
+              हुए सामग्री को व्यवस्थित और सुलभ बनाते हैं।
+            </p>
+
+            <div class="about-points">
+              <div class="about-point">
+                <strong>सटीकता</strong>
+                <span>शुद्ध, सुव्यवस्थित और पढ़ने में सरल सामग्री।</span>
+              </div>
+              <div class="about-point">
+                <strong>दैनिक साधना अनुकूल</strong>
+                <span>सुबह-शाम के पाठ के लिए त्वरित उपयोग।</span>
+              </div>
+              <div class="about-point">
+                <strong>सुलभता</strong>
+                <span>मोबाइल और डेस्कटॉप दोनों पर संतुलित अनुभव।</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="about-card">
+            <h3>हमारे मूल्य</h3>
+            <p>
+              श्रद्धा, सरलता और विश्वसनीयता हमारे हर निर्णय का आधार हैं। हम
+              मानते हैं कि अच्छा आध्यात्मिक मंच वही है जो ध्यान भटकाए नहीं,
+              बल्कि साधना को केंद्र में रखे।
+            </p>
+
+            <div class="about-actions">
+              <a class="about-btn about-btn-primary" href="contact.html"
+                >सुझाव भेजें</a
+              >
+              <a class="about-btn about-btn-secondary" href="../index.html"
+                >मुख्य पृष्ठ</a
+              >
+            </div>
+          </article>
         </div>
       </section>
     </main>
 
     <footer>
+      <div
+        class="header-divider"
+        style="justify-content: center; margin-bottom: 10px"
+      >
+        <div class="divider-line" style="width: 60px"></div>
+        <div class="divider-dot"></div>
+        <div class="divider-line" style="width: 60px"></div>
+      </div>
+      ॥ जय जय श्री हरि ॥ — सभी देवी-देवताओं को समर्पित <br />
       <div class="footer-links">
+        <a href="about.html">हमारे बारे में</a>
+        <span aria-hidden="true">•</span>
         <a href="contact.html">संपर्क</a>
         <span aria-hidden="true">•</span>
         <a href="../index.html">भक्ति अमृत © 2026</a>
