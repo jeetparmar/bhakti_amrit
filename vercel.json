@@ -1,6 +1,10 @@
 {
     "rewrites": [
         {
+            "source": "/lander",
+            "destination": "/index.html"
+        },
+        {
             "source": "/:deity/css/:path*",
             "destination": "/css/:path*"
         },
