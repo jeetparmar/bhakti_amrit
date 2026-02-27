@@ -89,6 +89,9 @@ let activeHomeSearchQuery = '';
 let activeDeityKey = '';
 let activeDeityTab = 'about';
 let activeKathaSlug = '';
+const HOME_BATCH_SIZE = 24;
+let homeFilteredEntries = [];
+let renderedHomeCount = 0;
 const validDeityTabs = [
   'about',
   'aarti',
@@ -374,15 +377,9 @@ function getAvailableDeityTabs(key) {
   return tabs;
 }
 
-function renderHomeGrid(
-  filter = activeHomeType,
-  searchQuery = activeHomeSearchQuery,
-) {
-  const grid = document.getElementById('homeGrid');
-  if (!grid) return;
+function getFilteredHomeDeities(filter = activeHomeType, searchQuery = '') {
   const normalizedQuery = searchQuery.trim().toLowerCase();
-
-  const filtered = Object.entries(deities).filter(
+  return Object.entries(deities).filter(
     ([key, deity]) =>
       (filter === 'all' ? true : getDeityType(key) === filter) &&
       (!normalizedQuery ||
@@ -390,31 +387,17 @@ function renderHomeGrid(
           .toLowerCase()
           .includes(normalizedQuery)),
   );
+}
 
-  if (!filtered.length) {
-    const queryText = normalizedQuery
-      ? ` "${escapeHtml(searchQuery.trim())}"`
-      : '';
-    grid.innerHTML = `
-      <div class="home-empty-state">
-        <div class="home-empty-icon">🔍</div>
-        <div class="home-empty-title">कोई परिणाम नहीं मिला${queryText}</div>
-        <div class="home-empty-subtitle">दूसरा नाम लिखें या ऊपर की श्रेणी बदलकर देखें</div>
-      </div>
-    `;
-    return;
-  }
-
-  grid.innerHTML = filtered
-    .map(([key, deity], index) => {
-      const deityType = getDeityType(key);
-      const imgSrc = getValidDeityImage(deity.img);
-      const isPriorityImage = index < 6;
-      const imgHtml = imgSrc
-        ? `<img class="deity-img" src="${imgSrc}" alt="${deity.name}" loading="${isPriorityImage ? 'eager' : 'lazy'}" fetchpriority="${isPriorityImage ? 'high' : 'low'}" width="240" height="240" decoding="async" onerror="this.parentNode.querySelector('.deity-img-fallback').style.display='flex'; this.style.display='none';">
+function getHomeCardHtml(key, deity, index) {
+  const deityType = getDeityType(key);
+  const imgSrc = getValidDeityImage(deity.img);
+  const isPriorityImage = index < 6;
+  const imgHtml = imgSrc
+    ? `<img class="deity-img" src="${imgSrc}" alt="${deity.name}" loading="${isPriorityImage ? 'eager' : 'lazy'}" fetchpriority="${isPriorityImage ? 'high' : 'low'}" width="240" height="240" decoding="async" onerror="this.parentNode.querySelector('.deity-img-fallback').style.display='flex'; this.style.display='none';">
      <div class="deity-img-fallback" style="display:none">${deity.emoji}</div>`
-        : `<div class="deity-img-fallback">${deity.emoji}</div>`;
-      return `
+    : `<div class="deity-img-fallback">${deity.emoji}</div>`;
+  return `
     <div class="deity-card" onclick="showDeityPage('${key}')">
     ${imgHtml}
     <div class="deity-info">
@@ -459,8 +442,72 @@ function renderHomeGrid(
       })()}
     </div>
     </div>`;
-    })
+}
+
+function renderHomeGrid(
+  filter = activeHomeType,
+  searchQuery = activeHomeSearchQuery,
+  options = {},
+) {
+  const { reset = true } = options;
+  const grid = document.getElementById('homeGrid');
+  if (!grid) return;
+
+  if (reset) {
+    homeFilteredEntries = getFilteredHomeDeities(filter, searchQuery);
+    renderedHomeCount = 0;
+    grid.innerHTML = '';
+
+    if (!homeFilteredEntries.length) {
+      const normalizedQuery = searchQuery.trim().toLowerCase();
+      const queryText = normalizedQuery ? ` "${escapeHtml(searchQuery.trim())}"` : '';
+      grid.innerHTML = `
+        <div class="home-empty-state">
+          <div class="home-empty-icon">🔍</div>
+          <div class="home-empty-title">कोई परिणाम नहीं मिला${queryText}</div>
+          <div class="home-empty-subtitle">दूसरा नाम लिखें या ऊपर की श्रेणी बदलकर देखें</div>
+        </div>
+      `;
+      return;
+    }
+  }
+
+  const nextBatch = homeFilteredEntries.slice(
+    renderedHomeCount,
+    renderedHomeCount + HOME_BATCH_SIZE,
+  );
+  if (!nextBatch.length) return;
+
+  const html = nextBatch
+    .map(([key, deity], idx) => getHomeCardHtml(key, deity, renderedHomeCount + idx))
     .join('');
+  grid.insertAdjacentHTML('beforeend', html);
+  renderedHomeCount += nextBatch.length;
+
+  if (reset) fillHomeViewportIfNeeded();
+}
+
+function fillHomeViewportIfNeeded() {
+  let guard = 0;
+  while (
+    renderedHomeCount < homeFilteredEntries.length &&
+    document.documentElement.scrollHeight <= window.innerHeight + 120 &&
+    guard < 8
+  ) {
+    renderHomeGrid(activeHomeType, activeHomeSearchQuery, { reset: false });
+    guard += 1;
+  }
+}
+
+function maybeLoadMoreHomeOnScroll() {
+  const homePage = document.getElementById('page-home');
+  if (!homePage || !homePage.classList.contains('active')) return;
+  if (renderedHomeCount >= homeFilteredEntries.length) return;
+  const nearBottom =
+    window.innerHeight + window.scrollY >=
+    document.documentElement.scrollHeight - 260;
+  if (!nearBottom) return;
+  renderHomeGrid(activeHomeType, activeHomeSearchQuery, { reset: false });
 }
 
 function showHomeByType(typeId = 'all', navId = 'home', options = {}) {
@@ -876,7 +923,7 @@ const deityTempleMap = {
   saraswati: ['सरस्वती'],
   vishnu: ['विष्णु'],
   ram: ['राम', 'Ram'],
-  krishna: ['कृष्ण', 'Krishna'],
+  krishna: ['कृष्ण', 'Krishna', 'जगन्नाथ', 'भगवान जगन्नाथ'],
   hanuman: ['हनुमान'],
   surya: ['सूर्य'],
   kali: ['काली'],
@@ -1043,6 +1090,11 @@ const templeCategories = [
   { id: 'Heritage', label: '🏛️ धरोहर', emoji: '🏛️' },
 ];
 let activeTempleFilter = 'all';
+let activeTempleSearchQuery = '';
+const TEMPLE_BATCH_SIZE = 18;
+let templeFilteredList = [];
+let renderedTempleCount = 0;
+let templeScrollTicking = false;
 
 function isOutsideIndiaTemple(temple) {
   const text = `${temple.state || ''} ${temple.location || ''}`.toLowerCase();
@@ -1077,23 +1129,31 @@ function buildTemplesPage() {
     )
     .join('');
 
+  setupTempleSearch();
   renderTemples('all');
 }
 
-function renderTemples(filter) {
-  activeTempleFilter = filter;
-  const grid = document.getElementById('templesGrid');
-  const filtered =
+function getFilteredTemples(filter) {
+  const byCategory =
     filter === 'all'
-      ? templesData
-      : filter === 'india'
-        ? templesData.filter((t) => !isOutsideIndiaTemple(t))
-        : filter === 'outside_india'
-          ? templesData.filter((t) => isOutsideIndiaTemple(t))
-          : templesData.filter((t) => t.type === filter);
-  grid.innerHTML = filtered
-    .map(
-      (temple, idx) => `
+    ? templesData
+    : filter === 'india'
+      ? templesData.filter((t) => !isOutsideIndiaTemple(t))
+      : filter === 'outside_india'
+        ? templesData.filter((t) => isOutsideIndiaTemple(t))
+        : templesData.filter((t) => t.type === filter);
+  const normalizedQuery = activeTempleSearchQuery.trim().toLowerCase();
+  if (!normalizedQuery) return byCategory;
+
+  return byCategory.filter((temple) =>
+    `${temple.name} ${temple.nameEn} ${temple.deity} ${temple.type} ${temple.state} ${temple.location}`
+      .toLowerCase()
+      .includes(normalizedQuery),
+  );
+}
+
+function getTempleCardHtml(temple, idx) {
+  return `
     <div class="temple-card" onclick="openTempleModal('${temple.id}')" style="animation-delay:${idx * 0.06}s; background:${temple.gradient}; --temple-color:${temple.color};">
       <div class="temple-card-top">
         <div class="temple-emoji-badge">${temple.emoji}</div>
@@ -1116,9 +1176,70 @@ function renderTemples(filter) {
         <span class="temple-arrow">→</span>
       </div>
     </div>
-  `,
-    )
+  `;
+}
+
+function renderTemples(filter, options = {}) {
+  const { reset = true } = options;
+  activeTempleFilter = filter;
+  const grid = document.getElementById('templesGrid');
+  if (!grid) return;
+
+  if (reset) {
+    templeFilteredList = getFilteredTemples(filter);
+    renderedTempleCount = 0;
+    grid.innerHTML = '';
+    if (!templeFilteredList.length) {
+      const queryText = activeTempleSearchQuery.trim()
+        ? ` "${escapeHtml(activeTempleSearchQuery.trim())}"`
+        : '';
+      grid.innerHTML = `
+        <div class="home-empty-state">
+          <div class="home-empty-icon">🔍</div>
+          <div class="home-empty-title">कोई मंदिर नहीं मिला${queryText}</div>
+          <div class="home-empty-subtitle">दूसरा नाम लिखें या ऊपर का फ़िल्टर बदलकर देखें</div>
+        </div>
+      `;
+      return;
+    }
+  }
+
+  const nextBatch = templeFilteredList.slice(
+    renderedTempleCount,
+    renderedTempleCount + TEMPLE_BATCH_SIZE,
+  );
+  if (!nextBatch.length) return;
+
+  const batchHtml = nextBatch
+    .map((temple, idx) => getTempleCardHtml(temple, renderedTempleCount + idx))
     .join('');
+  grid.insertAdjacentHTML('beforeend', batchHtml);
+  renderedTempleCount += nextBatch.length;
+
+  if (reset) fillTemplesViewportIfNeeded();
+}
+
+function fillTemplesViewportIfNeeded() {
+  let guard = 0;
+  while (
+    renderedTempleCount < templeFilteredList.length &&
+    document.documentElement.scrollHeight <= window.innerHeight + 120 &&
+    guard < 8
+  ) {
+    renderTemples(activeTempleFilter, { reset: false });
+    guard += 1;
+  }
+}
+
+function maybeLoadMoreTemplesOnScroll() {
+  const templesPage = document.getElementById('page-temples');
+  if (!templesPage || !templesPage.classList.contains('active')) return;
+  if (renderedTempleCount >= templeFilteredList.length) return;
+  const nearBottom =
+    window.innerHeight + window.scrollY >=
+    document.documentElement.scrollHeight - 260;
+  if (!nearBottom) return;
+  renderTemples(activeTempleFilter, { reset: false });
 }
 
 function filterTemples(category, btn) {
@@ -1127,13 +1248,44 @@ function filterTemples(category, btn) {
     .forEach((b) => b.classList.remove('active'));
   btn.classList.add('active');
   const grid = document.getElementById('templesGrid');
+  if (!grid) return;
   grid.style.opacity = '0';
   grid.style.transform = 'translateY(12px)';
   setTimeout(() => {
-    renderTemples(category);
+    renderTemples(category, { reset: true });
     grid.style.opacity = '1';
     grid.style.transform = 'translateY(0)';
   }, 200);
+}
+
+function setupTempleSearch() {
+  const searchInput = document.getElementById('templeSearchInput');
+  const clearBtn = document.getElementById('templeSearchClear');
+  if (!searchInput) return;
+
+  const syncClearButton = () => {
+    if (!clearBtn) return;
+    clearBtn.classList.toggle('visible', searchInput.value.trim().length > 0);
+  };
+
+  searchInput.value = activeTempleSearchQuery;
+  syncClearButton();
+
+  searchInput.addEventListener('input', (event) => {
+    activeTempleSearchQuery = event.target.value;
+    renderTemples(activeTempleFilter, { reset: true });
+    syncClearButton();
+  });
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      activeTempleSearchQuery = '';
+      searchInput.value = '';
+      renderTemples(activeTempleFilter, { reset: true });
+      syncClearButton();
+      searchInput.focus();
+    });
+  }
 }
 
 function openTempleModal(id) {
@@ -1203,6 +1355,9 @@ const festivalCategories = [
   { id: 'Surya', label: '☀️ सूर्य उपासना' },
 ];
 let activeFestivalFilter = 'all';
+const FESTIVAL_BATCH_SIZE = 16;
+let festivalFilteredList = [];
+let renderedFestivalCount = 0;
 
 function buildFestivalsPage() {
   const filtersEl = document.getElementById('festivalFilters');
@@ -1223,19 +1378,14 @@ function buildFestivalsPage() {
   renderFestivals('all');
 }
 
-function renderFestivals(filter) {
-  activeFestivalFilter = filter;
-  const grid = document.getElementById('festivalsGrid');
-  if (!grid) return;
+function getFilteredFestivals(filter) {
+  return filter === 'all'
+    ? festivalsData
+    : festivalsData.filter((festival) => festival.type === filter);
+}
 
-  const filtered =
-    filter === 'all'
-      ? festivalsData
-      : festivalsData.filter((festival) => festival.type === filter);
-
-  grid.innerHTML = filtered
-    .map(
-      (festival, idx) => `
+function getFestivalCardHtml(festival, idx) {
+  return `
     <div class="temple-card" onclick="openFestivalModal('${festival.id}')" style="animation-delay:${idx * 0.06}s; background:${festival.gradient}; --temple-color:${festival.color};">
       <div class="temple-card-top">
         <div class="temple-emoji-badge">${festival.emoji}</div>
@@ -1258,9 +1408,59 @@ function renderFestivals(filter) {
         <span class="temple-arrow">→</span>
       </div>
     </div>
-  `,
+  `;
+}
+
+function renderFestivals(filter, options = {}) {
+  const { reset = true } = options;
+  activeFestivalFilter = filter;
+  const grid = document.getElementById('festivalsGrid');
+  if (!grid) return;
+
+  if (reset) {
+    festivalFilteredList = getFilteredFestivals(filter);
+    renderedFestivalCount = 0;
+    grid.innerHTML = '';
+  }
+
+  const nextBatch = festivalFilteredList.slice(
+    renderedFestivalCount,
+    renderedFestivalCount + FESTIVAL_BATCH_SIZE,
+  );
+  if (!nextBatch.length) return;
+
+  const html = nextBatch
+    .map((festival, idx) =>
+      getFestivalCardHtml(festival, renderedFestivalCount + idx),
     )
     .join('');
+  grid.insertAdjacentHTML('beforeend', html);
+  renderedFestivalCount += nextBatch.length;
+
+  if (reset) fillFestivalsViewportIfNeeded();
+}
+
+function fillFestivalsViewportIfNeeded() {
+  let guard = 0;
+  while (
+    renderedFestivalCount < festivalFilteredList.length &&
+    document.documentElement.scrollHeight <= window.innerHeight + 120 &&
+    guard < 8
+  ) {
+    renderFestivals(activeFestivalFilter, { reset: false });
+    guard += 1;
+  }
+}
+
+function maybeLoadMoreFestivalsOnScroll() {
+  const festivalsPage = document.getElementById('page-festivals');
+  if (!festivalsPage || !festivalsPage.classList.contains('active')) return;
+  if (renderedFestivalCount >= festivalFilteredList.length) return;
+  const nearBottom =
+    window.innerHeight + window.scrollY >=
+    document.documentElement.scrollHeight - 260;
+  if (!nearBottom) return;
+  renderFestivals(activeFestivalFilter, { reset: false });
 }
 
 function filterFestivals(category, btn) {
@@ -1273,7 +1473,7 @@ function filterFestivals(category, btn) {
   grid.style.opacity = '0';
   grid.style.transform = 'translateY(12px)';
   setTimeout(() => {
-    renderFestivals(category);
+    renderFestivals(category, { reset: true });
     grid.style.opacity = '1';
     grid.style.transform = 'translateY(0)';
   }, 200);
@@ -1450,6 +1650,17 @@ window.addEventListener('load', () => {
 
 // Failsafe: hide splash even when `load` is delayed on slow/blocked networks.
 window.setTimeout(hideLoader, 5000);
+
+window.addEventListener('scroll', () => {
+  if (templeScrollTicking) return;
+  templeScrollTicking = true;
+  window.requestAnimationFrame(() => {
+    templeScrollTicking = false;
+    maybeLoadMoreHomeOnScroll();
+    maybeLoadMoreFestivalsOnScroll();
+    maybeLoadMoreTemplesOnScroll();
+  });
+});
 
 window.addEventListener('popstate', () => {
   applyUrlState();
