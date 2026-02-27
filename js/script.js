@@ -203,10 +203,15 @@ function getKathaEntries(data = null, deityKey = '') {
       typeof primaryContent === 'string' &&
       primaryContent.includes(marker)
     ) {
-      primaryContent = primaryContent.split(marker)[0].replace(/<br\/><br\/>$/, '');
+      primaryContent = primaryContent
+        .split(marker)[0]
+        .replace(/<br\/><br\/>$/, '');
     }
 
-    if (typeof primaryContent === 'string' && primaryContent.trim().length > 0) {
+    if (
+      typeof primaryContent === 'string' &&
+      primaryContent.trim().length > 0
+    ) {
       entries.push({
         slug: data.slug || 'somvar-vrat-katha',
         title: data.title || '',
@@ -217,7 +222,8 @@ function getKathaEntries(data = null, deityKey = '') {
     if (Array.isArray(data.extraKathas)) {
       data.extraKathas.forEach((item) => {
         if (!item || typeof item !== 'object') return;
-        if (typeof item.content !== 'string' || !item.content.trim().length) return;
+        if (typeof item.content !== 'string' || !item.content.trim().length)
+          return;
         entries.push(item);
       });
     }
@@ -261,7 +267,9 @@ function updateUrlState({
   const safeDeity = deityKey && deities[deityKey] ? deityKey : '';
   const safeTab = getSafeDeityTab(tabId);
   const safeKathaSlug =
-    safeDeity && safeTab === 'katha' ? getSafeKathaSlug(safeDeity, kathaSlug) : '';
+    safeDeity && safeTab === 'katha'
+      ? getSafeKathaSlug(safeDeity, kathaSlug)
+      : '';
 
   if (safeDeity) {
     url.pathname =
@@ -340,7 +348,8 @@ function escapeHtml(value = '') {
 
 function hasLyricsContent(data) {
   if (Array.isArray(data?.items) && data.items.length > 0) return true;
-  if (Array.isArray(data?.extraKathas) && data.extraKathas.length > 0) return true;
+  if (Array.isArray(data?.extraKathas) && data.extraKathas.length > 0)
+    return true;
   if (typeof data === 'string') return data.trim().length > 0;
   if (data && typeof data.content === 'string') {
     return data.content.trim().length > 0;
@@ -436,6 +445,12 @@ function renderHomeGrid(
           const kathaLabel = kathaCount > 1 ? `कथा (${kathaCount})` : 'कथा';
           tags.push(
             `<span class="tag tag-katha" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'katha' })">${kathaLabel}</span>`,
+          );
+        }
+        const templeCount = getRelatedTemples(key).length;
+        if (templeCount > 0) {
+          tags.push(
+            `<span class="tag tag-temples" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'temples' })">मंदिर (${templeCount})</span>`,
           );
         }
         return tags.length
@@ -877,24 +892,24 @@ const deityTempleMap = {
   gorakh_nath: ['गोरख'],
   jaharveer: ['जाहरवीर'],
   pretraj_sarkar: ['प्रेतराज'],
-  balaji: ['हनुमान', 'विष्णु'],
+  balaji: ['हनुमान', 'बालाजी'],
   sai: ['साईं'],
-  giriraj: ['कृष्ण', 'Krishna'],
+  giriraj: ['गिरिराज', 'गोवर्धन'],
   mahavir: ['महावीर'],
-  parshuram: ['विष्णु'],
+  parshuram: ['परशुराम'],
   ramdev: ['रामदेव'],
   pitar: ['पितर'],
   baba_gangaram: ['गंगाराम'],
-  vindhyeshwari: ['दुर्गा', 'विंध्यवासिनी'],
+  vindhyeshwari: ['विंध्यवासिनी', 'विन्ध्येश्वरी'],
   mahalakshmi: ['लक्ष्मी'],
-  gayatri: ['सूर्य', 'गायत्री'],
+  gayatri: ['गायत्री'],
   mahakali: ['काली'],
   sheetla: ['शीतला'],
-  radha: ['कृष्ण', 'Krishna'],
-  tulsi: ['विष्णु', 'कृष्ण', 'Krishna'],
+  radha: ['राधा', 'Radha'],
+  tulsi: [],
   vaishno_devi: ['वैष्णो देवी', 'दुर्गा'],
   santoshi_maa: ['संतोषी'],
-  annapurna: ['अन्नपूर्णा', 'शिव'],
+  annapurna: ['अन्नपूर्णा'],
   parvati: ['शिव'],
   baglamukhi: ['बगलामुखी'],
   ganga: ['गंगा'],
@@ -902,14 +917,71 @@ const deityTempleMap = {
   sharda: ['सरस्वती', 'शारदा'],
   shakambhari: ['शाकम्भरी'],
   lalita_shakambhari: ['शाकम्भरी', 'ललिता'],
-  rani_sati: ['राणी सती'],
+  rani_sati: ['राणी सती', 'रानी सती', 'माता रानी सती'],
 };
 
-function renderDeityTemples(deityKey) {
+const deityTempleIdMap = {
+  annapurna: ['annapurna-temple'],
+  gayatri: ['gayatri-dham-haridwar', 'panch-gayatri-dham'],
+  narmada: ['omkareshwar', 'maheshwar', 'hoshangabad', 'mandla'],
+  parshuram: ['parshuram-temple-bihar'],
+  pretraj_sarkar: ['mehndipur-balaji'],
+  radha: ['iskcon_london', 'iskcon_usa', 'radha_radhanath_sa', 'iskcon_australia'],
+};
+
+function getDeityKeyByTempleName(deityName = '') {
+  const raw = String(deityName || '')
+    .trim()
+    .toLowerCase();
+  if (!raw) return '';
+
+  let fallbackKey = '';
+  for (const [key, aliases] of Object.entries(deityTempleMap)) {
+    for (const alias of aliases) {
+      const normalizedAlias = String(alias || '')
+        .trim()
+        .toLowerCase();
+      if (!normalizedAlias) continue;
+      if (raw === normalizedAlias) return key;
+      if (
+        !fallbackKey &&
+        (raw.includes(normalizedAlias) || normalizedAlias.includes(raw))
+      ) {
+        fallbackKey = key;
+      }
+    }
+  }
+
+  return fallbackKey;
+}
+
+function openTempleDeity(deityName, event) {
+  if (event) event.stopPropagation();
+  const deityKey = getDeityKeyByTempleName(deityName);
+  if (!deityKey || !deities[deityKey]) return;
+  closeTempleModal();
+  showDeityPage(deityKey, { initialTab: 'temples' });
+}
+
+function openTempleDeityByTempleId(templeId, event) {
+  if (event) event.stopPropagation();
+  const temple = templesData.find((t) => t.id === templeId);
+  if (!temple) return;
+  openTempleDeity(temple.deity);
+}
+
+function getRelatedTemples(deityKey) {
   const deityNames = deityTempleMap[deityKey] || [];
-  const related = templesData.filter((t) =>
-    deityNames.some((name) => t.deity.includes(name)),
+  const deityTempleIds = deityTempleIdMap[deityKey] || [];
+  return templesData.filter(
+    (t) =>
+      deityTempleIds.includes(t.id) ||
+      deityNames.some((name) => t.deity.includes(name)),
   );
+}
+
+function renderDeityTemples(deityKey) {
+  const related = getRelatedTemples(deityKey);
 
   if (related.length === 0) {
     return `
@@ -1036,7 +1108,7 @@ function renderTemples(filter) {
         </div>
         <p class="temple-desc">${temple.desc}</p>
         <div class="temple-deity-badge">
-          <span>🙏 ${temple.deity}</span>
+          <button class="temple-deity-link-btn" type="button" onclick="openTempleDeityByTempleId('${temple.id}', event)">🙏 ${temple.deity}</button>
         </div>
       </div>
       <div class="temple-card-footer">
@@ -1092,7 +1164,7 @@ function openTempleModal(id) {
       </div>
       <div class="temple-info-card">
         <div class="temple-info-icon">🙏</div>
-        <div><div class="temple-info-label">देवता</div><div class="temple-info-val">${temple.deity}</div></div>
+        <div><div class="temple-info-label">देवता</div><div class="temple-info-val"><button class="temple-info-deity-link" type="button" onclick="openTempleDeity('${temple.deity}', event)">${temple.deity}</button></div></div>
       </div>
       <div class="temple-info-card">
         <div class="temple-info-icon">🕐</div>
