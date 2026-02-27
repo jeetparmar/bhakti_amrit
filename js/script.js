@@ -1389,6 +1389,7 @@ window.addEventListener('DOMContentLoaded', () => {
     typeId: activeHomeType,
     deityKey: activeDeityKey,
     tabId: activeDeityTab,
+    kathaSlug: activeKathaSlug,
     replace: true,
   });
 });
