@@ -89,9 +89,12 @@ let activeHomeSearchQuery = '';
 let activeDeityKey = '';
 let activeDeityTab = 'about';
 let activeKathaSlug = '';
-const HOME_BATCH_SIZE = 24;
+const HOME_BATCH_SIZE = 60;
 let homeFilteredEntries = [];
 let renderedHomeCount = 0;
+let homeRenderCycleId = 0;
+let homeRenderTimer = null;
+const homeTempleCountCache = new Map();
 const validDeityTabs = [
   'about',
   'aarti',
@@ -430,7 +433,7 @@ function getHomeCardHtml(key, deity, index) {
             `<span class="tag tag-katha" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'katha' })">${kathaLabel}</span>`,
           );
         }
-        const templeCount = getRelatedTemples(key).length;
+        const templeCount = getHomeTempleCount(key);
         if (templeCount > 0) {
           tags.push(
             `<span class="tag tag-temples" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'temples' })">मंदिर (${templeCount})</span>`,
@@ -444,6 +447,15 @@ function getHomeCardHtml(key, deity, index) {
     </div>`;
 }
 
+function getHomeTempleCount(deityKey) {
+  if (homeTempleCountCache.has(deityKey)) {
+    return homeTempleCountCache.get(deityKey);
+  }
+  const count = getRelatedTemples(deityKey).length;
+  homeTempleCountCache.set(deityKey, count);
+  return count;
+}
+
 function renderHomeGrid(
   filter = activeHomeType,
   searchQuery = activeHomeSearchQuery,
@@ -454,6 +466,7 @@ function renderHomeGrid(
   if (!grid) return;
 
   if (reset) {
+    homeRenderCycleId += 1;
     homeFilteredEntries = getFilteredHomeDeities(filter, searchQuery);
     renderedHomeCount = 0;
     grid.innerHTML = '';
@@ -502,6 +515,7 @@ function fillHomeViewportIfNeeded() {
 function maybeLoadMoreHomeOnScroll() {
   const homePage = document.getElementById('page-home');
   if (!homePage || !homePage.classList.contains('active')) return;
+  if (homeRenderTimer) return;
   if (renderedHomeCount >= homeFilteredEntries.length) return;
   const nearBottom =
     window.innerHeight + window.scrollY >=
@@ -524,13 +538,20 @@ function showHomeByType(typeId = 'all', navId = 'home', options = {}) {
     searchInput.placeholder = getHomeSearchPlaceholder(safeType);
   }
   if (!grid) return;
+  if (homeRenderTimer) {
+    clearTimeout(homeRenderTimer);
+    homeRenderTimer = null;
+  }
+  const cycleId = homeRenderCycleId + 1;
   grid.style.opacity = '0';
   grid.style.transform = 'translateY(12px)';
-  setTimeout(() => {
+  homeRenderTimer = setTimeout(() => {
+    homeRenderTimer = null;
+    if (cycleId < homeRenderCycleId) return;
     renderHomeGrid(safeType, activeHomeSearchQuery);
     grid.style.opacity = '1';
     grid.style.transform = 'translateY(0)';
-  }, 180);
+  }, 40);
 
   if (!options.skipUrl) {
     updateUrlState({ typeId: safeType, deityKey: '' });
@@ -552,6 +573,10 @@ function setupHomeSearch() {
   syncClearButton();
 
   searchInput.addEventListener('input', (event) => {
+    if (homeRenderTimer) {
+      clearTimeout(homeRenderTimer);
+      homeRenderTimer = null;
+    }
     activeHomeSearchQuery = event.target.value;
     renderHomeGrid(activeHomeType, activeHomeSearchQuery);
     syncClearButton();
@@ -559,6 +584,10 @@ function setupHomeSearch() {
 
   if (clearBtn) {
     clearBtn.addEventListener('click', () => {
+      if (homeRenderTimer) {
+        clearTimeout(homeRenderTimer);
+        homeRenderTimer = null;
+      }
       activeHomeSearchQuery = '';
       searchInput.value = '';
       renderHomeGrid(activeHomeType, activeHomeSearchQuery);
