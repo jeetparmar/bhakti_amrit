@@ -29,6 +29,10 @@
             "destination": "/icons/:path*"
         },
         {
+            "source": "/:deity/:tab/:slug",
+            "destination": "/index.html"
+        },
+        {
             "source": "/:deity/:tab",
             "destination": "/index.html"
         }

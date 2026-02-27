@@ -1091,6 +1091,12 @@ nav {
   box-shadow: 0 4px 15px rgba(255, 107, 0, 0.3);
 }
 
+.katha-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .text-content {
   display: none;
 }

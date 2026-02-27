@@ -88,6 +88,7 @@ let activeHomeNavId = 'home';
 let activeHomeSearchQuery = '';
 let activeDeityKey = '';
 let activeDeityTab = 'about';
+let activeKathaSlug = '';
 const validDeityTabs = [
   'about',
   'aarti',
@@ -168,30 +169,105 @@ function getPathState() {
     .filter(Boolean)
     .map((segment) => decodeURIComponent(segment));
 
+  if (segments.length === 3) {
+    const [deityKey, tabId, kathaSlug] = segments;
+    const safeTab = getSafeDeityTab(tabId);
+    if (deities[deityKey] && safeTab === 'katha') {
+      return { deityKey, tabId: safeTab, kathaSlug };
+    }
+  }
+
   if (segments.length === 2) {
     const [deityKey, tabId] = segments;
     const safeTab = getSafeDeityTab(tabId);
     if (deities[deityKey] && safeTab === tabId) {
-      return { deityKey, tabId: safeTab };
+      return { deityKey, tabId: safeTab, kathaSlug: '' };
     }
   }
 
-  return { deityKey: '', tabId: 'about' };
+  return { deityKey: '', tabId: 'about', kathaSlug: '' };
+}
+
+function getKathaEntries(data = null, deityKey = '') {
+  if (!data) return [];
+  if (Array.isArray(data.items)) return data.items.filter(Boolean);
+  if (Array.isArray(data)) return data.filter(Boolean);
+
+  if (typeof data === 'object') {
+    const entries = [];
+    const marker = '<div class="title-line">॥ १६ सोमवार व्रत कथा ॥</div>';
+    let primaryContent = data.content || '';
+
+    if (
+      deityKey === 'shiva' &&
+      typeof primaryContent === 'string' &&
+      primaryContent.includes(marker)
+    ) {
+      primaryContent = primaryContent.split(marker)[0].replace(/<br\/><br\/>$/, '');
+    }
+
+    if (typeof primaryContent === 'string' && primaryContent.trim().length > 0) {
+      entries.push({
+        slug: data.slug || 'somvar-vrat-katha',
+        title: data.title || '',
+        content: primaryContent,
+      });
+    }
+
+    if (Array.isArray(data.extraKathas)) {
+      data.extraKathas.forEach((item) => {
+        if (!item || typeof item !== 'object') return;
+        if (typeof item.content !== 'string' || !item.content.trim().length) return;
+        entries.push(item);
+      });
+    }
+
+    if (entries.length) return entries;
+  }
+
+  if (typeof data === 'string' && data.trim().length > 0) {
+    return [{ slug: 'katha', title: '', content: data }];
+  }
+
+  if (
+    data &&
+    typeof data === 'object' &&
+    typeof data.content === 'string' &&
+    data.content.trim().length > 0
+  ) {
+    return [{ slug: 'katha', title: data.title || '', content: data.content }];
+  }
+
+  return [];
+}
+
+function getSafeKathaSlug(deityKey = '', requestedSlug = '') {
+  const entries = getKathaEntries(deities[deityKey]?.katha, deityKey);
+  if (!entries.length) return '';
+  const raw = String(requestedSlug || '').trim();
+  const selected = entries.find((item) => item.slug === raw);
+  return selected ? selected.slug : entries[0].slug;
 }
 
 function updateUrlState({
   typeId = activeHomeType,
   deityKey = '',
   tabId = activeDeityTab,
+  kathaSlug = activeKathaSlug,
   replace = false,
 } = {}) {
   const url = new URL(window.location.href);
   const safeType = getSafeHomeType(typeId);
   const safeDeity = deityKey && deities[deityKey] ? deityKey : '';
   const safeTab = getSafeDeityTab(tabId);
+  const safeKathaSlug =
+    safeDeity && safeTab === 'katha' ? getSafeKathaSlug(safeDeity, kathaSlug) : '';
 
   if (safeDeity) {
-    url.pathname = `/${encodeURIComponent(safeDeity)}/${encodeURIComponent(safeTab)}`;
+    url.pathname =
+      safeTab === 'katha' && safeKathaSlug
+        ? `/${encodeURIComponent(safeDeity)}/${encodeURIComponent(safeTab)}/${encodeURIComponent(safeKathaSlug)}`
+        : `/${encodeURIComponent(safeDeity)}/${encodeURIComponent(safeTab)}`;
     url.search = '';
   } else {
     url.pathname = '/';
@@ -205,6 +281,7 @@ function updateUrlState({
       typeId: safeType,
       deityKey: safeDeity || null,
       tabId: safeDeity ? safeTab : null,
+      kathaSlug: safeDeity && safeTab === 'katha' ? safeKathaSlug : null,
     },
     '',
     `${url.pathname}${url.search}`,
@@ -216,18 +293,32 @@ function applyUrlState() {
   const pathState = getPathState();
   const pathDeity = pathState.deityKey;
   const pathTab = pathState.tabId;
+  const pathKathaSlug = pathState.kathaSlug || '';
   const rawType = params.get('type') || 'all';
   const typeId = getSafeHomeType(rawType);
   const navId = getNavIdByHomeType(typeId);
   const queryDeity = params.get('deity') || '';
   const queryTab = getSafeDeityTab(params.get('tab') || 'about');
+  const queryKathaSlug = params.get('katha') || '';
   const deityKey = pathDeity || queryDeity;
   const tabId = pathDeity ? pathTab : queryTab;
+  const kathaSlug = pathDeity ? pathKathaSlug : queryKathaSlug;
 
   if (deityKey && deities[deityKey]) {
     activeHomeType = typeId;
     activeHomeNavId = navId;
-    showDeityPage(deityKey, { skipUrl: true, initialTab: tabId });
+    showDeityPage(deityKey, {
+      skipUrl: true,
+      initialTab: tabId,
+      initialKathaSlug: kathaSlug,
+    });
+    updateUrlState({
+      typeId: activeHomeType,
+      deityKey,
+      tabId,
+      kathaSlug,
+      replace: true,
+    });
     return;
   }
 
@@ -248,6 +339,8 @@ function escapeHtml(value = '') {
 }
 
 function hasLyricsContent(data) {
+  if (Array.isArray(data?.items) && data.items.length > 0) return true;
+  if (Array.isArray(data?.extraKathas) && data.extraKathas.length > 0) return true;
   if (typeof data === 'string') return data.trim().length > 0;
   if (data && typeof data.content === 'string') {
     return data.content.trim().length > 0;
@@ -339,8 +432,10 @@ function renderHomeGrid(
           );
         }
         if (hasLyricsContent(deity.katha)) {
+          const kathaCount = getKathaEntries(deity.katha, key).length;
+          const kathaLabel = kathaCount > 1 ? `कथा (${kathaCount})` : 'कथा';
           tags.push(
-            `<span class="tag tag-katha" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'katha' })">कथा</span>`,
+            `<span class="tag tag-katha" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'katha' })">${kathaLabel}</span>`,
           );
         }
         return tags.length
@@ -518,6 +613,10 @@ function showDeityPage(key, options = {}) {
   const availableTabs = getAvailableDeityTabs(key);
   activeDeityKey = key;
   activeDeityTab = getSafeDeityTab(options.initialTab || 'about');
+  activeKathaSlug = getSafeKathaSlug(
+    key,
+    options.initialKathaSlug || activeKathaSlug,
+  );
   if (!availableTabs.includes(activeDeityTab)) activeDeityTab = 'about';
 
   // Build header
@@ -577,7 +676,7 @@ function showDeityPage(key, options = {}) {
   </div>
   <div id="tab-katha" class="text-content ${activeDeityTab === 'katha' ? 'active' : ''}">
     <div class="deity-tab-wrap">
-      <div class="lyrics-box">${renderLyrics(deity.katha)}</div>
+      <div class="lyrics-box">${renderKatha(key, deity.katha)}</div>
     </div>
   </div>
   <div id="tab-mantra" class="text-content ${activeDeityTab === 'mantra' ? 'active' : ''}">
@@ -598,6 +697,7 @@ function showDeityPage(key, options = {}) {
       typeId: activeHomeType,
       deityKey: key,
       tabId: activeDeityTab,
+      kathaSlug: activeDeityTab === 'katha' ? activeKathaSlug : '',
     });
   }
 }
@@ -659,6 +759,32 @@ function renderLyrics(data) {
   return `${titleHtml}${linesHtml}`;
 }
 
+function renderKatha(deityKey, data) {
+  const entries = getKathaEntries(data, deityKey);
+  if (!entries.length) return 'जल्द ही आ रहा है...';
+
+  const safeSlug = getSafeKathaSlug(deityKey, activeKathaSlug);
+  const selected = entries.find((item) => item.slug === safeSlug) || entries[0];
+  activeKathaSlug = selected.slug;
+
+  const navHtml =
+    entries.length > 1
+      ? `<div class="katha-list">${entries
+          .map((item) => {
+            const activeClass = item.slug === selected.slug ? ' active' : '';
+            return `<button class="tab-btn${activeClass}" onclick="openKatha('${deityKey}', '${item.slug}')">${item.title || item.slug}</button>`;
+          })
+          .join('')}</div><br/>`
+      : '';
+
+  return `${navHtml}${renderLyrics(selected)}`;
+}
+
+function openKatha(deityKey, slug) {
+  if (!deities[deityKey]) return;
+  showDeityPage(deityKey, { initialTab: 'katha', initialKathaSlug: slug });
+}
+
 function renderMantras(mantras, key) {
   return (mantras || [])
     .map(
@@ -692,11 +818,13 @@ function showTab(tabId, btn) {
   if (target) target.classList.add('active');
   if (btn) btn.classList.add('active');
   activeDeityTab = safeTab;
+  if (safeTab !== 'katha') activeKathaSlug = '';
   if (activeDeityKey) {
     updateUrlState({
       typeId: activeHomeType,
       deityKey: activeDeityKey,
       tabId: safeTab,
+      kathaSlug: safeTab === 'katha' ? activeKathaSlug : '',
     });
   }
 }
