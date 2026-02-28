@@ -192,6 +192,14 @@ const deities = {
     desc: 'संकटमोचक पूज्य स्वरूप',
     img: 'icons/balaji.webp',
   },
+  tirupati_balaji: {
+    name: 'श्री तिरुपति बालाजी',
+    english: 'Tirupati Bala Ji',
+    emoji: '🌟',
+    color: '#FFD54F',
+    desc: 'श्री वेंकटेश्वर, विष्णु का पूज्य स्वरूप',
+    img: 'icons/tirupati_balaji.webp',
+  },
   sai: {
     name: 'श्री साईं',
     english: 'Shri Sai',

@@ -42,6 +42,7 @@ const deityTypeMap = {
   jaharveer: 'लोक देव',
   pretraj_sarkar: 'लोक देव',
   balaji: 'लोक देव',
+  tirupati_balaji: 'देव',
   sai: 'लोक देव',
   giriraj: 'लोक देव',
   mahavir: 'लोक देव',
@@ -1058,6 +1059,7 @@ const deityTempleMap = {
   jaharveer: ['जाहरवीर'],
   pretraj_sarkar: ['प्रेतराज'],
   balaji: ['हनुमान', 'बालाजी'],
+  tirupati_balaji: ['तिरुपति बालाजी', 'वेंकटेश्वर'],
   sai: ['साईं'],
   giriraj: ['गिरिराज', 'गोवर्धन'],
   mahavir: ['महावीर'],
@@ -1091,6 +1093,7 @@ const deityTempleIdMap = {
   narmada: ['omkareshwar', 'maheshwar', 'hoshangabad', 'mandla'],
   parshuram: ['parshuram-temple-bihar'],
   pretraj_sarkar: ['mehndipur-balaji'],
+  tirupati_balaji: ['tirupati'],
   radha: [
     'iskcon_london',
     'iskcon_usa',

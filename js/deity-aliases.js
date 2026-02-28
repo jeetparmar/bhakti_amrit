@@ -25,6 +25,7 @@ window.deityAliases = {
   jaharveer: ['jahar veer', 'gogaji', 'goga ji', 'जाहरवीर', 'जाहर वीर', 'गोगाजी', 'गोगा जी'],
   pretraj_sarkar: ['pretraj', 'pret raj', 'प्रेतराज', 'प्रेत राज', 'प्रेतराज सरकार'],
   balaji: ['salasar balaji', 'mehandipur balaji', 'बालाजी', 'सालासर बालाजी', 'मेहंदीपुर बालाजी'],
+  tirupati_balaji: ['tirupati balaji', 'tirupati bala ji', 'venkateswara', 'venkateshwar', 'वेंकटेश्वर', 'तिरुपति बालाजी', 'तिरुपति बाला जी'],
   sai: ['saibaba', 'sai baba', 'shirdi sai', 'शिरडी साईं', 'साईं', 'साई', 'साईंबाबा', 'साईं बाबा'],
   giriraj: ['giriraj ji', 'govardhan', 'giriraj maharaj', 'गिरिराज', 'गिरिराज जी', 'गोवर्धन', 'गिरिराज महाराज'],
   mahavir: ['mahaveer', 'vardhaman', 'महावीर', 'महावीर स्वामी', 'वर्धमान'],
