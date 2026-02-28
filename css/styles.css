@@ -1482,13 +1482,27 @@ footer {
 }
 
 .loader-om {
-  font-size: 5rem;
   animation: glow 1s ease-in-out infinite alternate;
-  color: var(--gold);
+}
+
+.loader-logo {
+  width: min(150px, 38vw);
+  height: auto;
+  display: block;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  transition: none;
+  filter:
+    drop-shadow(0 0 10px rgba(212, 175, 55, 0.55))
+    drop-shadow(0 0 24px rgba(255, 107, 0, 0.35));
 }
 
 .loader-text {
-  margin-top: 20px;
+  margin-top: -8px;
   color: rgba(255, 248, 231, 0.6);
   font-family: 'EB Garamond', serif;
   font-style: italic;

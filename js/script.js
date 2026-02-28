@@ -177,7 +177,11 @@ function resolveDeityKey(rawDeityKey = '') {
   if (deities[raw]) return raw;
   const normalized = normalizeAlias(raw);
   if (!normalized) return '';
-  return deityAliasMap.get(normalized) || deityAliasMap.get(normalized.replace(/\s+/g, '')) || '';
+  return (
+    deityAliasMap.get(normalized) ||
+    deityAliasMap.get(normalized.replace(/\s+/g, '')) ||
+    ''
+  );
 }
 
 const homeTypeToNavId = {
@@ -349,7 +353,8 @@ function updateUrlState({
   const url = new URL(window.location.href);
   const safeType = getSafeHomeType(typeId);
   const resolvedDeity = resolveDeityKey(deityKey);
-  const safeDeity = resolvedDeity && deities[resolvedDeity] ? resolvedDeity : '';
+  const safeDeity =
+    resolvedDeity && deities[resolvedDeity] ? resolvedDeity : '';
   const safeTab = getSafeDeityTab(tabId);
   const safeKathaSlug =
     safeDeity && safeTab === 'katha'
@@ -552,7 +557,9 @@ function renderHomeGrid(
 
     if (!homeFilteredEntries.length) {
       const normalizedQuery = searchQuery.trim().toLowerCase();
-      const queryText = normalizedQuery ? ` "${escapeHtml(searchQuery.trim())}"` : '';
+      const queryText = normalizedQuery
+        ? ` "${escapeHtml(searchQuery.trim())}"`
+        : '';
       grid.innerHTML = `
         <div class="home-empty-state">
           <div class="home-empty-icon">🔍</div>
@@ -571,7 +578,9 @@ function renderHomeGrid(
   if (!nextBatch.length) return;
 
   const html = nextBatch
-    .map(([key, deity], idx) => getHomeCardHtml(key, deity, renderedHomeCount + idx))
+    .map(([key, deity], idx) =>
+      getHomeCardHtml(key, deity, renderedHomeCount + idx),
+    )
     .join('');
   grid.insertAdjacentHTML('beforeend', html);
   renderedHomeCount += nextBatch.length;
@@ -1082,7 +1091,12 @@ const deityTempleIdMap = {
   narmada: ['omkareshwar', 'maheshwar', 'hoshangabad', 'mandla'],
   parshuram: ['parshuram-temple-bihar'],
   pretraj_sarkar: ['mehndipur-balaji'],
-  radha: ['iskcon_london', 'iskcon_usa', 'radha_radhanath_sa', 'iskcon_australia'],
+  radha: [
+    'iskcon_london',
+    'iskcon_usa',
+    'radha_radhanath_sa',
+    'iskcon_australia',
+  ],
 };
 
 function getDeityKeyByTempleName(deityName = '') {
