@@ -564,6 +564,23 @@ nav {
   justify-content: flex-end;
 }
 
+.home-hero-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 25px;
+}
+
+.home-hero-row .section-subtitle {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.home-hero-row .home-search-wrap {
+  margin-top: 0;
+  flex: 0 0 auto;
+}
+
 .home-search-input-wrap {
   position: relative;
   display: flex;
@@ -1393,6 +1410,16 @@ footer {
   .home-search-wrap {
     width: 100%;
     justify-content: stretch;
+  }
+
+  .home-hero-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .home-hero-row .section-subtitle {
+    margin-bottom: 0;
   }
 
   .home-search-input-wrap {

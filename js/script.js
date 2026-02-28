@@ -104,6 +104,82 @@ const validDeityTabs = [
   'temples',
 ];
 
+function normalizeAlias(value = '') {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[_-]+/g, ' ')
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function addAlias(targetMap, alias, deityKey) {
+  const normalized = normalizeAlias(alias);
+  if (!normalized || !deityKey) return;
+  if (!targetMap.has(normalized)) targetMap.set(normalized, deityKey);
+  const compact = normalized.replace(/\s+/g, '');
+  if (compact && !targetMap.has(compact)) targetMap.set(compact, deityKey);
+}
+
+function buildDeityAliasMap() {
+  const aliasMap = new Map();
+
+  Object.entries(deities).forEach(([key, deity]) => {
+    addAlias(aliasMap, key, key);
+    addAlias(aliasMap, key.replace(/_/g, ' '), key);
+    addAlias(aliasMap, key.replace(/_/g, ''), key);
+
+    if (deity?.english) {
+      addAlias(aliasMap, deity.english, key);
+      addAlias(
+        aliasMap,
+        deity.english.replace(/\b(shri|shree|lord)\b/gi, '').trim(),
+        key,
+      );
+    }
+
+    if (deity?.name) {
+      addAlias(aliasMap, deity.name, key);
+      addAlias(aliasMap, deity.name.replace(/^श्री\s+/, ''), key);
+    }
+
+    if (deity?.desc) {
+      deity.desc
+        .split(/[,,;|]/)
+        .map((part) => part.trim())
+        .filter(Boolean)
+        .forEach((part) => addAlias(aliasMap, part, key));
+    }
+  });
+
+  // Load configurable aliases from `js/deity-aliases.js` when present.
+  const configuredAliases =
+    typeof window !== 'undefined' && window.deityAliases
+      ? window.deityAliases
+      : {};
+
+  Object.entries(configuredAliases).forEach(([key, aliases]) => {
+    if (!deities[key] || !Array.isArray(aliases)) return;
+    aliases.forEach((alias) => addAlias(aliasMap, alias, key));
+  });
+
+  return aliasMap;
+}
+
+const deityAliasMap = buildDeityAliasMap();
+
+function resolveDeityKey(rawDeityKey = '') {
+  const raw = String(rawDeityKey || '').trim();
+  if (!raw) return '';
+  if (deities[raw]) return raw;
+  const normalized = normalizeAlias(raw);
+  if (!normalized) return '';
+  return deityAliasMap.get(normalized) || deityAliasMap.get(normalized.replace(/\s+/g, '')) || '';
+}
+
 const homeTypeToNavId = {
   all: 'home',
   देव: 'type-dev',
@@ -176,7 +252,8 @@ function getPathState() {
     .map((segment) => decodeURIComponent(segment));
 
   if (segments.length === 3) {
-    const [deityKey, tabId, kathaSlug] = segments;
+    const [rawDeityKey, tabId, kathaSlug] = segments;
+    const deityKey = resolveDeityKey(rawDeityKey);
     const safeTab = getSafeDeityTab(tabId);
     if (deities[deityKey] && safeTab === 'katha') {
       return { deityKey, tabId: safeTab, kathaSlug };
@@ -184,7 +261,8 @@ function getPathState() {
   }
 
   if (segments.length === 2) {
-    const [deityKey, tabId] = segments;
+    const [rawDeityKey, tabId] = segments;
+    const deityKey = resolveDeityKey(rawDeityKey);
     const safeTab = getSafeDeityTab(tabId);
     if (deities[deityKey] && safeTab === tabId) {
       return { deityKey, tabId: safeTab, kathaSlug: '' };
@@ -270,7 +348,8 @@ function updateUrlState({
 } = {}) {
   const url = new URL(window.location.href);
   const safeType = getSafeHomeType(typeId);
-  const safeDeity = deityKey && deities[deityKey] ? deityKey : '';
+  const resolvedDeity = resolveDeityKey(deityKey);
+  const safeDeity = resolvedDeity && deities[resolvedDeity] ? resolvedDeity : '';
   const safeTab = getSafeDeityTab(tabId);
   const safeKathaSlug =
     safeDeity && safeTab === 'katha'
@@ -314,7 +393,7 @@ function applyUrlState() {
   const queryDeity = params.get('deity') || '';
   const queryTab = getSafeDeityTab(params.get('tab') || 'about');
   const queryKathaSlug = params.get('katha') || '';
-  const deityKey = pathDeity || queryDeity;
+  const deityKey = pathDeity || resolveDeityKey(queryDeity);
   const tabId = pathDeity ? pathTab : queryTab;
   const kathaSlug = pathDeity ? pathKathaSlug : queryKathaSlug;
 
@@ -699,13 +778,14 @@ function syncNav(pageId) {
 }
 
 function showDeityPage(key, options = {}) {
-  const deity = deities[key];
+  const resolvedKey = resolveDeityKey(key);
+  const deity = deities[resolvedKey];
   if (!deity) return;
-  const availableTabs = getAvailableDeityTabs(key);
-  activeDeityKey = key;
+  const availableTabs = getAvailableDeityTabs(resolvedKey);
+  activeDeityKey = resolvedKey;
   activeDeityTab = getSafeDeityTab(options.initialTab || 'about');
   activeKathaSlug = getSafeKathaSlug(
-    key,
+    resolvedKey,
     options.initialKathaSlug || activeKathaSlug,
   );
   if (!availableTabs.includes(activeDeityTab)) activeDeityTab = 'about';
@@ -752,7 +832,7 @@ function showDeityPage(key, options = {}) {
   content.innerHTML = `
   <div id="tab-about" class="text-content ${activeDeityTab === 'about' ? 'active' : ''}">
     <div class="deity-tab-wrap deity-tab-wrap-no-padding">
-      <div class="lyrics-box about-content">${renderAbout(aboutData[key])}</div>
+      <div class="lyrics-box about-content">${renderAbout(aboutData[resolvedKey])}</div>
     </div>
   </div>
   <div id="tab-aarti" class="text-content ${activeDeityTab === 'aarti' ? 'active' : ''}">
@@ -767,17 +847,17 @@ function showDeityPage(key, options = {}) {
   </div>
   <div id="tab-katha" class="text-content ${activeDeityTab === 'katha' ? 'active' : ''}">
     <div class="deity-tab-wrap">
-      <div class="lyrics-box">${renderKatha(key, deity.katha)}</div>
+      <div class="lyrics-box">${renderKatha(resolvedKey, deity.katha)}</div>
     </div>
   </div>
   <div id="tab-mantra" class="text-content ${activeDeityTab === 'mantra' ? 'active' : ''}">
     <div class="deity-tab-wrap">
-      <div class="mantra-grid">${renderMantras(deity.mantras, key)}</div>
+      <div class="mantra-grid">${renderMantras(deity.mantras, resolvedKey)}</div>
     </div>
   </div>
   <div id="tab-temples" class="text-content ${activeDeityTab === 'temples' ? 'active' : ''}">
     <div class="deity-tab-wrap">
-      ${renderDeityTemples(key)}
+      ${renderDeityTemples(resolvedKey)}
     </div>
   </div>`;
 
@@ -786,7 +866,7 @@ function showDeityPage(key, options = {}) {
   if (!options.skipUrl) {
     updateUrlState({
       typeId: activeHomeType,
-      deityKey: key,
+      deityKey: resolvedKey,
       tabId: activeDeityTab,
       kathaSlug: activeDeityTab === 'katha' ? activeKathaSlug : '',
     });
