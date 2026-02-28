@@ -1112,11 +1112,14 @@ const templeCategories = [
   { id: 'all', label: '✨ सभी', emoji: '🛕' },
   { id: 'india', label: '🇮🇳 भारत', emoji: '🇮🇳' },
   { id: 'outside_india', label: '🌍 विदेश', emoji: '🌍' },
-  { id: 'Jyotirlinga', label: '🔱 ज्योतिर्लिंग', emoji: '🔱' },
-  { id: 'Char Dham', label: '🙏 चार धाम', emoji: '🙏' },
-  { id: 'Shakti Peeth', label: '🌺 शक्ति पीठ', emoji: '🌺' },
-  { id: 'Vaishnava', label: '🦚 वैष्णव', emoji: '🦚' },
-  { id: 'Heritage', label: '🏛️ धरोहर', emoji: '🏛️' },
+  { id: 'jyotirlinga', label: '🔱 ज्योतिर्लिंग', emoji: '🔱' },
+  { id: 'char_dham', label: '🙏 चार धाम', emoji: '🙏' },
+  { id: 'shakti_peeth', label: '🌺 शक्ति पीठ', emoji: '🌺' },
+  { id: 'vaishnava', label: '🦚 वैष्णव', emoji: '🦚' },
+  { id: 'heritage', label: '🏛️ धरोहर', emoji: '🏛️' },
+  { id: 'temple', label: '🛕 मंदिर', emoji: '🛕' },
+  { id: 'pilgrimage', label: '🙏 तीर्थ', emoji: '🙏' },
+  { id: 'peeth_math', label: '📿 पीठ/मठ', emoji: '📿' },
 ];
 let activeTempleFilter = 'all';
 let activeTempleSearchQuery = '';
@@ -1142,6 +1145,51 @@ function isOutsideIndiaTemple(temple) {
   );
 }
 
+function includesKeyword(value = '', keyword = '') {
+  return String(value || '')
+    .toLowerCase()
+    .includes(String(keyword || '').toLowerCase());
+}
+
+function matchesTempleFilter(temple, filter) {
+  const type = String(temple.type || '').toLowerCase();
+  const deity = String(temple.deity || '').toLowerCase();
+  const name = String(temple.name || '').toLowerCase();
+
+  if (filter === 'all') return true;
+  if (filter === 'india') return !isOutsideIndiaTemple(temple);
+  if (filter === 'outside_india') return isOutsideIndiaTemple(temple);
+
+  if (filter === 'jyotirlinga') return includesKeyword(type, 'jyotirlinga');
+  if (filter === 'char_dham') return includesKeyword(type, 'char dham');
+  if (filter === 'shakti_peeth') return includesKeyword(type, 'shakti peeth');
+  if (filter === 'vaishnava') return includesKeyword(type, 'vaishnava');
+  if (filter === 'heritage') return includesKeyword(type, 'heritage');
+
+  if (filter === 'temple')
+    return includesKeyword(type, 'temple') || includesKeyword(type, 'mandir');
+
+  if (filter === 'pilgrimage') {
+    return (
+      includesKeyword(type, 'pilgrimage') ||
+      includesKeyword(type, 'dham') ||
+      includesKeyword(type, 'teerth') ||
+      includesKeyword(type, 'sacred hill') ||
+      includesKeyword(type, 'char dham')
+    );
+  }
+
+  if (filter === 'peeth_math') {
+    return (
+      includesKeyword(type, 'peeth') ||
+      includesKeyword(type, 'peetham') ||
+      includesKeyword(type, 'math')
+    );
+  }
+
+  return type === String(filter || '').toLowerCase();
+}
+
 function buildTemplesPage() {
   // Build filters
   const filtersEl = document.getElementById('templeFilters');
@@ -1163,14 +1211,9 @@ function buildTemplesPage() {
 }
 
 function getFilteredTemples(filter) {
-  const byCategory =
-    filter === 'all'
-    ? templesData
-    : filter === 'india'
-      ? templesData.filter((t) => !isOutsideIndiaTemple(t))
-      : filter === 'outside_india'
-        ? templesData.filter((t) => isOutsideIndiaTemple(t))
-        : templesData.filter((t) => t.type === filter);
+  const byCategory = templesData.filter((temple) =>
+    matchesTempleFilter(temple, filter),
+  );
   const normalizedQuery = activeTempleSearchQuery.trim().toLowerCase();
   if (!normalizedQuery) return byCategory;
 

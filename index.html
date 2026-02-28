@@ -4,15 +4,45 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>भक्ति अमृत - Bhakti Amrit</title>
+    <meta
+      name="description"
+      content="भक्ति अमृत पर देवी-देवताओं की आरती, चालीसा, मंत्र, कथा और प्रसिद्ध मंदिर एक ही स्थान पर पढ़ें। सरल हिंदी में विश्वसनीय भक्ति सामग्री।"
+    />
+    <link rel="canonical" href="https://bhaktiamrit.com/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Bhakti Amrit" />
+    <meta property="og:locale" content="hi_IN" />
+    <meta property="og:title" content="भक्ति अमृत - Bhakti Amrit" />
+    <meta
+      property="og:description"
+      content="देवी-देवताओं की आरती, चालीसा, मंत्र, कथा और प्रसिद्ध मंदिर की जानकारी सरल हिंदी में।"
+    />
+    <meta property="og:url" content="https://bhaktiamrit.com/" />
+    <meta
+      property="og:image"
+      content="https://bhaktiamrit.com/icons/logo.png"
+    />
+    <meta property="og:image:width" content="500" />
+    <meta property="og:image:height" content="500" />
+    <meta property="og:image:alt" content="Bhakti Amrit Logo" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="भक्ति अमृत - Bhakti Amrit" />
+    <meta
+      name="twitter:description"
+      content="देवी-देवताओं की आरती, चालीसा, मंत्र, कथा और प्रसिद्ध मंदिर की जानकारी।"
+    />
+    <meta
+      name="twitter:image"
+      content="https://bhaktiamrit.com/icons/logo.png"
+    />
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon.png" />
+    <link rel="shortcut icon" href="icons/favicon.png" />
     <link
       href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi:ital@0;1&family=Cinzel+Decorative:wght@400;700;900&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="css/styles.css" />
-    <link
-      rel="icon"
-      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🕉️</text></svg>"
-    />
   </head>
 
   <body>
@@ -84,30 +114,8 @@
     <!-- Floating particles -->
     <div id="particles"></div>
 
-    <header>
-      <span class="om-symbol">🕉️</span>
-      <h1
-        id="siteTitle"
-        data-title-hi="भक्ति अमृत"
-        data-title-en="Bhakti Amrit"
-      >
-        भक्ति अमृत
-      </h1>
-      <p
-        id="siteSubtitle"
-        data-subtitle-hi="॥ दैनिक साधना का संपूर्ण साथी ॥"
-        data-subtitle-en="Your complete daily sadhana companion - Aarti, Chalisa, Mantras, deity stories, and temple guidance in one place."
-      >
-        ॥ दैनिक साधना का संपूर्ण साथी॥
-      </p>
-      <div class="header-divider">
-        <div class="divider-line"></div>
-        <div class="divider-dot"></div>
-        <div class="divider-dot" style="background: var(--gold)"></div>
-        <div class="divider-dot"></div>
-        <div class="divider-line"></div>
-      </div>
-    </header>
+    <div id="siteHeaderMount"></div>
+    <script src="js/header.js"></script>
 
     <nav id="mainNav">
       <button
@@ -243,26 +251,28 @@
           <div class="section-subtitle">
             भारत के प्रसिद्ध तीर्थ स्थल — मानचित्र पर देखें और जानिए विस्तार से
           </div>
-          <div class="temple-filters" id="templeFilters"></div>
-          <div class="home-search-wrap">
-            <div class="home-search-input-wrap">
-              <span class="home-search-icon" aria-hidden="true">🔎</span>
-              <input
-                id="templeSearchInput"
-                class="home-search-input"
-                type="search"
-                placeholder="मंदिर, देवता, स्थान या प्रकार खोजें..."
-                autocomplete="off"
-              />
-              <button
-                id="templeSearchClear"
-                class="home-search-clear"
-                type="button"
-                aria-label="Clear temple search"
-                title="Clear temple search"
-              >
-                ✕
-              </button>
+          <div class="temple-controls">
+            <div class="temple-filters" id="templeFilters"></div>
+            <div class="home-search-wrap">
+              <div class="home-search-input-wrap">
+                <span class="home-search-icon" aria-hidden="true">🔎</span>
+                <input
+                  id="templeSearchInput"
+                  class="home-search-input"
+                  type="search"
+                  placeholder="मंदिर, देवता, स्थान या प्रकार खोजें..."
+                  autocomplete="off"
+                />
+                <button
+                  id="templeSearchClear"
+                  class="home-search-clear"
+                  type="button"
+                  aria-label="Clear temple search"
+                  title="Clear temple search"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -281,25 +291,24 @@
         </div>
         <div class="temples-grid" id="festivalsGrid"></div>
       </div>
+    </div>
 
-      </div>
-
-      <!-- Festival Modal -->
-      <div
-        id="festivalModal"
-        class="temple-modal-overlay"
-        onclick="closeFestivalModal(event)"
-      >
-        <div class="temple-modal">
-          <button class="temple-modal-close" onclick="closeFestivalModal()">
-            ✕
-          </button>
-          <div class="temple-modal-header" id="festivalModalHeader"></div>
-          <div class="temple-modal-body">
-            <div class="temple-modal-info" id="festivalModalInfo"></div>
-          </div>
+    <!-- Festival Modal -->
+    <div
+      id="festivalModal"
+      class="temple-modal-overlay"
+      onclick="closeFestivalModal(event)"
+    >
+      <div class="temple-modal">
+        <button class="temple-modal-close" onclick="closeFestivalModal()">
+          ✕
+        </button>
+        <div class="temple-modal-header" id="festivalModalHeader"></div>
+        <div class="temple-modal-body">
+          <div class="temple-modal-info" id="festivalModalInfo"></div>
         </div>
       </div>
+    </div>
 
     <!-- Temple Map Modal -->
     <div
@@ -318,24 +327,8 @@
       </div>
     </div>
 
-    <footer>
-      <div
-        class="header-divider"
-        style="justify-content: center; margin-bottom: 10px"
-      >
-        <div class="divider-line" style="width: 60px"></div>
-        <div class="divider-dot"></div>
-        <div class="divider-line" style="width: 60px"></div>
-      </div>
-      ॥ जय जय श्री हरि ॥ — सभी देवी-देवताओं को समर्पित <br />
-      <div class="footer-links">
-        <a href="html/about.html">हमारे बारे में</a>
-        <span aria-hidden="true">•</span>
-        <a href="html/contact.html">संपर्क</a>
-        <span aria-hidden="true">•</span>
-        <a href="index.html">भक्ति अमृत © 2026</a>
-      </div>
-    </footer>
+    <div id="siteFooterMount" data-footer-path="root"></div>
+    <script src="js/footer.js"></script>
 
     <div class="accessibility-controls">
       <button

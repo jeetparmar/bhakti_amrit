@@ -4,6 +4,44 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>हमारे बारे में - भक्ति अमृत</title>
+    <meta
+      name="description"
+      content="भक्ति अमृत का उद्देश्य सरल हिंदी में विश्वसनीय भक्ति सामग्री देना है। हमारे मिशन, सामग्री और दृष्टि के बारे में जानें।"
+    />
+    <link rel="canonical" href="https://bhaktiamrit.com/html/about.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Bhakti Amrit" />
+    <meta property="og:locale" content="hi_IN" />
+    <meta property="og:title" content="हमारे बारे में - भक्ति अमृत" />
+    <meta
+      property="og:description"
+      content="भक्ति अमृत का मिशन: आरती, चालीसा, मंत्र और कथा को आधुनिक पाठकों के लिए सरल बनाना।"
+    />
+    <meta property="og:url" content="https://bhaktiamrit.com/html/about.html" />
+    <meta property="og:image" content="https://bhaktiamrit.com/icons/logo.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="हमारे बारे में - भक्ति अमृत" />
+    <meta
+      name="twitter:description"
+      content="भक्ति अमृत का मिशन और हमारी सामग्री दृष्टि।"
+    />
+    <meta
+      name="twitter:image"
+      content="https://bhaktiamrit.com/icons/logo.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="../icons/favicon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="../icons/favicon.png"
+    />
+    <link rel="shortcut icon" href="../icons/favicon.png" />
     <link
       href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi:ital@0;1&family=Cinzel+Decorative:wght@400;700;900&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap"
       rel="stylesheet"
@@ -158,30 +196,8 @@
   </head>
 
   <body>
-    <header>
-      <span class="om-symbol">🕉️</span>
-      <h1
-        id="siteTitle"
-        data-title-hi="भक्ति अमृत"
-        data-title-en="Bhakti Amrit"
-      >
-        भक्ति अमृत
-      </h1>
-      <p
-        id="siteSubtitle"
-        data-subtitle-hi="॥ दैनिक साधना का संपूर्ण साथी ॥"
-        data-subtitle-en="Your complete daily sadhana companion - Aarti, Chalisa, Mantras, deity stories, and temple guidance in one place."
-      >
-        ॥ दैनिक साधना का संपूर्ण साथी॥
-      </p>
-      <div class="header-divider">
-        <div class="divider-line"></div>
-        <div class="divider-dot"></div>
-        <div class="divider-dot" style="background: var(--gold)"></div>
-        <div class="divider-dot"></div>
-        <div class="divider-line"></div>
-      </div>
-    </header>
+    <div id="siteHeaderMount"></div>
+    <script src="../js/header.js"></script>
 
     <main class="main-container">
       <section class="about-page">
@@ -256,23 +272,7 @@
       </section>
     </main>
 
-    <footer>
-      <div
-        class="header-divider"
-        style="justify-content: center; margin-bottom: 10px"
-      >
-        <div class="divider-line" style="width: 60px"></div>
-        <div class="divider-dot"></div>
-        <div class="divider-line" style="width: 60px"></div>
-      </div>
-      ॥ जय जय श्री हरि ॥ — सभी देवी-देवताओं को समर्पित <br />
-      <div class="footer-links">
-        <a href="about.html">हमारे बारे में</a>
-        <span aria-hidden="true">•</span>
-        <a href="contact.html">संपर्क</a>
-        <span aria-hidden="true">•</span>
-        <a href="../index.html">भक्ति अमृत © 2026</a>
-      </div>
-    </footer>
+    <div id="siteFooterMount" data-footer-path="sub"></div>
+    <script src="../js/footer.js"></script>
   </body>
 </html>
