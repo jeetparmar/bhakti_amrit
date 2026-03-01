@@ -5,6 +5,14 @@
             "destination": "/index.html"
         },
         {
+            "source": "/temples",
+            "destination": "/index.html"
+        },
+        {
+            "source": "/temples/:slug",
+            "destination": "/index.html"
+        },
+        {
             "source": "/:deity/css/:path*",
             "destination": "/css/:path*"
         },
