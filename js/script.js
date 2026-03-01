@@ -90,6 +90,7 @@ let activeHomeSearchQuery = '';
 let activeDeityKey = '';
 let activeDeityTab = 'about';
 let activeKathaSlug = '';
+let activeTempleDetailId = '';
 const HOME_BATCH_SIZE = 60;
 let homeFilteredEntries = [];
 let renderedHomeCount = 0;
@@ -256,12 +257,32 @@ function getPathState() {
     .filter(Boolean)
     .map((segment) => decodeURIComponent(segment));
 
+  if (segments.length === 2 && segments[0] === 'temples') {
+    return {
+      pageId: 'temple-detail',
+      templeId: segments[1],
+      deityKey: '',
+      tabId: 'about',
+      kathaSlug: '',
+    };
+  }
+
+  if (segments.length === 1 && segments[0] === 'temples') {
+    return {
+      pageId: 'temples',
+      templeId: '',
+      deityKey: '',
+      tabId: 'about',
+      kathaSlug: '',
+    };
+  }
+
   if (segments.length === 3) {
     const [rawDeityKey, tabId, kathaSlug] = segments;
     const deityKey = resolveDeityKey(rawDeityKey);
     const safeTab = getSafeDeityTab(tabId);
     if (deities[deityKey] && safeTab === 'katha') {
-      return { deityKey, tabId: safeTab, kathaSlug };
+      return { pageId: '', templeId: '', deityKey, tabId: safeTab, kathaSlug };
     }
   }
 
@@ -270,11 +291,23 @@ function getPathState() {
     const deityKey = resolveDeityKey(rawDeityKey);
     const safeTab = getSafeDeityTab(tabId);
     if (deities[deityKey] && safeTab === tabId) {
-      return { deityKey, tabId: safeTab, kathaSlug: '' };
+      return {
+        pageId: '',
+        templeId: '',
+        deityKey,
+        tabId: safeTab,
+        kathaSlug: '',
+      };
     }
   }
 
-  return { deityKey: '', tabId: 'about', kathaSlug: '' };
+  return {
+    pageId: '',
+    templeId: '',
+    deityKey: '',
+    tabId: 'about',
+    kathaSlug: '',
+  };
 }
 
 function getKathaEntries(data = null, deityKey = '') {
@@ -349,6 +382,8 @@ function updateUrlState({
   deityKey = '',
   tabId = activeDeityTab,
   kathaSlug = activeKathaSlug,
+  pageId = '',
+  templeId = activeTempleDetailId,
   replace = false,
 } = {}) {
   const url = new URL(window.location.href);
@@ -367,6 +402,15 @@ function updateUrlState({
       safeTab === 'katha' && safeKathaSlug
         ? `/${encodeURIComponent(safeDeity)}/${encodeURIComponent(safeTab)}/${encodeURIComponent(safeKathaSlug)}`
         : `/${encodeURIComponent(safeDeity)}/${encodeURIComponent(safeTab)}`;
+    url.search = '';
+  } else if (pageId === 'temple-detail') {
+    const safeTempleId = templesData.some((t) => t.id === templeId) ? templeId : '';
+    url.pathname = safeTempleId
+      ? `/temples/${encodeURIComponent(safeTempleId)}`
+      : '/temples';
+    url.search = '';
+  } else if (pageId === 'temples') {
+    url.pathname = '/temples';
     url.search = '';
   } else {
     url.pathname = '/';
@@ -390,6 +434,8 @@ function updateUrlState({
 function applyUrlState() {
   const params = new URLSearchParams(window.location.search);
   const pathState = getPathState();
+  const pathPageId = pathState.pageId || '';
+  const pathTempleId = pathState.templeId || '';
   const pathDeity = pathState.deityKey;
   const pathTab = pathState.tabId;
   const pathKathaSlug = pathState.kathaSlug || '';
@@ -402,6 +448,16 @@ function applyUrlState() {
   const deityKey = pathDeity || resolveDeityKey(queryDeity);
   const tabId = pathDeity ? pathTab : queryTab;
   const kathaSlug = pathDeity ? pathKathaSlug : queryKathaSlug;
+
+  if (pathPageId === 'temple-detail') {
+    showTempleDetailsPage(pathTempleId, { skipUrl: true });
+    return;
+  }
+
+  if (pathPageId === 'temples') {
+    showTemplesMenuPage({ skipUrl: true });
+    return;
+  }
 
   if (deityKey && deities[deityKey]) {
     activeHomeType = typeId;
@@ -748,6 +804,12 @@ function updateTopHomeButton(pageId) {
     return;
   }
 
+  if (pageId === 'temple-detail') {
+    homeBtn.innerHTML = '<span class="nav-icon-emoji">↩️</span> वापस जाएं';
+    homeBtn.setAttribute('onclick', 'showTemplesMenuPage()');
+    return;
+  }
+
   homeBtn.innerHTML = '<span class="nav-icon-emoji">🏠</span> मुख्य पृष्ठ';
   homeBtn.setAttribute('onclick', "showHomeByType('all', 'home')");
 }
@@ -770,6 +832,21 @@ function showPage(pageId, navId) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
   if (pageId === 'temples') buildTemplesPage();
   if (pageId === 'festivals') buildFestivalsPage();
+}
+
+function showTemplesMenuPage(options = {}) {
+  const { skipUrl = false } = options;
+  activeDeityKey = '';
+  activeDeityTab = 'about';
+  activeTempleDetailId = '';
+  showPage('temples', 'temples');
+  if (!skipUrl) {
+    updateUrlState({
+      typeId: activeHomeType,
+      deityKey: '',
+      pageId: 'temples',
+    });
+  }
 }
 
 function syncNav(pageId) {
@@ -1323,7 +1400,7 @@ function getFilteredTemples(filter) {
 
 function getTempleCardHtml(temple, idx) {
   return `
-    <div class="temple-card" onclick="openTempleModal('${temple.id}')" style="animation-delay:${idx * 0.06}s; background:${temple.gradient}; --temple-color:${temple.color};">
+    <div class="temple-card" onclick="showTempleDetailsPage('${temple.id}')" style="animation-delay:${idx * 0.06}s; background:${temple.gradient}; --temple-color:${temple.color};">
       <div class="temple-card-top">
         <div class="temple-emoji-badge">${temple.emoji}</div>
         <div class="temple-type-badge">${temple.type}</div>
@@ -1457,10 +1534,8 @@ function setupTempleSearch() {
   }
 }
 
-function openTempleModal(id) {
-  const temple = templesData.find((t) => t.id === id);
-  if (!temple) return;
-  document.getElementById('templeModalHeader').innerHTML = `
+function getTempleDetailHeaderHtml(temple) {
+  return `
     <div class="temple-modal-hero" style="--temple-color:${temple.color}">
       <div class="temple-modal-hero-main">
         <div class="temple-modal-emoji">${temple.emoji}</div>
@@ -1474,7 +1549,10 @@ function openTempleModal(id) {
         </div>
       </div>
     </div>`;
-  document.getElementById('templeModalInfo').innerHTML = `
+}
+
+function getTempleDetailInfoHtml(temple) {
+  return `
     <div class="temple-info-grid">
       <div class="temple-info-card">
         <div class="temple-info-icon">📍</div>
@@ -1500,6 +1578,41 @@ function openTempleModal(id) {
       <div class="temple-history-title">📜 इतिहास</div>
       <p>${temple.history}</p>
     </div>`;
+}
+
+function showTempleDetailsPage(templeId, options = {}) {
+  const { skipUrl = false } = options;
+  const temple = templesData.find((t) => t.id === templeId);
+  if (!temple) {
+    showTemplesMenuPage({ skipUrl });
+    return;
+  }
+  activeDeityKey = '';
+  activeDeityTab = 'about';
+  activeTempleDetailId = temple.id;
+  const headerEl = document.getElementById('templeDetailHeader');
+  const infoEl = document.getElementById('templeDetailInfo');
+  if (!headerEl || !infoEl) return;
+  headerEl.innerHTML = getTempleDetailHeaderHtml(temple);
+  infoEl.innerHTML = getTempleDetailInfoHtml(temple);
+  showPage('temple-detail', 'temples');
+  if (!skipUrl) {
+    updateUrlState({
+      typeId: activeHomeType,
+      deityKey: '',
+      pageId: 'temple-detail',
+      templeId: temple.id,
+    });
+  }
+}
+
+function openTempleModal(id) {
+  const temple = templesData.find((t) => t.id === id);
+  if (!temple) return;
+  document.getElementById('templeModalHeader').innerHTML =
+    getTempleDetailHeaderHtml(temple);
+  document.getElementById('templeModalInfo').innerHTML =
+    getTempleDetailInfoHtml(temple);
   const modal = document.getElementById('templeMapModal');
   modal.classList.add('active');
   document.body.style.overflow = 'hidden';
@@ -1837,11 +1950,15 @@ window.addEventListener('popstate', () => {
 
 window.addEventListener('DOMContentLoaded', () => {
   applyUrlState();
+  const activePageEl = document.querySelector('.page.active');
+  const activePageId = activePageEl?.id?.replace('page-', '') || '';
   updateUrlState({
     typeId: activeHomeType,
     deityKey: activeDeityKey,
     tabId: activeDeityTab,
     kathaSlug: activeKathaSlug,
+    pageId: activeDeityKey ? '' : activePageId,
+    templeId: activeTempleDetailId,
     replace: true,
   });
 });

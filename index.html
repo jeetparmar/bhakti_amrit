@@ -174,7 +174,7 @@
           </button>
           <button
             class="nav-btn"
-            onclick="showPage('temples')"
+            onclick="showTemplesMenuPage()"
             data-page="temples"
           >
             <span class="nav-icon-emoji">🛕</span> प्रसिद्ध मंदिर
@@ -282,6 +282,24 @@
         </div>
         <div class="temples-grid" id="templesGrid"></div>
       </div>
+
+      <!-- TEMPLE DETAIL PAGE -->
+      <div id="page-temple-detail" class="page">
+        <button
+          id="templeDetailBackButton"
+          class="back-btn"
+          onclick="showTemplesMenuPage()"
+        >
+          ← वापस मंदिर सूची
+        </button>
+        <div class="temple-detail-shell">
+          <div class="temple-modal-header" id="templeDetailHeader"></div>
+          <div class="temple-modal-body temple-detail-body">
+            <div class="temple-modal-info" id="templeDetailInfo"></div>
+          </div>
+        </div>
+      </div>
+
       <!-- FESTIVALS PAGE -->
       <div id="page-festivals" class="page">
         <div class="temples-header">
