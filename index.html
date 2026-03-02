@@ -181,7 +181,7 @@
           </button>
           <button
             class="nav-btn"
-            onclick="showPage('festivals')"
+            onclick="showFestivalsMenuPage()"
             data-page="festivals"
           >
             <span class="nav-icon-emoji">🎉</span> प्रसिद्ध त्योहार
@@ -306,21 +306,14 @@
         </div>
         <div class="temples-grid" id="festivalsGrid"></div>
       </div>
-    </div>
 
-    <!-- Festival Modal -->
-    <div
-      id="festivalModal"
-      class="temple-modal-overlay"
-      onclick="closeFestivalModal(event)"
-    >
-      <div class="temple-modal">
-        <button class="temple-modal-close" onclick="closeFestivalModal()">
-          ✕
-        </button>
-        <div class="temple-modal-header" id="festivalModalHeader"></div>
-        <div class="temple-modal-body">
-          <div class="temple-modal-info" id="festivalModalInfo"></div>
+      <!-- FESTIVAL DETAIL PAGE -->
+      <div id="page-festival-detail" class="page">
+        <div class="temple-detail-shell">
+          <div class="temple-modal-header" id="festivalDetailHeader"></div>
+          <div class="temple-modal-body temple-detail-body">
+            <div class="temple-modal-info" id="festivalDetailInfo"></div>
+          </div>
         </div>
       </div>
     </div>

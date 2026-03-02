@@ -91,6 +91,7 @@ let activeDeityKey = '';
 let activeDeityTab = 'about';
 let activeKathaSlug = '';
 let activeTempleDetailId = '';
+let activeFestivalDetailId = '';
 const HOME_BATCH_SIZE = 60;
 let homeFilteredEntries = [];
 let renderedHomeCount = 0;
@@ -267,9 +268,31 @@ function getPathState() {
     };
   }
 
+  if (segments.length === 2 && segments[0] === 'festivals') {
+    return {
+      pageId: 'festival-detail',
+      festivalId: segments[1],
+      templeId: '',
+      deityKey: '',
+      tabId: 'about',
+      kathaSlug: '',
+    };
+  }
+
   if (segments.length === 1 && segments[0] === 'temples') {
     return {
       pageId: 'temples',
+      templeId: '',
+      deityKey: '',
+      tabId: 'about',
+      kathaSlug: '',
+    };
+  }
+
+  if (segments.length === 1 && segments[0] === 'festivals') {
+    return {
+      pageId: 'festivals',
+      festivalId: '',
       templeId: '',
       deityKey: '',
       tabId: 'about',
@@ -303,6 +326,7 @@ function getPathState() {
 
   return {
     pageId: '',
+    festivalId: '',
     templeId: '',
     deityKey: '',
     tabId: 'about',
@@ -384,6 +408,7 @@ function updateUrlState({
   kathaSlug = activeKathaSlug,
   pageId = '',
   templeId = activeTempleDetailId,
+  festivalId = activeFestivalDetailId,
   replace = false,
 } = {}) {
   const url = new URL(window.location.href);
@@ -409,8 +434,19 @@ function updateUrlState({
       ? `/temples/${encodeURIComponent(safeTempleId)}`
       : '/temples';
     url.search = '';
+  } else if (pageId === 'festival-detail') {
+    const safeFestivalId = festivalsData.some((f) => f.id === festivalId)
+      ? festivalId
+      : '';
+    url.pathname = safeFestivalId
+      ? `/festivals/${encodeURIComponent(safeFestivalId)}`
+      : '/festivals';
+    url.search = '';
   } else if (pageId === 'temples') {
     url.pathname = '/temples';
+    url.search = '';
+  } else if (pageId === 'festivals') {
+    url.pathname = '/festivals';
     url.search = '';
   } else {
     url.pathname = '/';
@@ -435,6 +471,7 @@ function applyUrlState() {
   const params = new URLSearchParams(window.location.search);
   const pathState = getPathState();
   const pathPageId = pathState.pageId || '';
+  const pathFestivalId = pathState.festivalId || '';
   const pathTempleId = pathState.templeId || '';
   const pathDeity = pathState.deityKey;
   const pathTab = pathState.tabId;
@@ -454,8 +491,18 @@ function applyUrlState() {
     return;
   }
 
+  if (pathPageId === 'festival-detail') {
+    showFestivalDetailsPage(pathFestivalId, { skipUrl: true });
+    return;
+  }
+
   if (pathPageId === 'temples') {
     showTemplesMenuPage({ skipUrl: true });
+    return;
+  }
+
+  if (pathPageId === 'festivals') {
+    showFestivalsMenuPage({ skipUrl: true });
     return;
   }
 
@@ -676,6 +723,8 @@ function showHomeByType(typeId = 'all', navId = 'home', options = {}) {
   activeHomeNavId = safeNavId;
   activeDeityKey = '';
   activeDeityTab = 'about';
+  activeTempleDetailId = '';
+  activeFestivalDetailId = '';
   showPage('home', safeNavId);
   const grid = document.getElementById('homeGrid');
   const searchInput = document.getElementById('homeSearchInput');
@@ -810,6 +859,12 @@ function updateTopHomeButton(pageId) {
     return;
   }
 
+  if (pageId === 'festival-detail') {
+    homeBtn.innerHTML = '<span class="nav-icon-emoji">↩️</span> वापस जाएं';
+    homeBtn.setAttribute('onclick', 'showFestivalsMenuPage()');
+    return;
+  }
+
   homeBtn.innerHTML = '<span class="nav-icon-emoji">🏠</span> मुख्य पृष्ठ';
   homeBtn.setAttribute('onclick', "showHomeByType('all', 'home')");
 }
@@ -839,12 +894,29 @@ function showTemplesMenuPage(options = {}) {
   activeDeityKey = '';
   activeDeityTab = 'about';
   activeTempleDetailId = '';
+  activeFestivalDetailId = '';
   showPage('temples', 'temples');
   if (!skipUrl) {
     updateUrlState({
       typeId: activeHomeType,
       deityKey: '',
       pageId: 'temples',
+    });
+  }
+}
+
+function showFestivalsMenuPage(options = {}) {
+  const { skipUrl = false } = options;
+  activeDeityKey = '';
+  activeDeityTab = 'about';
+  activeTempleDetailId = '';
+  activeFestivalDetailId = '';
+  showPage('festivals', 'festivals');
+  if (!skipUrl) {
+    updateUrlState({
+      typeId: activeHomeType,
+      deityKey: '',
+      pageId: 'festivals',
     });
   }
 }
@@ -871,6 +943,8 @@ function showDeityPage(key, options = {}) {
   const availableTabs = getAvailableDeityTabs(resolvedKey);
   activeDeityKey = resolvedKey;
   activeDeityTab = getSafeDeityTab(options.initialTab || 'about');
+  activeTempleDetailId = '';
+  activeFestivalDetailId = '';
   activeKathaSlug = getSafeKathaSlug(
     resolvedKey,
     options.initialKathaSlug || activeKathaSlug,
@@ -1590,6 +1664,7 @@ function showTempleDetailsPage(templeId, options = {}) {
   activeDeityKey = '';
   activeDeityTab = 'about';
   activeTempleDetailId = temple.id;
+  activeFestivalDetailId = '';
   const headerEl = document.getElementById('templeDetailHeader');
   const infoEl = document.getElementById('templeDetailInfo');
   if (!headerEl || !infoEl) return;
@@ -1668,7 +1743,7 @@ function getFilteredFestivals(filter) {
 
 function getFestivalCardHtml(festival, idx) {
   return `
-    <div class="temple-card" onclick="openFestivalModal('${festival.id}')" style="animation-delay:${idx * 0.06}s; background:${festival.gradient}; --temple-color:${festival.color};">
+    <div class="temple-card" onclick="showFestivalDetailsPage('${festival.id}')" style="animation-delay:${idx * 0.06}s; background:${festival.gradient}; --temple-color:${festival.color};">
       <div class="temple-card-top">
         <div class="temple-emoji-badge">${festival.emoji}</div>
         <div class="temple-type-badge">${festival.type}</div>
@@ -1761,11 +1836,8 @@ function filterFestivals(category, btn) {
   }, 200);
 }
 
-function openFestivalModal(id) {
-  const festival = festivalsData.find((f) => f.id === id);
-  if (!festival) return;
-
-  document.getElementById('festivalModalHeader').innerHTML = `
+function getFestivalDetailHeaderHtml(festival) {
+  return `
     <div class="temple-modal-hero" style="--temple-color:${festival.color}">
       <div class="temple-modal-hero-main">
         <div class="temple-modal-emoji">${festival.emoji}</div>
@@ -1779,8 +1851,10 @@ function openFestivalModal(id) {
         </div>
       </div>
     </div>`;
+}
 
-  document.getElementById('festivalModalInfo').innerHTML = `
+function getFestivalDetailInfoHtml(festival) {
+  return `
     <div class="temple-info-grid">
       <div class="temple-info-card">
         <div class="temple-info-icon">📅</div>
@@ -1812,17 +1886,33 @@ function openFestivalModal(id) {
       <div class="temple-history-title">🪔 प्रमुख अनुष्ठान</div>
       <p>${festival.rituals}</p>
     </div>`;
-
-  const modal = document.getElementById('festivalModal');
-  modal.classList.add('active');
-  document.body.style.overflow = 'hidden';
 }
 
-function closeFestivalModal(e) {
-  if (e && e.target !== document.getElementById('festivalModal')) return;
-  const modal = document.getElementById('festivalModal');
-  modal.classList.remove('active');
-  document.body.style.overflow = '';
+function showFestivalDetailsPage(festivalId, options = {}) {
+  const { skipUrl = false } = options;
+  const festival = festivalsData.find((f) => f.id === festivalId);
+  if (!festival) {
+    showFestivalsMenuPage({ skipUrl });
+    return;
+  }
+  activeDeityKey = '';
+  activeDeityTab = 'about';
+  activeTempleDetailId = '';
+  activeFestivalDetailId = festival.id;
+  const headerEl = document.getElementById('festivalDetailHeader');
+  const infoEl = document.getElementById('festivalDetailInfo');
+  if (!headerEl || !infoEl) return;
+  headerEl.innerHTML = getFestivalDetailHeaderHtml(festival);
+  infoEl.innerHTML = getFestivalDetailInfoHtml(festival);
+  showPage('festival-detail', 'festivals');
+  if (!skipUrl) {
+    updateUrlState({
+      typeId: activeHomeType,
+      deityKey: '',
+      pageId: 'festival-detail',
+      festivalId: festival.id,
+    });
+  }
 }
 
 for (const key in aartiData) {
@@ -1959,6 +2049,7 @@ window.addEventListener('DOMContentLoaded', () => {
     kathaSlug: activeKathaSlug,
     pageId: activeDeityKey ? '' : activePageId,
     templeId: activeTempleDetailId,
+    festivalId: activeFestivalDetailId,
     replace: true,
   });
 });

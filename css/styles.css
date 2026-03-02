@@ -1886,14 +1886,14 @@ footer {
 
 .temple-modal-hero h2 {
   font-family: 'Cinzel Decorative', cursive;
-  font-size: clamp(1.1rem, 3vw, 1.6rem);
+  font-size: clamp(1.25rem, 3.2vw, 1.9rem);
   color: var(--temple-color, var(--gold));
   line-height: 1.3;
   margin-bottom: 4px;
 }
 
 .temple-modal-hero p {
-  font-size: 0.85rem;
+  font-size: 0.98rem;
   color: rgba(255, 248, 231, 0.45);
   font-family: 'EB Garamond', serif;
   font-style: italic;
@@ -1902,7 +1902,7 @@ footer {
 .temple-modal-type {
   display: inline-block;
   margin-top: 0;
-  font-size: 0.65rem;
+  font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 2px;
   padding: 4px 12px;
@@ -1922,7 +1922,7 @@ footer {
 .temple-type-link {
   color: var(--gold);
   text-decoration: none;
-  font-size: 0.78rem;
+  font-size: 0.9rem;
   font-family: 'EB Garamond', serif;
   border-bottom: 1px solid transparent;
   transition: all 0.2s ease;
@@ -1990,7 +1990,7 @@ footer {
 }
 
 .temple-info-label {
-  font-size: 0.68rem;
+  font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 1px;
   color: rgba(255, 248, 231, 0.35);
@@ -1999,7 +1999,7 @@ footer {
 }
 
 .temple-info-val {
-  font-size: 0.88rem;
+  font-size: 1.12rem;
   color: rgba(255, 248, 231, 0.85);
   line-height: 1.4;
 }
@@ -2020,7 +2020,7 @@ footer {
 }
 
 .temple-history-title {
-  font-size: 0.85rem;
+  font-size: 1.12rem;
   color: var(--gold);
   font-family: 'Cinzel Decorative', cursive;
   margin-bottom: 10px;
@@ -2028,7 +2028,7 @@ footer {
 }
 
 .temple-history p {
-  font-size: 0.92rem;
+  font-size: 1.35rem;
   color: rgba(255, 248, 231, 0.75);
   line-height: 1.75;
   font-family: 'EB Garamond', serif;
@@ -2070,7 +2070,7 @@ footer {
 .deity-temples-empty p {
   margin: 0;
   color: rgba(255, 248, 231, 0.8);
-  font-size: 0.98rem;
+  font-size: 1.08rem;
   line-height: 1.7;
   font-family: 'Tiro Devanagari Hindi', serif;
 }
@@ -2099,7 +2099,7 @@ footer {
   flex-wrap: wrap;
   margin-bottom: 16px;
   color: rgba(255, 248, 231, 0.72);
-  font-size: 0.92rem;
+  font-size: 1.02rem;
   text-align: center;
 }
 
@@ -2112,7 +2112,7 @@ footer {
   border: 1px solid rgba(212, 175, 55, 0.35);
   background: rgba(212, 175, 55, 0.12);
   color: var(--gold);
-  font-size: 0.82rem;
+  font-size: 0.92rem;
   font-weight: 700;
   line-height: 1;
 }
@@ -2131,7 +2131,7 @@ footer {
   color: var(--dark);
   font-weight: 700;
   font-family: 'Tiro Devanagari Hindi', serif;
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   cursor: pointer;
   box-shadow: 0 6px 20px rgba(255, 107, 0, 0.4);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -2166,6 +2166,7 @@ footer {
   }
 
   .temple-history p {
+    font-size: 1rem;
     max-height: min(30vh, 220px);
   }
 
@@ -2177,13 +2178,25 @@ footer {
     grid-template-columns: 1fr 1fr;
   }
 
+  .temple-info-label {
+    font-size: 0.85rem;
+  }
+
+  .temple-info-val {
+    font-size: 1.02rem;
+  }
+
+  .temple-history-title {
+    font-size: 1.02rem;
+  }
+
   .deity-temples-all-btn {
     width: 100%;
     padding: 12px 16px;
   }
 
   .deity-temples-intro {
-    font-size: 0.88rem;
+    font-size: 0.95rem;
     gap: 8px;
     margin-bottom: 14px;
   }
