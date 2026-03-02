@@ -86,6 +86,8 @@ function getValidDeityImage(path) {
 
 let activeHomeType = 'all';
 let activeHomeNavId = 'home';
+let deityReturnHomeType = 'all';
+let deityReturnHomeNavId = 'home';
 let activeHomeSearchQuery = '';
 let activeDeityKey = '';
 let activeDeityTab = 'about';
@@ -848,7 +850,7 @@ function updateTopHomeButton(pageId) {
     homeBtn.innerHTML = '<span class="nav-icon-emoji">↩️</span> वापस जाएं';
     homeBtn.setAttribute(
       'onclick',
-      'showHomeByType(activeHomeType, activeHomeNavId)',
+      'showHomeByType(deityReturnHomeType, deityReturnHomeNavId)',
     );
     return;
   }
@@ -872,7 +874,79 @@ function updateTopHomeButton(pageId) {
 function updateDeityBackButton(pageId) {
   const deityBackButton = document.getElementById('deityBackButton');
   if (!deityBackButton) return;
+  deityBackButton.setAttribute(
+    'onclick',
+    'showHomeByType(deityReturnHomeType, deityReturnHomeNavId)',
+  );
   deityBackButton.style.display = pageId === 'deity' ? 'none' : '';
+}
+
+let defaultSiteHeaderMarkup = '';
+let defaultSiteHeaderHeight = 0;
+
+function syncDefaultSiteHeaderHeight() {
+  const siteHeaderMount = document.getElementById('siteHeaderMount');
+  if (!siteHeaderMount) return;
+  let measured = 0;
+  const siteHeader = siteHeaderMount.querySelector('header');
+  if (siteHeader) {
+    measured = Math.ceil(siteHeader.getBoundingClientRect().height);
+  } else if (defaultSiteHeaderMarkup) {
+    const probe = document.createElement('div');
+    probe.style.cssText =
+      'position:absolute;left:-99999px;top:0;visibility:hidden;width:100%;pointer-events:none;';
+    probe.innerHTML = defaultSiteHeaderMarkup;
+    document.body.appendChild(probe);
+    const probeHeader = probe.querySelector('header');
+    if (probeHeader) {
+      measured = Math.ceil(probeHeader.getBoundingClientRect().height);
+    }
+    document.body.removeChild(probe);
+  }
+
+  if (!measured) return;
+  defaultSiteHeaderHeight = measured;
+  document.documentElement.style.setProperty(
+    '--site-header-height',
+    `${defaultSiteHeaderHeight}px`,
+  );
+}
+
+function syncSiteHeaderByPage(pageId) {
+  const siteHeaderMount = document.getElementById('siteHeaderMount');
+  const deityHeader = document.getElementById('deityHeader');
+  if (!siteHeaderMount) return;
+
+  if (!defaultSiteHeaderMarkup) {
+    defaultSiteHeaderMarkup = siteHeaderMount.innerHTML;
+    syncDefaultSiteHeaderHeight();
+  }
+
+  const useDeityHeader =
+    pageId === 'deity' &&
+    deityHeader &&
+    deityHeader.innerHTML &&
+    deityHeader.innerHTML.trim().length > 0;
+
+  if (useDeityHeader) {
+    siteHeaderMount.innerHTML = `<div class="content-header content-header-site">${deityHeader.innerHTML}
+      <div class="header-divider">
+        <div class="divider-line"></div>
+        <div class="divider-dot"></div>
+        <div class="divider-dot" style="background: var(--gold)"></div>
+        <div class="divider-dot"></div>
+        <div class="divider-line"></div>
+      </div>
+    </div>`;
+    deityHeader.style.display = 'none';
+    return;
+  }
+
+  if (siteHeaderMount.innerHTML !== defaultSiteHeaderMarkup) {
+    siteHeaderMount.innerHTML = defaultSiteHeaderMarkup;
+    syncDefaultSiteHeaderHeight();
+  }
+  if (deityHeader) deityHeader.style.display = '';
 }
 
 function showPage(pageId, navId) {
@@ -883,6 +957,7 @@ function showPage(pageId, navId) {
   if (target) target.classList.add('active');
   updateTopHomeButton(pageId);
   updateDeityBackButton(pageId);
+  syncSiteHeaderByPage(pageId);
   syncNav(navId || pageId);
   window.scrollTo({ top: 0, behavior: 'smooth' });
   if (pageId === 'temples') buildTemplesPage();
@@ -940,6 +1015,18 @@ function showDeityPage(key, options = {}) {
   const resolvedKey = resolveDeityKey(key);
   const deity = deities[resolvedKey];
   if (!deity) return;
+
+  // Preserve where the user came from for back navigation.
+  deityReturnHomeType = getSafeHomeType(activeHomeType);
+  deityReturnHomeNavId = activeHomeNavId || getNavIdByHomeType(deityReturnHomeType);
+
+  // If a deity is opened directly from "मुख्य पृष्ठ", highlight its type menu.
+  if (activeHomeNavId === 'home' || activeHomeType === 'all') {
+    const inferredType = getDeityType(resolvedKey);
+    activeHomeType = inferredType;
+    activeHomeNavId = getNavIdByHomeType(inferredType);
+  }
+
   const availableTabs = getAvailableDeityTabs(resolvedKey);
   activeDeityKey = resolvedKey;
   activeDeityTab = getSafeDeityTab(options.initialTab || 'about');
@@ -2008,6 +2095,7 @@ window.addEventListener('load', () => {
     buildHomeGrid();
     updateArrowVisibility();
     updateSiteTitleByLang();
+    syncDefaultSiteHeaderHeight();
 
     const htmlObserver = new MutationObserver(updateSiteTitleByLang);
     htmlObserver.observe(document.documentElement, {
@@ -2041,6 +2129,10 @@ window.addEventListener('scroll', () => {
 
 window.addEventListener('popstate', () => {
   applyUrlState();
+});
+
+window.addEventListener('resize', () => {
+  syncDefaultSiteHeaderHeight();
 });
 
 window.addEventListener('DOMContentLoaded', () => {
