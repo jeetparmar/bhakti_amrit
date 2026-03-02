@@ -993,7 +993,7 @@ function showDeityPage(key, options = {}) {
   content.innerHTML = `
   <div id="tab-about" class="text-content ${activeDeityTab === 'about' ? 'active' : ''}">
     <div class="deity-tab-wrap deity-tab-wrap-no-padding">
-      <div class="lyrics-box about-content">${renderAbout(aboutData[resolvedKey])}</div>
+      <div class="lyrics-box about-content about-content-merged">${renderAbout(aboutData[resolvedKey])}</div>
     </div>
   </div>
   <div id="tab-aarti" class="text-content ${activeDeityTab === 'aarti' ? 'active' : ''}">
@@ -1013,12 +1013,16 @@ function showDeityPage(key, options = {}) {
   </div>
   <div id="tab-mantra" class="text-content ${activeDeityTab === 'mantra' ? 'active' : ''}">
     <div class="deity-tab-wrap">
-      <div class="mantra-grid">${renderMantras(deity.mantras, resolvedKey)}</div>
+      <div class="lyrics-box">
+        <div class="mantra-grid">${renderMantras(deity.mantras, resolvedKey)}</div>
+      </div>
     </div>
   </div>
   <div id="tab-temples" class="text-content ${activeDeityTab === 'temples' ? 'active' : ''}">
     <div class="deity-tab-wrap">
-      ${renderDeityTemples(resolvedKey)}
+      <div class="lyrics-box">
+        ${renderDeityTemples(resolvedKey)}
+      </div>
     </div>
   </div>`;
 
@@ -1035,29 +1039,25 @@ function showDeityPage(key, options = {}) {
 }
 
 function renderAbout(data) {
-  if (typeof data === 'string') return data;
+  if (typeof data === 'string') return `<p>${data}</p>`;
   if (!Array.isArray(data)) return 'विवरण जल्द ही आ रहा है...';
 
   return data
     .map((section) => {
-      let contentHtml = '';
+      const sectionTitle = section.title ? `<h3>${section.title}</h3>` : '';
+      let sectionContent = '';
+
       if (section.content) {
-        contentHtml = `<p>${section.content}</p>`;
-      } else if (section.items) {
-        contentHtml = `<ul>${section.items
-          .map(
-            (item) => `
-        <li><strong>${item.label}:</strong> ${item.text}</li>
-      `,
-          )
+        sectionContent = `<p>${section.content}</p>`;
+      } else if (Array.isArray(section.items) && section.items.length) {
+        sectionContent = `<ul>${section.items
+          .map((item) => `<li><strong>${item.label}:</strong> ${item.text}</li>`)
           .join('')}</ul>`;
       }
-      return `
-      <div class="info-section">
-        <h3>${section.title}</h3>
-        ${contentHtml}
-      </div>`;
+
+      return `${sectionTitle}${sectionContent}`;
     })
+    .filter(Boolean)
     .join('');
 }
 
@@ -1118,10 +1118,13 @@ function openKatha(deityKey, slug) {
 }
 
 function renderMantras(mantras, key) {
-  return (mantras || [])
+  const list = mantras || [];
+  if (!list.length) return 'जल्द ही आ रहा है...';
+
+  const items = list
     .map(
       (m, i) => `
-  <div class="mantra-card">
+  <div class="mantra-item">
     <button class="copy-btn" onclick="copyMantra(this, ${i}, '${key}')">📋 कॉपी</button>
     <div class="mantra-type">${m.type}</div>
     <div class="mantra-text">${m.text}</div>
@@ -1130,6 +1133,8 @@ function renderMantras(mantras, key) {
   </div>`,
     )
     .join('');
+
+  return `<div class="mantra-merged">${items}</div>`;
 }
 
 function showTab(tabId, btn) {
