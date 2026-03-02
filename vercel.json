@@ -13,6 +13,14 @@
             "destination": "/index.html"
         },
         {
+            "source": "/festivals",
+            "destination": "/index.html"
+        },
+        {
+            "source": "/festivals/:slug",
+            "destination": "/index.html"
+        },
+        {
             "source": "/:deity/css/:path*",
             "destination": "/css/:path*"
         },
