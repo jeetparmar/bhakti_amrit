@@ -95,10 +95,12 @@ let activeKathaSlug = '';
 let activeTempleDetailId = '';
 let activeFestivalDetailId = '';
 const HOME_BATCH_SIZE = 60;
+const HOME_VIEW_MODE_STORAGE_KEY = 'bhaktiHomeViewMode';
 let homeFilteredEntries = [];
 let renderedHomeCount = 0;
 let homeRenderCycleId = 0;
 let homeRenderTimer = null;
+let activeHomeViewMode = 'card';
 const homeTempleCountCache = new Map();
 const validDeityTabs = [
   'about',
@@ -570,6 +572,69 @@ function buildHomeGrid() {
   renderHomeGrid(activeHomeType, activeHomeSearchQuery);
 }
 
+function getSafeHomeViewMode(mode = 'card') {
+  if (mode === 'list') return 'table';
+  return mode === 'table' ? 'table' : 'card';
+}
+
+function loadHomeViewMode() {
+  try {
+    const savedMode = localStorage.getItem(HOME_VIEW_MODE_STORAGE_KEY);
+    activeHomeViewMode = getSafeHomeViewMode(savedMode || 'card');
+  } catch (error) {
+    activeHomeViewMode = 'card';
+  }
+}
+
+function applyHomeViewMode(mode = activeHomeViewMode) {
+  const grid = document.getElementById('homeGrid');
+  if (!grid) return;
+  const safeMode = getSafeHomeViewMode(mode);
+  grid.classList.toggle('table-view', safeMode === 'table');
+}
+
+function syncHomeViewToggleButtons() {
+  const cardBtn = document.getElementById('homeViewCardBtn');
+  const tableBtn = document.getElementById('homeViewTableBtn');
+  if (!cardBtn || !tableBtn) return;
+
+  const isCard = activeHomeViewMode !== 'table';
+  cardBtn.classList.toggle('active', isCard);
+  tableBtn.classList.toggle('active', !isCard);
+  cardBtn.setAttribute('aria-pressed', isCard ? 'true' : 'false');
+  tableBtn.setAttribute('aria-pressed', isCard ? 'false' : 'true');
+}
+
+function setHomeViewMode(mode = 'card') {
+  const safeMode = getSafeHomeViewMode(mode);
+  if (safeMode === activeHomeViewMode) {
+    applyHomeViewMode(safeMode);
+    syncHomeViewToggleButtons();
+    return;
+  }
+
+  activeHomeViewMode = safeMode;
+  try {
+    localStorage.setItem(HOME_VIEW_MODE_STORAGE_KEY, safeMode);
+  } catch (error) {
+    // Ignore storage errors and keep in-memory preference.
+  }
+
+  applyHomeViewMode(safeMode);
+  syncHomeViewToggleButtons();
+  renderHomeGrid(activeHomeType, activeHomeSearchQuery);
+}
+
+function setupHomeViewToggle() {
+  const cardBtn = document.getElementById('homeViewCardBtn');
+  const tableBtn = document.getElementById('homeViewTableBtn');
+  if (!cardBtn || !tableBtn) return;
+
+  cardBtn.addEventListener('click', () => setHomeViewMode('card'));
+  tableBtn.addEventListener('click', () => setHomeViewMode('table'));
+  syncHomeViewToggleButtons();
+}
+
 function escapeHtml(value = '') {
   return String(value)
     .replace(/&/g, '&amp;')
@@ -633,6 +698,46 @@ function getFilteredHomeDeities(filter = activeHomeType, searchQuery = '') {
   );
 }
 
+function getHomeTagsHtml(key, deity) {
+  const tags = [];
+  if (hasLyricsContent(deity.aarti)) {
+    tags.push(
+      `<span class="tag tag-aarti" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'aarti' })">आरती</span>`,
+    );
+  }
+  if (hasLyricsContent(deity.chalisa)) {
+    tags.push(
+      `<span class="tag tag-chalisa" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'chalisa' })">चालीसा</span>`,
+    );
+  }
+  if (hasMantrasContent(deity.mantras)) {
+    tags.push(
+      `<span class="tag tag-mantra" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'mantra' })">मंत्र</span>`,
+    );
+  }
+  if (hasLyricsContent(deity.katha)) {
+    const kathaCount = getKathaEntries(deity.katha, key).length;
+    const kathaLabel = kathaCount > 1 ? `कथा (${kathaCount})` : 'कथा';
+    tags.push(
+      `<span class="tag tag-katha" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'katha' })">${kathaLabel}</span>`,
+    );
+  }
+  const extraData = getExtraContentData(key);
+  if (hasLyricsContent(extraData)) {
+    const extraTag = escapeHtml(extraData?.tag || 'अतिरिक्त');
+    tags.push(
+      `<span class="tag tag-extra" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'extra' })">${extraTag}</span>`,
+    );
+  }
+  const templeCount = getHomeTempleCount(key);
+  if (templeCount > 0) {
+    tags.push(
+      `<span class="tag tag-temples" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'temples' })">मंदिर (${templeCount})</span>`,
+    );
+  }
+  return tags.length ? `<div class="deity-tags">${tags.join('')}</div>` : '';
+}
+
 function getHomeCardHtml(key, deity, index) {
   const deityType = getDeityType(key);
   const imgSrc = getValidDeityImage(deity.img);
@@ -650,47 +755,30 @@ function getHomeCardHtml(key, deity, index) {
         <span class="deity-type-badge">${deityType}</span>
       </div>
       <span class="deity-meta">${deity.desc}</span>
-      ${(() => {
-        const tags = [];
-        if (hasLyricsContent(deity.aarti)) {
-          tags.push(
-            `<span class="tag tag-aarti" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'aarti' })">आरती</span>`,
-          );
-        }
-        if (hasLyricsContent(deity.chalisa)) {
-          tags.push(
-            `<span class="tag tag-chalisa" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'chalisa' })">चालीसा</span>`,
-          );
-        }
-        if (hasMantrasContent(deity.mantras)) {
-          tags.push(
-            `<span class="tag tag-mantra" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'mantra' })">मंत्र</span>`,
-          );
-        }
-        if (hasLyricsContent(deity.katha)) {
-          const kathaCount = getKathaEntries(deity.katha, key).length;
-          const kathaLabel = kathaCount > 1 ? `कथा (${kathaCount})` : 'कथा';
-          tags.push(
-            `<span class="tag tag-katha" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'katha' })">${kathaLabel}</span>`,
-          );
-        }
-        const extraData = getExtraContentData(key);
-        if (hasLyricsContent(extraData)) {
-          const extraTag = escapeHtml(extraData?.tag || 'अतिरिक्त');
-          tags.push(
-            `<span class="tag tag-extra" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'extra' })">${extraTag}</span>`,
-          );
-        }
-        const templeCount = getHomeTempleCount(key);
-        if (templeCount > 0) {
-          tags.push(
-            `<span class="tag tag-temples" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'temples' })">मंदिर (${templeCount})</span>`,
-          );
-        }
-        return tags.length
-          ? `<div class="deity-tags">${tags.join('')}</div>`
-          : '';
-      })()}
+      ${getHomeTagsHtml(key, deity)}
+    </div>
+    </div>`;
+}
+
+function getHomeTableHtml(key, deity, index) {
+  const deityType = getDeityType(key);
+  const imgSrc = getValidDeityImage(deity.img);
+  const isPriorityImage = index < 6;
+  const imgHtml = imgSrc
+    ? `<img class="deity-img" src="${imgSrc}" alt="${deity.name}" loading="${isPriorityImage ? 'eager' : 'lazy'}" fetchpriority="${isPriorityImage ? 'high' : 'low'}" width="240" height="240" decoding="async" onerror="this.parentNode.querySelector('.deity-img-fallback').style.display='flex'; this.style.display='none';">
+     <div class="deity-img-fallback" style="display:none">${deity.emoji}</div>`
+    : `<div class="deity-img-fallback">${deity.emoji}</div>`;
+
+  return `
+    <div class="deity-card deity-card-table" onclick="showDeityPage('${key}')">
+    ${imgHtml}
+    <div class="deity-info">
+      <div class="deity-title-row">
+        <span class="deity-name">${deity.name}</span>
+        <span class="deity-type-badge">${deityType}</span>
+      </div>
+      <span class="deity-meta">${deity.desc}</span>
+      ${getHomeTagsHtml(key, deity)}
     </div>
     </div>`;
 }
@@ -735,6 +823,7 @@ function renderHomeGrid(
     }
   }
 
+  applyHomeViewMode(activeHomeViewMode);
   const nextBatch = homeFilteredEntries.slice(
     renderedHomeCount,
     renderedHomeCount + HOME_BATCH_SIZE,
@@ -743,7 +832,9 @@ function renderHomeGrid(
 
   const html = nextBatch
     .map(([key, deity], idx) =>
-      getHomeCardHtml(key, deity, renderedHomeCount + idx),
+      activeHomeViewMode === 'table'
+        ? getHomeTableHtml(key, deity, renderedHomeCount + idx)
+        : getHomeCardHtml(key, deity, renderedHomeCount + idx),
     )
     .join('');
   grid.insertAdjacentHTML('beforeend', html);
@@ -792,6 +883,7 @@ function showHomeByType(typeId = 'all', navId = 'home', options = {}) {
     searchInput.placeholder = getHomeSearchPlaceholder(safeType);
   }
   if (!grid) return;
+  applyHomeViewMode(activeHomeViewMode);
   if (homeRenderTimer) {
     clearTimeout(homeRenderTimer);
     homeRenderTimer = null;
@@ -2260,6 +2352,8 @@ window.addEventListener('load', () => {
     }
 
     createParticles();
+    loadHomeViewMode();
+    setupHomeViewToggle();
     setupHomeSearch();
     buildHomeGrid();
     updateArrowVisibility();

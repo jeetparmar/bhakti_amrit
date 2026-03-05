@@ -566,10 +566,68 @@ nav {
 }
 
 /* PAGE: HOME */
+.home-title-row {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.home-title-row .section-title {
+  margin-bottom: 0;
+}
+
+.home-view-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 175, 55, 0.28);
+  background: rgba(255, 248, 231, 0.06);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  flex: 0 0 auto;
+  height: 44px;
+  box-sizing: border-box;
+}
+
+.home-view-btn {
+  border: 0;
+  border-radius: 999px;
+  height: 100%;
+  padding: 0 12px;
+  min-width: 72px;
+  background: transparent;
+  color: rgba(255, 248, 231, 0.7);
+  font-family: 'Tiro Devanagari Hindi', serif;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-view-btn:hover {
+  color: var(--gold);
+}
+
+.home-view-btn.active {
+  background: linear-gradient(135deg, var(--saffron), var(--gold));
+  color: var(--dark);
+  font-weight: 700;
+  box-shadow: 0 4px 10px rgba(255, 107, 0, 0.32);
+}
+
 .home-search-wrap {
   margin-top: 18px;
   display: flex;
   justify-content: flex-end;
+}
+
+.home-search-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: min(720px, 100%);
 }
 
 .home-hero-row {
@@ -593,6 +651,9 @@ nav {
   position: relative;
   display: flex;
   align-items: center;
+  flex: 1;
+  min-width: 0;
+  height: 44px;
 }
 
 .home-search-icon {
@@ -605,13 +666,14 @@ nav {
 
 .home-search-input {
   width: min(520px, 100%);
+  height: 100%;
   background: rgba(255, 248, 231, 0.07);
   border: 1px solid rgba(212, 175, 55, 0.35);
   color: var(--cream);
   font-family: 'Tiro Devanagari Hindi', serif;
   font-size: 0.95rem;
   border-radius: 999px;
-  padding: 11px 44px 11px 36px;
+  padding: 0 44px 0 36px;
   outline: none;
   transition:
     border-color 0.2s ease,
@@ -680,6 +742,80 @@ nav {
   transition:
     opacity 0.2s ease,
     transform 0.2s ease;
+}
+
+.home-grid.table-view {
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.home-grid.table-view .deity-card {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  align-items: center;
+  min-height: 78px;
+  border-radius: 12px;
+}
+
+.home-grid.table-view .deity-card:hover {
+  transform: translateY(-2px) scale(1.002);
+}
+
+.home-grid.table-view .deity-img,
+.home-grid.table-view .deity-img-fallback {
+  width: 64px;
+  min-width: 64px;
+  height: 64px;
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  margin-left: 7px;
+  filter: none;
+}
+
+.home-grid.table-view .deity-info {
+  width: 100%;
+  padding: 8px 10px 8px 16px;
+  background: transparent;
+}
+
+.home-grid.table-view .deity-title-row {
+  margin-bottom: 2px;
+}
+
+.home-grid.table-view .deity-name {
+  font-size: 0.97rem;
+}
+
+.home-grid.table-view .deity-type-badge {
+  font-size: 0.6rem;
+  padding: 3px 8px;
+}
+
+.home-grid.table-view .deity-meta {
+  font-size: 0.72rem;
+  margin-top: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.home-grid.table-view .deity-tags {
+  margin-top: 4px;
+  padding-top: 0;
+  gap: 4px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.home-grid.table-view .deity-tags::-webkit-scrollbar {
+  display: none;
+}
+
+.home-grid.table-view .tag {
+  font-size: 0.64rem;
+  padding: 2px 8px;
 }
 
 .home-empty-state {
@@ -1539,6 +1675,10 @@ footer {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   }
 
+  .home-title-row {
+    margin-bottom: 4px;
+  }
+
   .home-search-input {
     width: 100%;
     font-size: 0.9rem;
@@ -1560,12 +1700,50 @@ footer {
   }
 
   .home-search-input-wrap {
-    width: 100%;
+    width: auto;
+    height: 40px;
+  }
+
+  .home-view-toggle {
+    gap: 4px;
+    padding: 3px;
+    height: 40px;
+  }
+
+  .home-view-btn {
+    padding: 0 10px;
+    min-width: 64px;
+    font-size: 0.76rem;
   }
 
   .deity-img,
   .deity-img-fallback {
     height: 140px;
+  }
+
+  .home-grid.table-view .deity-card {
+    grid-template-columns: 52px minmax(0, 1fr);
+    min-height: 66px;
+  }
+
+  .home-grid.table-view .deity-img,
+  .home-grid.table-view .deity-img-fallback {
+    width: 52px;
+    min-width: 52px;
+    height: 52px;
+    margin-left: 6px;
+  }
+
+  .home-grid.table-view .deity-info {
+    padding: 6px 8px 6px 12px;
+  }
+
+  .home-grid.table-view .deity-name {
+    font-size: 0.9rem;
+  }
+
+  .home-grid.table-view .deity-meta {
+    font-size: 0.68rem;
   }
 
   .lyrics-box {

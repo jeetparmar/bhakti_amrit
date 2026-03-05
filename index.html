@@ -200,32 +200,61 @@
     <div class="main-container">
       <!-- HOME PAGE -->
       <div id="page-home" class="page active">
-        <div class="section-title">
-          <span class="diya">🪔</span> देव-देवी संग्रह
+        <div class="home-title-row">
+          <div class="section-title">
+            <span class="diya">🪔</span> देव-देवी संग्रह
+          </div>
         </div>
         <div class="home-hero-row">
           <div class="section-subtitle">
             किसी भी देवता का नाम चुनें और उनकी आरती, चालीसा व मंत्र पढ़ें
           </div>
           <div class="home-search-wrap">
-            <div class="home-search-input-wrap">
-              <span class="home-search-icon" aria-hidden="true">🔎</span>
-              <input
-                id="homeSearchInput"
-                class="home-search-input"
-                type="search"
-                placeholder="देवता का नाम लिखें..."
-                autocomplete="off"
-              />
-              <button
-                id="homeSearchClear"
-                class="home-search-clear"
-                type="button"
-                aria-label="Clear search"
-                title="Clear search"
+            <div class="home-search-controls">
+              <div class="home-search-input-wrap">
+                <span class="home-search-icon" aria-hidden="true">🔎</span>
+                <input
+                  id="homeSearchInput"
+                  class="home-search-input"
+                  type="search"
+                  placeholder="देवता का नाम लिखें..."
+                  autocomplete="off"
+                />
+                <button
+                  id="homeSearchClear"
+                  class="home-search-clear"
+                  type="button"
+                  aria-label="Clear search"
+                  title="Clear search"
+                >
+                  ✕
+                </button>
+              </div>
+              <div
+                class="home-view-toggle"
+                id="homeViewToggle"
+                role="group"
+                aria-label="Choose home layout"
               >
-                ✕
-              </button>
+                <button
+                  id="homeViewCardBtn"
+                  class="home-view-btn active"
+                  type="button"
+                  aria-pressed="true"
+                  title="Card view"
+                >
+                  कार्ड
+                </button>
+                <button
+                  id="homeViewTableBtn"
+                  class="home-view-btn"
+                  type="button"
+                  aria-pressed="false"
+                  title="Table view"
+                >
+                  टेबल
+                </button>
+              </div>
             </div>
           </div>
         </div>
