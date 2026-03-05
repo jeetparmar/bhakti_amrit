@@ -335,6 +335,25 @@
       </div>
     </div>
 
+    <div
+      id="readingModeDialog"
+      class="reading-mode-overlay"
+      onclick="closeReadingMode(event)"
+    >
+      <div class="reading-mode-dialog">
+        <button
+          class="reading-mode-close"
+          type="button"
+          onclick="closeReadingMode()"
+          aria-label="पठन मोड बंद करें"
+          title="पठन मोड बंद करें"
+        >
+          ✕
+        </button>
+        <div class="reading-mode-body" id="readingModeBody"></div>
+      </div>
+    </div>
+
     <div id="siteFooterMount" data-footer-path="root"></div>
     <script src="js/footer.js"></script>
 

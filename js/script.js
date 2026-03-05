@@ -1008,6 +1008,7 @@ function syncSiteHeaderByPage(pageId) {
 }
 
 function showPage(pageId, navId) {
+  if (pageId !== 'deity') closeReadingMode();
   document
     .querySelectorAll('.page')
     .forEach((p) => p.classList.remove('active'));
@@ -1144,40 +1145,68 @@ function showDeityPage(key, options = {}) {
   content.innerHTML = `
   <div id="tab-about" class="text-content ${activeDeityTab === 'about' ? 'active' : ''}">
     <div class="deity-tab-wrap deity-tab-wrap-no-padding">
-      <div class="lyrics-box about-content about-content-merged">${renderAbout(aboutData[resolvedKey])}</div>
+      <div class="deity-tab-content">
+        <div class="lyrics-box about-content about-content-merged">
+          ${renderAbout(aboutData[resolvedKey])}
+        </div>
+      </div>
     </div>
   </div>
   <div id="tab-aarti" class="text-content ${activeDeityTab === 'aarti' ? 'active' : ''}">
     <div class="deity-tab-wrap">
-      <div class="lyrics-box">${renderLyrics(deity.aarti)}</div>
+      <div class="deity-tab-content">
+        <div class="lyrics-box">
+          ${getSectionReadingButtonHtml()}
+          ${renderLyrics(deity.aarti)}
+        </div>
+      </div>
     </div>
   </div>
   <div id="tab-chalisa" class="text-content ${activeDeityTab === 'chalisa' ? 'active' : ''}">
     <div class="deity-tab-wrap">
-      <div class="lyrics-box">${renderLyrics(deity.chalisa)}</div>
+      <div class="deity-tab-content">
+        <div class="lyrics-box">
+          ${getSectionReadingButtonHtml()}
+          ${renderLyrics(deity.chalisa)}
+        </div>
+      </div>
     </div>
   </div>
   <div id="tab-katha" class="text-content ${activeDeityTab === 'katha' ? 'active' : ''}">
     <div class="deity-tab-wrap">
-      <div class="lyrics-box">${renderKatha(resolvedKey, deity.katha)}</div>
+      <div class="deity-tab-content">
+        <div class="lyrics-box">
+          ${getSectionReadingButtonHtml()}
+          ${renderKatha(resolvedKey, deity.katha)}
+        </div>
+      </div>
     </div>
   </div>
   <div id="tab-mantra" class="text-content ${activeDeityTab === 'mantra' ? 'active' : ''}">
     <div class="deity-tab-wrap">
-      <div class="lyrics-box">
-        <div class="mantra-grid">${renderMantras(deity.mantras, resolvedKey)}</div>
+      <div class="deity-tab-content">
+        <div class="lyrics-box">
+          <div class="mantra-grid">${renderMantras(deity.mantras, resolvedKey)}</div>
+        </div>
       </div>
     </div>
   </div>
   <div id="tab-extra" class="text-content ${activeDeityTab === 'extra' ? 'active' : ''}">
     <div class="deity-tab-wrap">
-      <div class="lyrics-box">${renderLyrics(extraData)}</div>
+      <div class="deity-tab-content">
+        <div class="lyrics-box">
+          ${getSectionReadingButtonHtml()}
+          ${renderLyrics(extraData)}
+        </div>
+      </div>
     </div>
   </div>
   <div id="tab-temples" class="text-content ${activeDeityTab === 'temples' ? 'active' : ''}">
     <div class="deity-tab-wrap">
-      <div class="lyrics-box">
-        ${renderDeityTemples(resolvedKey)}
+      <div class="deity-tab-content">
+        <div class="lyrics-box">
+          ${renderDeityTemples(resolvedKey)}
+        </div>
       </div>
     </div>
   </div>`;
@@ -1217,6 +1246,15 @@ function renderAbout(data) {
     })
     .filter(Boolean)
     .join('');
+}
+
+function getSectionReadingButtonHtml() {
+  return `<div class="deity-tab-actions">
+    <button class="section-reading-btn" type="button" onclick="openReadingModeFromSection(this)" title="पठन मोड" aria-label="पठन मोड">
+      <span class="section-reading-icon" aria-hidden="true">📖</span>
+      <span class="section-reading-label">पठन मोड</span>
+    </button>
+  </div>`;
 }
 
 function renderLyrics(data) {
@@ -2129,6 +2167,66 @@ function scrollDirectBottom() {
   });
 }
 
+function openReadingMode() {
+  const page = document.getElementById('page-deity');
+  if (!page || !page.classList.contains('active')) return;
+
+  const overlay = document.getElementById('readingModeDialog');
+  const body = document.getElementById('readingModeBody');
+  if (!overlay || !body) return;
+
+  const activeTab = page.querySelector('.text-content.active');
+  const contentSource = activeTab
+    ? activeTab.querySelector('.deity-tab-content') || activeTab
+    : null;
+  if (contentSource) {
+    const clone = contentSource.cloneNode(true);
+    clone.querySelectorAll('.deity-tab-actions').forEach((el) => el.remove());
+    clone.querySelectorAll('.katha-list').forEach((el) => {
+      const nextEl = el.nextElementSibling;
+      if (nextEl && nextEl.tagName === 'BR') nextEl.remove();
+      el.remove();
+    });
+    body.innerHTML = clone.innerHTML;
+  } else {
+    body.innerHTML = '<div class="lyrics-box">सामग्री उपलब्ध नहीं है।</div>';
+  }
+
+  overlay.classList.add('active');
+  document.body.classList.add('reading-mode-open');
+}
+
+function openReadingModeFromSection(trigger) {
+  const section = trigger?.closest('.text-content');
+  if (!section) return openReadingMode();
+  const overlay = document.getElementById('readingModeDialog');
+  const body = document.getElementById('readingModeBody');
+  if (!overlay || !body) return;
+  const contentSource = section.querySelector('.deity-tab-content');
+  if (contentSource) {
+    const clone = contentSource.cloneNode(true);
+    clone.querySelectorAll('.deity-tab-actions').forEach((el) => el.remove());
+    clone.querySelectorAll('.katha-list').forEach((el) => {
+      const nextEl = el.nextElementSibling;
+      if (nextEl && nextEl.tagName === 'BR') nextEl.remove();
+      el.remove();
+    });
+    body.innerHTML = clone.innerHTML;
+  } else {
+    body.innerHTML = '<div class="lyrics-box">सामग्री उपलब्ध नहीं है।</div>';
+  }
+  overlay.classList.add('active');
+  document.body.classList.add('reading-mode-open');
+}
+
+function closeReadingMode(e) {
+  const overlay = document.getElementById('readingModeDialog');
+  if (!overlay) return;
+  if (e && e.target && e.target.id !== 'readingModeDialog') return;
+  overlay.classList.remove('active');
+  document.body.classList.remove('reading-mode-open');
+}
+
 // ============ INIT ============
 let isLoaderHidden = false;
 
@@ -2204,6 +2302,10 @@ window.addEventListener('popstate', () => {
 
 window.addEventListener('resize', () => {
   syncDefaultSiteHeaderHeight();
+});
+
+window.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') closeReadingMode();
 });
 
 window.addEventListener('DOMContentLoaded', () => {

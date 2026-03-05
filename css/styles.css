@@ -53,6 +53,10 @@ body {
   min-height: 100vh;
 }
 
+body.reading-mode-open {
+  overflow: hidden;
+}
+
 /* Animated Background */
 body::before {
   content: '';
@@ -1236,6 +1240,12 @@ nav {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  justify-content: center;
+}
+
+.katha-list .tab-btn {
+  padding: 6px 14px;
+  font-size: 0.92rem;
 }
 
 .text-content {
@@ -1310,6 +1320,11 @@ nav {
 }
 
 #tab-chalisa .lyrics-box .title-line {
+  border-bottom: 1px solid rgba(212, 175, 55, 0.35);
+  padding-bottom: 10px;
+}
+
+#tab-katha .lyrics-box .title-line {
   border-bottom: 1px solid rgba(212, 175, 55, 0.35);
   padding-bottom: 10px;
 }
@@ -1580,6 +1595,17 @@ footer {
   }
 
   .font-size-btn .label {
+    display: none;
+  }
+
+  .section-reading-btn {
+    min-width: 34px;
+    min-height: 34px;
+    padding: 6px 8px;
+    justify-content: center;
+  }
+
+  .section-reading-label {
     display: none;
   }
 }
@@ -1939,6 +1965,72 @@ footer {
   transform: scale(1) translateY(0);
 }
 
+.reading-mode-overlay {
+  position: fixed;
+  inset: 0;
+  display: none;
+  z-index: 9100;
+  background: rgba(10, 5, 2, 0.82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 0;
+}
+
+.reading-mode-overlay.active {
+  display: block;
+}
+
+.reading-mode-dialog {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  border: 0;
+  background: linear-gradient(
+    145deg,
+    rgba(26, 10, 0, 0.96),
+    rgba(58, 24, 0, 0.92)
+  );
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.reading-mode-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  background: rgba(255, 248, 231, 0.08);
+  color: var(--cream);
+  border-radius: 999px;
+  width: 38px;
+  height: 38px;
+  font-size: 1rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.reading-mode-close:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.reading-mode-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.reading-mode-body .lyrics-box {
+  margin: 0;
+  max-width: none;
+}
+
 .temple-modal-close {
   position: absolute;
   top: 16px;
@@ -2192,6 +2284,37 @@ footer {
   padding: 0;
 }
 
+.deity-tab-actions {
+  position: absolute;
+  top: 25px;
+  right: 35px;
+  z-index: 5;
+}
+
+.section-reading-btn {
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  background: rgba(26, 10, 0, 0.55);
+  color: var(--cream);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-family: 'Tiro Devanagari Hindi', serif;
+  font-size: 0.78rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.section-reading-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.section-reading-icon {
+  line-height: 1;
+}
+
 .deity-temples-intro {
   display: flex;
   align-items: center;
@@ -2300,14 +2423,6 @@ footer {
     font-size: 0.95rem;
     gap: 8px;
     margin-bottom: 14px;
-  }
-
-  .deity-tab-wrap {
-    padding: 0;
-  }
-
-  .deity-tab-wrap-no-padding {
-    padding: 0;
   }
 }
 
