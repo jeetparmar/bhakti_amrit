@@ -1858,11 +1858,11 @@ const templeCategories = [
 let activeTempleFilter = 'all';
 let activeTempleSearchQuery = '';
 const TEMPLE_BATCH_SIZE = 18;
-const TEMPLE_VISIBLE_FILTER_COUNT = 4;
+const TEMPLE_VISIBLE_FILTER_COUNT = 3;
 let templeFilteredList = [];
 let renderedTempleCount = 0;
 let templeScrollTicking = false;
-let templeFiltersExpanded = false;
+let templeVisibleFilterCount = TEMPLE_VISIBLE_FILTER_COUNT;
 
 function isOutsideIndiaTemple(temple) {
   const text = `${temple.state || ''} ${temple.location || ''}`.toLowerCase();
@@ -2002,16 +2002,16 @@ function getTempleFiltersHtml() {
     templeCategories.findIndex((cat) => cat.id === activeTempleFilter),
     0,
   );
-  const visibleIndexes = templeFiltersExpanded
-    ? templeCategories.map((_, idx) => idx)
-    : Array.from(
-        new Set([
-          ...templeCategories
-            .slice(0, TEMPLE_VISIBLE_FILTER_COUNT)
-            .map((_, idx) => idx),
-          activeIndex,
-        ]),
-      ).sort((left, right) => left - right);
+  const clampedVisibleCount = Math.min(
+    templeVisibleFilterCount,
+    templeCategories.length,
+  );
+  const visibleIndexes = Array.from(
+    new Set([
+      ...templeCategories.slice(0, clampedVisibleCount).map((_, idx) => idx),
+      activeIndex,
+    ]),
+  ).sort((left, right) => left - right);
 
   const buttonsHtml = visibleIndexes
     .map((idx) => {
@@ -2033,7 +2033,7 @@ function getTempleFiltersHtml() {
         class="temple-filter-btn temple-filter-toggle"
         type="button"
         onclick="toggleTempleFilters(event)"
-      >${templeFiltersExpanded ? 'कम..' : 'और..'}</button>
+      >${clampedVisibleCount >= templeCategories.length ? 'कम..' : 'और..'}</button>
     `
       : '';
 
@@ -2048,7 +2048,14 @@ function renderTempleFilters() {
 
 function toggleTempleFilters(event) {
   if (event) event.stopPropagation();
-  templeFiltersExpanded = !templeFiltersExpanded;
+  if (templeVisibleFilterCount >= templeCategories.length) {
+    templeVisibleFilterCount = TEMPLE_VISIBLE_FILTER_COUNT;
+  } else {
+    templeVisibleFilterCount = Math.min(
+      templeVisibleFilterCount + TEMPLE_VISIBLE_FILTER_COUNT,
+      templeCategories.length,
+    );
+  }
   renderTempleFilters();
 }
 
