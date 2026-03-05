@@ -53,8 +53,71 @@ body {
   min-height: 100vh;
 }
 
+body {
+  top: 0 !important;
+}
+
 body.reading-mode-open {
   overflow: hidden;
+}
+
+.lang-toggle {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 2100;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  background: rgba(26, 10, 0, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.38);
+}
+
+.lang-toggle-btn {
+  border: 0;
+  min-width: 44px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(255, 248, 231, 0.8);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.4px;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.lang-toggle-btn:hover {
+  transform: translateY(-1px);
+}
+
+.lang-toggle-btn.active {
+  color: #2c1810;
+  background: linear-gradient(135deg, #d4af37, #ffb347);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.45);
+}
+
+.translate-widget-hidden {
+  position: fixed;
+  left: -9999px;
+  top: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.goog-te-banner-frame {
+  display: none !important;
 }
 
 /* Animated Background */
@@ -2572,6 +2635,18 @@ footer {
 
 /* Temple page responsive */
 @media (max-width: 600px) {
+  .lang-toggle {
+    top: max(8px, env(safe-area-inset-top));
+    right: max(8px, env(safe-area-inset-right));
+    padding: 3px;
+  }
+
+  .lang-toggle-btn {
+    min-width: 40px;
+    padding: 7px 10px;
+    font-size: 0.78rem;
+  }
+
   .temples-grid {
     grid-template-columns: 1fr;
   }

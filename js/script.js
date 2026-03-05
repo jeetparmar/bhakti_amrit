@@ -1000,6 +1000,126 @@ function updateSiteTitleByLang() {
   }
 }
 
+const SUPPORTED_LANGUAGES = ['hi', 'en'];
+let activeLanguage = 'hi';
+let googleTranslateLoadPromise = null;
+
+function getSafeLanguage(lang = 'hi') {
+  const normalized = String(lang || '')
+    .trim()
+    .toLowerCase();
+  return SUPPORTED_LANGUAGES.includes(normalized) ? normalized : 'hi';
+}
+
+function syncLanguageToggle() {
+  const hiBtn = document.getElementById('langToggleHi');
+  const enBtn = document.getElementById('langToggleEn');
+  if (!hiBtn || !enBtn) return;
+
+  const isEnglish = activeLanguage === 'en';
+  hiBtn.classList.toggle('active', !isEnglish);
+  enBtn.classList.toggle('active', isEnglish);
+  hiBtn.setAttribute('aria-pressed', isEnglish ? 'false' : 'true');
+  enBtn.setAttribute('aria-pressed', isEnglish ? 'true' : 'false');
+}
+
+function getGoogleTranslateCombo() {
+  return (
+    document.querySelector('#google_translate_element select.goog-te-combo') ||
+    document.querySelector('select.goog-te-combo')
+  );
+}
+
+function applyGoogleTranslateSelection(targetLang = 'hi') {
+  const combo = getGoogleTranslateCombo();
+  if (!combo) return false;
+  if (combo.value !== targetLang) {
+    combo.value = targetLang;
+    combo.dispatchEvent(new Event('change'));
+  }
+  return true;
+}
+
+function ensureGoogleTranslateScript() {
+  if (window.google?.translate?.TranslateElement) return Promise.resolve();
+  if (googleTranslateLoadPromise) return googleTranslateLoadPromise;
+
+  googleTranslateLoadPromise = new Promise((resolve, reject) => {
+    window.bhaktiGoogleTranslateInit = () => {
+      try {
+        if (!document.getElementById('google_translate_element')) {
+          resolve();
+          return;
+        }
+        if (!window.google?.translate?.TranslateElement) {
+          resolve();
+          return;
+        }
+        if (!window.__bhaktiTranslateWidgetReady) {
+          new window.google.translate.TranslateElement(
+            {
+              pageLanguage: 'hi',
+              includedLanguages: 'hi,en',
+              autoDisplay: false,
+            },
+            'google_translate_element',
+          );
+          window.__bhaktiTranslateWidgetReady = true;
+        }
+        resolve();
+      } catch (error) {
+        reject(error);
+      }
+    };
+
+    const script = document.createElement('script');
+    script.src =
+      'https://translate.google.com/translate_a/element.js?cb=bhaktiGoogleTranslateInit';
+    script.async = true;
+    script.onerror = () => reject(new Error('Google Translate script load failed'));
+    document.body.appendChild(script);
+  });
+
+  return googleTranslateLoadPromise;
+}
+
+async function switchLanguage(lang = 'hi') {
+  const safeLang = getSafeLanguage(lang);
+  activeLanguage = safeLang;
+  document.documentElement.setAttribute('lang', safeLang);
+  syncLanguageToggle();
+  updateSiteTitleByLang();
+
+  if (safeLang === 'en') {
+    try {
+      await ensureGoogleTranslateScript();
+      let attempts = 0;
+      const maxAttempts = 16;
+      while (!applyGoogleTranslateSelection('en') && attempts < maxAttempts) {
+        await new Promise((resolve) => setTimeout(resolve, 150));
+        attempts += 1;
+      }
+    } catch (error) {
+      console.error('Manual English translation failed:', error);
+    }
+    return;
+  }
+
+  applyGoogleTranslateSelection('hi');
+}
+
+function setupLanguageToggle() {
+  const hiBtn = document.getElementById('langToggleHi');
+  const enBtn = document.getElementById('langToggleEn');
+  if (!hiBtn || !enBtn) return;
+
+  hiBtn.addEventListener('click', () => switchLanguage('hi'));
+  enBtn.addEventListener('click', () => switchLanguage('en'));
+
+  // Always start in Hindi to prevent automatic translation.
+  switchLanguage('hi');
+}
+
 function updateTopHomeButton(pageId) {
   const homeBtn = document.getElementById('mainHomeButton');
   if (!homeBtn) return;
@@ -2372,7 +2492,7 @@ window.addEventListener('load', () => {
     setupHomeSearch();
     buildHomeGrid();
     updateArrowVisibility();
-    updateSiteTitleByLang();
+    setupLanguageToggle();
     syncDefaultSiteHeaderHeight();
 
     const htmlObserver = new MutationObserver(updateSiteTitleByLang);

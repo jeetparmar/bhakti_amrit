@@ -46,6 +46,26 @@
   </head>
 
   <body>
+    <div class="lang-toggle" id="languageToggle" role="group" aria-label="Language toggle">
+      <button
+        id="langToggleHi"
+        class="lang-toggle-btn active"
+        type="button"
+        aria-pressed="true"
+      >
+        HI
+      </button>
+      <button
+        id="langToggleEn"
+        class="lang-toggle-btn"
+        type="button"
+        aria-pressed="false"
+      >
+        EN
+      </button>
+    </div>
+    <div id="google_translate_element" class="translate-widget-hidden" aria-hidden="true"></div>
+
     <!-- Loader -->
     <div class="loader" id="loader">
       <div class="loader-om">
