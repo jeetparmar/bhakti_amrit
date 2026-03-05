@@ -1193,6 +1193,10 @@ nav {
   flex-wrap: wrap;
 }
 
+#deityTabs {
+  justify-content: center;
+}
+
 .tab-btn {
   background: rgba(255, 248, 231, 0.05);
   border: 1px solid rgba(212, 175, 55, 0.3);
@@ -1203,6 +1207,10 @@ nav {
   font-family: 'Tiro Devanagari Hindi', serif;
   font-size: 1rem;
   transition: all 0.3s;
+}
+
+#deityTabs .tab-btn {
+  padding: 5px 10px;
 }
 
 .tab-btn.active,
@@ -1595,8 +1603,7 @@ footer {
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   transition: none;
-  filter:
-    drop-shadow(0 0 10px rgba(212, 175, 55, 0.55))
+  filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.55))
     drop-shadow(0 0 24px rgba(255, 107, 0, 0.35));
 }
 
