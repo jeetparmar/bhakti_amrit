@@ -306,7 +306,7 @@ nav {
   color: rgba(255, 248, 231, 0.8);
   font-family: 'Tiro Devanagari Hindi', serif;
   font-size: 0.9rem;
-  padding: 8px 18px;
+  padding: 5px 10px;
   cursor: pointer;
   border-radius: 25px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -314,8 +314,7 @@ nav {
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  gap: 6px;
-  min-height: 38px;
+  gap: 5px;
   box-sizing: border-box;
 }
 
@@ -2019,12 +2018,11 @@ footer {
   align-items: center;
   border-right: 1px solid rgba(212, 175, 55, 0.12);
   min-height: 100%;
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.04),
-      rgba(255, 255, 255, 0.01)
-    );
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.04),
+    rgba(255, 255, 255, 0.01)
+  );
 }
 
 .temples-grid.table-view .temple-emoji-badge {
