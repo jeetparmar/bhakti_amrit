@@ -1,8 +1,10 @@
 // ============ PARTICLES ============
 function createParticles() {
   const container = document.getElementById('particles');
+  if (!container) return;
   const symbols = ['🕉️', '✨', '🌸', '⭐', '🪔', '🏹', '🌺', '🌼'];
-  for (let i = 0; i < 15; i++) {
+  const particleCount = window.matchMedia('(max-width: 768px)').matches ? 8 : 15;
+  for (let i = 0; i < particleCount; i++) {
     const p = document.createElement('div');
     p.className = 'particle';
     p.textContent = symbols[Math.floor(Math.random() * symbols.length)];
@@ -742,19 +744,22 @@ function getHomeCardHtml(key, deity, index) {
   const deityType = getDeityType(key);
   const imgSrc = getValidDeityImage(deity.img);
   const isPriorityImage = index < 6;
+  const safeName = escapeHtml(deity?.name || 'श्री देव');
+  const safeDesc = escapeHtml(deity?.desc || 'भक्ति सामग्री उपलब्ध');
+  const safeEmoji = escapeHtml(deity?.emoji || '🪔');
   const imgHtml = imgSrc
-    ? `<img class="deity-img" src="${imgSrc}" alt="${deity.name}" loading="${isPriorityImage ? 'eager' : 'lazy'}" fetchpriority="${isPriorityImage ? 'high' : 'low'}" width="240" height="240" decoding="async" onerror="this.parentNode.querySelector('.deity-img-fallback').style.display='flex'; this.style.display='none';">
-     <div class="deity-img-fallback" style="display:none">${deity.emoji}</div>`
-    : `<div class="deity-img-fallback">${deity.emoji}</div>`;
+    ? `<img class="deity-img" src="${imgSrc}" alt="${safeName}" loading="${isPriorityImage ? 'eager' : 'lazy'}" fetchpriority="${isPriorityImage ? 'high' : 'low'}" width="240" height="240" decoding="async" onerror="this.parentNode.querySelector('.deity-img-fallback').style.display='flex'; this.style.display='none';">
+     <div class="deity-img-fallback" style="display:none">${safeEmoji}</div>`
+    : `<div class="deity-img-fallback">${safeEmoji}</div>`;
   return `
     <div class="deity-card" onclick="showDeityPage('${key}')">
     ${imgHtml}
     <div class="deity-info">
       <div class="deity-title-row">
-        <span class="deity-name">${deity.name}</span>
+        <span class="deity-name">${safeName}</span>
         <span class="deity-type-badge">${deityType}</span>
       </div>
-      <span class="deity-meta">${deity.desc}</span>
+      <span class="deity-meta">${safeDesc}</span>
       ${getHomeTagsHtml(key, deity)}
     </div>
     </div>`;
@@ -763,21 +768,24 @@ function getHomeCardHtml(key, deity, index) {
 function getHomeTableHtml(key, deity, index) {
   const deityType = getDeityType(key);
   const imgSrc = getValidDeityImage(deity.img);
-  const isPriorityImage = index < 6;
+  const isPriorityImage = index < 12;
+  const safeName = escapeHtml(deity?.name || 'श्री देव');
+  const safeDesc = escapeHtml(deity?.desc || 'भक्ति सामग्री उपलब्ध');
+  const safeEmoji = escapeHtml(deity?.emoji || '🪔');
   const imgHtml = imgSrc
-    ? `<img class="deity-img" src="${imgSrc}" alt="${deity.name}" loading="${isPriorityImage ? 'eager' : 'lazy'}" fetchpriority="${isPriorityImage ? 'high' : 'low'}" width="240" height="240" decoding="async" onerror="this.parentNode.querySelector('.deity-img-fallback').style.display='flex'; this.style.display='none';">
-     <div class="deity-img-fallback" style="display:none">${deity.emoji}</div>`
-    : `<div class="deity-img-fallback">${deity.emoji}</div>`;
+    ? `<img class="deity-img" src="${imgSrc}" alt="${safeName}" loading="${isPriorityImage ? 'eager' : 'lazy'}" fetchpriority="${isPriorityImage ? 'high' : 'low'}" width="240" height="240" decoding="async" onerror="this.parentNode.querySelector('.deity-img-fallback').style.display='flex'; this.style.display='none';">
+     <div class="deity-img-fallback" style="display:none">${safeEmoji}</div>`
+    : `<div class="deity-img-fallback">${safeEmoji}</div>`;
 
   return `
     <div class="deity-card deity-card-table" onclick="showDeityPage('${key}')">
     ${imgHtml}
     <div class="deity-info">
       <div class="deity-title-row">
-        <span class="deity-name">${deity.name}</span>
+        <span class="deity-name">${safeName}</span>
         <span class="deity-type-badge">${deityType}</span>
       </div>
-      <span class="deity-meta">${deity.desc}</span>
+      <span class="deity-meta">${safeDesc}</span>
       ${getHomeTagsHtml(key, deity)}
     </div>
     </div>`;
@@ -2335,6 +2343,13 @@ window.addEventListener('load', () => {
   setTimeout(hideLoader, 1800);
 
   try {
+    const ua = navigator.userAgent || '';
+    const isIOS = /iPad|iPhone|iPod/.test(ua);
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    if (isIOS || isMobile) {
+      document.body.classList.add('reduced-effects');
+    }
+
     // Load saved font size
     const savedMultiplier = localStorage.getItem('bhaktiFontSizeMultiplier');
     if (savedMultiplier) {

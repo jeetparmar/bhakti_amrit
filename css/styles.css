@@ -891,6 +891,27 @@ nav {
   height: 100%;
 }
 
+/* Reduce GPU-heavy effects on mobile/iOS to avoid blank cards while scrolling */
+body.reduced-effects .deity-card,
+body.reduced-effects .tag,
+body.reduced-effects .deity-type-badge,
+body.reduced-effects .home-search-input-wrap,
+body.reduced-effects nav,
+body.reduced-effects .accessibility-controls button {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+body.reduced-effects .deity-card,
+body.reduced-effects .tag,
+body.reduced-effects .deity-type-badge {
+  box-shadow: none;
+}
+
+body.reduced-effects .deity-card:hover {
+  transform: translateY(-2px) scale(1.005);
+}
+
 .deity-card::before {
   content: '';
   position: absolute;
