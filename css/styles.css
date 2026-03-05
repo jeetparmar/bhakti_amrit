@@ -1314,6 +1314,11 @@ nav {
   padding-bottom: 10px;
 }
 
+#tab-extra .lyrics-box .title-line {
+  border-bottom: 1px solid rgba(212, 175, 55, 0.35);
+  padding-bottom: 10px;
+}
+
 /* ABOUT SECTION ENHANCEMENTS */
 .about-content {
   position: relative;

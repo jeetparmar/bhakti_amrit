@@ -1,7 +1,7 @@
 const extraContent = {
   ram: {
     tag: 'स्तुति',
-    title: 'श्री राम स्तुति',
+    title: '॥ 🏹 श्री राम स्तुति 🏹 ॥',
     lines: [
       {
         type: 'stanza',
