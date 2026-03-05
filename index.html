@@ -286,25 +286,52 @@
           </div>
           <div class="temple-controls">
             <div class="temple-filters" id="templeFilters"></div>
-            <div class="home-search-wrap">
-              <div class="home-search-input-wrap">
-                <span class="home-search-icon" aria-hidden="true">🔎</span>
-                <input
-                  id="templeSearchInput"
-                  class="home-search-input"
-                  type="search"
-                  placeholder="मंदिर, देवता, स्थान या प्रकार खोजें..."
-                  autocomplete="off"
-                />
-                <button
-                  id="templeSearchClear"
-                  class="home-search-clear"
-                  type="button"
-                  aria-label="Clear temple search"
-                  title="Clear temple search"
+            <div class="home-search-wrap temple-search-wrap">
+              <div class="home-search-controls temple-search-controls">
+                <div class="home-search-input-wrap">
+                  <span class="home-search-icon" aria-hidden="true">🔎</span>
+                  <input
+                    id="templeSearchInput"
+                    class="home-search-input"
+                    type="search"
+                    placeholder="मंदिर, देवता, स्थान या प्रकार खोजें..."
+                    autocomplete="off"
+                  />
+                  <button
+                    id="templeSearchClear"
+                    class="home-search-clear"
+                    type="button"
+                    aria-label="Clear temple search"
+                    title="Clear temple search"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div
+                  class="home-view-toggle"
+                  id="templeViewToggle"
+                  role="group"
+                  aria-label="Choose temple layout"
                 >
-                  ✕
-                </button>
+                  <button
+                    id="templeViewCardBtn"
+                    class="home-view-btn active"
+                    type="button"
+                    aria-pressed="true"
+                    title="Card view"
+                  >
+                    कार्ड
+                  </button>
+                  <button
+                    id="templeViewTableBtn"
+                    class="home-view-btn"
+                    type="button"
+                    aria-pressed="false"
+                    title="Table view"
+                  >
+                    टेबल
+                  </button>
+                </div>
               </div>
             </div>
           </div>

@@ -809,6 +809,11 @@ nav {
   scrollbar-width: none;
 }
 
+.home-grid.table-view .deity-tags.is-expanded {
+  flex-wrap: wrap;
+  overflow-x: visible;
+}
+
 .home-grid.table-view .deity-tags::-webkit-scrollbar {
   display: none;
 }
@@ -1034,6 +1039,10 @@ body.reduced-effects .deity-card:hover {
   padding-top: 8px;
 }
 
+.deity-tags.is-expanded {
+  flex-wrap: wrap;
+}
+
 .tag {
   font-size: 0.78rem;
   padding: 3px 12px;
@@ -1061,6 +1070,15 @@ body.reduced-effects .deity-card:hover {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.28),
     0 10px 24px rgba(0, 0, 0, 0.38);
+}
+
+.tag-toggle {
+  appearance: none;
+  -webkit-appearance: none;
+  font: inherit;
+  color: rgba(255, 248, 231, 0.9);
+  border-color: rgba(255, 248, 231, 0.28);
+  background: rgba(255, 248, 231, 0.08);
 }
 
 .tag-aarti {
@@ -1927,6 +1945,14 @@ footer {
   flex: 0 0 auto;
 }
 
+.temple-search-wrap {
+  width: auto;
+}
+
+.temple-search-controls {
+  justify-content: flex-end;
+}
+
 .temple-filter-btn {
   background: rgba(255, 248, 231, 0.05);
   border: 1px solid rgba(212, 175, 55, 0.25);
@@ -1957,6 +1983,60 @@ footer {
   transition:
     opacity 0.2s ease,
     transform 0.2s ease;
+}
+
+.temples-grid.table-view {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+@media (max-width: 900px) {
+  .temples-grid.table-view {
+    grid-template-columns: 1fr;
+  }
+}
+
+.temples-grid.table-view .temple-card {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) 62px;
+  grid-template-rows: 1fr;
+  align-items: center;
+  min-height: 84px;
+  border-radius: 18px;
+}
+
+.temples-grid.table-view .temple-card:hover {
+  transform: translateY(-2px) scale(1.002);
+}
+
+.temples-grid.table-view .temple-card-top {
+  grid-column: 1;
+  grid-row: 1;
+  padding: 10px 6px 10px 10px;
+  justify-content: center;
+  gap: 6px;
+  flex-direction: column;
+  align-items: center;
+  border-right: 1px solid rgba(212, 175, 55, 0.12);
+  min-height: 100%;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.04),
+      rgba(255, 255, 255, 0.01)
+    );
+}
+
+.temples-grid.table-view .temple-emoji-badge {
+  font-size: 1.5rem;
+}
+
+.temples-grid.table-view .temple-type-badge {
+  font-size: 0.52rem;
+  letter-spacing: 0.6px;
+  padding: 2px 6px;
+  max-width: 56px;
+  line-height: 1.15;
 }
 
 .temple-card {
@@ -2030,6 +2110,16 @@ footer {
   flex: 1;
 }
 
+.temples-grid.table-view .temple-card-body {
+  grid-column: 2;
+  grid-row: 1;
+  padding: 9px 12px;
+  min-width: 0;
+  display: grid;
+  align-content: center;
+  gap: 2px;
+}
+
 .temple-name {
   font-size: 1.15rem;
   color: var(--temple-color, var(--gold));
@@ -2040,6 +2130,12 @@ footer {
   text-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
 }
 
+.temples-grid.table-view .temple-name {
+  font-size: 0.92rem;
+  margin-bottom: 0;
+  line-height: 1.2;
+}
+
 .temple-name-en {
   font-size: 0.72rem;
   color: rgba(255, 248, 231, 0.4);
@@ -2048,11 +2144,24 @@ footer {
   margin-bottom: 10px;
 }
 
+.temples-grid.table-view .temple-name-en {
+  font-size: 0.64rem;
+  margin-bottom: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .temple-location-row {
   display: flex;
   align-items: center;
   gap: 6px;
   margin-bottom: 10px;
+}
+
+.temples-grid.table-view .temple-location-row {
+  margin-bottom: 0;
+  gap: 4px;
 }
 
 .temple-location-pin {
@@ -2072,6 +2181,10 @@ footer {
   margin-bottom: 12px;
 }
 
+.temples-grid.table-view .temple-desc {
+  display: none;
+}
+
 .temple-deity-badge {
   display: inline-flex;
   font-size: 0.75rem;
@@ -2080,6 +2193,13 @@ footer {
   background: rgba(255, 255, 255, 0.05);
   border: 1px dashed rgba(255, 248, 231, 0.2);
   color: rgba(255, 248, 231, 0.6);
+}
+
+.temples-grid.table-view .temple-deity-badge {
+  font-size: 0.62rem;
+  padding: 2px 7px;
+  justify-self: start;
+  max-width: 100%;
 }
 
 .temple-deity-link-btn {
@@ -2105,6 +2225,20 @@ footer {
   transition: background 0.3s;
 }
 
+.temples-grid.table-view .temple-card-footer {
+  grid-column: 3;
+  grid-row: 1;
+  min-width: 62px;
+  min-height: 100%;
+  padding: 10px 8px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  border-top: 0;
+  border-left: 1px solid rgba(212, 175, 55, 0.12);
+  background: rgba(255, 255, 255, 0.02);
+}
+
 .temple-card:hover .temple-card-footer {
   background: rgba(var(--temple-color, 212, 175, 55), 0.08);
 }
@@ -2115,10 +2249,26 @@ footer {
   font-family: 'EB Garamond', serif;
 }
 
+.temples-grid.table-view .temple-map-cta {
+  font-size: 0;
+  text-align: center;
+  line-height: 1;
+}
+
+.temples-grid.table-view .temple-map-cta::before {
+  content: 'देखें';
+  font-size: 0.64rem;
+  letter-spacing: 0.2px;
+}
+
 .temple-arrow {
   font-size: 1.1rem;
   color: var(--temple-color, var(--gold));
   transition: transform 0.3s;
+}
+
+.temples-grid.table-view .temple-arrow {
+  font-size: 0.92rem;
 }
 
 .temple-card:hover .temple-arrow {
@@ -2580,6 +2730,36 @@ footer {
     grid-template-columns: 1fr;
   }
 
+  .temples-grid.table-view .temple-card {
+    grid-template-columns: 62px minmax(0, 1fr) 54px;
+    grid-template-rows: 1fr;
+    min-height: 76px;
+  }
+
+  .temples-grid.table-view .temple-card-top {
+    padding: 8px 4px 8px 8px;
+  }
+
+  .temples-grid.table-view .temple-emoji-badge {
+    font-size: 1.3rem;
+  }
+
+  .temples-grid.table-view .temple-type-badge {
+    max-width: 48px;
+  }
+
+  .temples-grid.table-view .temple-card-body {
+    padding: 8px 10px;
+  }
+
+  .temples-grid.table-view .temple-card-footer {
+    grid-column: 3;
+    border-left: 1px solid rgba(212, 175, 55, 0.12);
+    border-top: 0;
+    min-width: 54px;
+    padding: 8px 6px;
+  }
+
   .temple-modal-hero {
     flex-direction: column;
     text-align: center;
@@ -2650,5 +2830,9 @@ footer {
 
   .temple-controls .home-search-input {
     width: 100%;
+  }
+
+  .temple-search-controls {
+    justify-content: stretch;
   }
 }

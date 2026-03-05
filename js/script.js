@@ -98,13 +98,17 @@ let activeExtraIndex = 0;
 let activeTempleDetailId = '';
 let activeFestivalDetailId = '';
 const HOME_BATCH_SIZE = 60;
+const HOME_VISIBLE_TAG_COUNT = 4;
 const HOME_VIEW_MODE_STORAGE_KEY = 'bhaktiHomeViewMode';
+const TEMPLE_VIEW_MODE_STORAGE_KEY = 'bhaktiTempleViewMode';
 let homeFilteredEntries = [];
 let renderedHomeCount = 0;
 let homeRenderCycleId = 0;
 let homeRenderTimer = null;
 let activeHomeViewMode = 'card';
+let activeTempleViewMode = 'card';
 const homeTempleCountCache = new Map();
+const expandedHomeTags = new Set();
 const validDeityTabs = [
   'about',
   'aarti',
@@ -638,6 +642,76 @@ function setupHomeViewToggle() {
   syncHomeViewToggleButtons();
 }
 
+function getSafeTempleViewMode(mode = 'card') {
+  if (mode === 'list') return 'table';
+  return mode === 'table' ? 'table' : 'card';
+}
+
+function loadTempleViewMode() {
+  try {
+    const savedMode = localStorage.getItem(TEMPLE_VIEW_MODE_STORAGE_KEY);
+    activeTempleViewMode = getSafeTempleViewMode(savedMode || 'card');
+  } catch (error) {
+    activeTempleViewMode = 'card';
+  }
+}
+
+function applyTempleViewMode(mode = activeTempleViewMode) {
+  const grid = document.getElementById('templesGrid');
+  if (!grid) return;
+  const safeMode = getSafeTempleViewMode(mode);
+  grid.classList.toggle('table-view', safeMode === 'table');
+}
+
+function syncTempleViewToggleButtons() {
+  const cardBtn = document.getElementById('templeViewCardBtn');
+  const tableBtn = document.getElementById('templeViewTableBtn');
+  if (!cardBtn || !tableBtn) return;
+
+  const isCard = activeTempleViewMode !== 'table';
+  cardBtn.classList.toggle('active', isCard);
+  tableBtn.classList.toggle('active', !isCard);
+  cardBtn.setAttribute('aria-pressed', isCard ? 'true' : 'false');
+  tableBtn.setAttribute('aria-pressed', isCard ? 'false' : 'true');
+}
+
+function setTempleViewMode(mode = 'card') {
+  const safeMode = getSafeTempleViewMode(mode);
+  if (safeMode === activeTempleViewMode) {
+    applyTempleViewMode(safeMode);
+    syncTempleViewToggleButtons();
+    return;
+  }
+
+  activeTempleViewMode = safeMode;
+  try {
+    localStorage.setItem(TEMPLE_VIEW_MODE_STORAGE_KEY, safeMode);
+  } catch (error) {
+    // Ignore storage errors and keep in-memory preference.
+  }
+
+  applyTempleViewMode(safeMode);
+  syncTempleViewToggleButtons();
+  renderTemples(activeTempleFilter, { reset: true });
+}
+
+function setupTempleViewToggle() {
+  const cardBtn = document.getElementById('templeViewCardBtn');
+  const tableBtn = document.getElementById('templeViewTableBtn');
+  if (!cardBtn || !tableBtn) return;
+
+  if (!cardBtn.dataset.bound) {
+    cardBtn.addEventListener('click', () => setTempleViewMode('card'));
+    cardBtn.dataset.bound = 'true';
+  }
+  if (!tableBtn.dataset.bound) {
+    tableBtn.addEventListener('click', () => setTempleViewMode('table'));
+    tableBtn.dataset.bound = 'true';
+  }
+
+  syncTempleViewToggleButtons();
+}
+
 function escapeHtml(value = '') {
   return String(value)
     .replace(/&/g, '&amp;')
@@ -776,7 +850,40 @@ function getHomeTagsHtml(key, deity) {
       `<span class="tag tag-temples" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'temples' })">मंदिर (${templeCount})</span>`,
     );
   }
-  return tags.length ? `<div class="deity-tags">${tags.join('')}</div>` : '';
+  if (!tags.length) return '';
+
+  const isExpanded = expandedHomeTags.has(key);
+  const hasHiddenTags = tags.length > HOME_VISIBLE_TAG_COUNT;
+  const visibleTags =
+    hasHiddenTags && !isExpanded
+      ? tags.slice(0, HOME_VISIBLE_TAG_COUNT)
+      : tags;
+  const toggleHtml = hasHiddenTags
+    ? `<button class="tag tag-toggle" type="button" onclick="toggleHomeTags(event, '${key}')">${isExpanded ? 'कम..' : 'और..'}</button>`
+    : '';
+
+  return `<div class="deity-tags${isExpanded ? ' is-expanded' : ''}" data-home-tags-key="${key}">${visibleTags.join('')}${toggleHtml}</div>`;
+}
+
+function toggleHomeTags(event, key) {
+  event.stopPropagation();
+  if (!deities[key]) return;
+
+  if (expandedHomeTags.has(key)) {
+    expandedHomeTags.delete(key);
+  } else {
+    expandedHomeTags.add(key);
+  }
+
+  document
+    .querySelectorAll(`[data-home-tags-key="${key}"]`)
+    .forEach((tagsEl) => {
+      tagsEl.outerHTML = getHomeTagsHtml(key, deities[key]);
+    });
+}
+
+if (typeof window !== 'undefined') {
+  window.toggleHomeTags = toggleHomeTags;
 }
 
 function getHomeCardHtml(key, deity, index) {
@@ -850,6 +957,7 @@ function renderHomeGrid(
 
   if (reset) {
     homeRenderCycleId += 1;
+    expandedHomeTags.clear();
     homeFilteredEntries = getFilteredHomeDeities(filter, searchQuery);
     renderedHomeCount = 0;
     grid.innerHTML = '';
@@ -1698,7 +1806,7 @@ function renderDeityTemples(deityKey) {
          style="animation-delay:${idx * 0.08}s; background:${temple.gradient}; --temple-color:${temple.color};">
       <div class="temple-card-top">
         <div class="temple-emoji-badge">${temple.emoji}</div>
-        <div class="temple-type-badge">${temple.type}</div>
+        <div class="temple-type-badge">${getTempleTypeLabel(temple.type)}</div>
       </div>
       <div class="temple-card-body">
         <h3 class="temple-name">${temple.name}</h3>
@@ -1741,13 +1849,20 @@ const templeCategories = [
   { id: 'temple', label: '🛕 मंदिर', emoji: '🛕' },
   { id: 'pilgrimage', label: '🙏 तीर्थ', emoji: '🙏' },
   { id: 'peeth_math', label: '📿 पीठ/मठ', emoji: '📿' },
+  { id: 'shiv', label: '🕉️ शिव', emoji: '🕉️' },
+  { id: 'krishna', label: '🪈 कृष्ण', emoji: '🪈' },
+  { id: 'hanuman', label: '🐒 हनुमान', emoji: '🐒' },
+  { id: 'ganesh', label: '🐘 गणेश', emoji: '🐘' },
+  { id: 'jain', label: '☸️ जैन', emoji: '☸️' },
 ];
 let activeTempleFilter = 'all';
 let activeTempleSearchQuery = '';
 const TEMPLE_BATCH_SIZE = 18;
+const TEMPLE_VISIBLE_FILTER_COUNT = 4;
 let templeFilteredList = [];
 let renderedTempleCount = 0;
 let templeScrollTicking = false;
+let templeFiltersExpanded = false;
 
 function isOutsideIndiaTemple(temple) {
   const text = `${temple.state || ''} ${temple.location || ''}`.toLowerCase();
@@ -1772,6 +1887,10 @@ function includesKeyword(value = '', keyword = '') {
     .includes(String(keyword || '').toLowerCase());
 }
 
+function includesAnyKeyword(value = '', keywords = []) {
+  return keywords.some((keyword) => includesKeyword(value, keyword));
+}
+
 function matchesTempleFilter(temple, filter) {
   const type = String(temple.type || '').toLowerCase();
   const deity = String(temple.deity || '').toLowerCase();
@@ -1786,6 +1905,32 @@ function matchesTempleFilter(temple, filter) {
   if (filter === 'shakti_peeth') return includesKeyword(type, 'shakti peeth');
   if (filter === 'vaishnava') return includesKeyword(type, 'vaishnava');
   if (filter === 'heritage') return includesKeyword(type, 'heritage');
+  if (filter === 'shiv')
+    return includesAnyKeyword(`${deity} ${name}`, ['shiv', 'शिव']);
+  if (filter === 'krishna')
+    return includesAnyKeyword(`${deity} ${name}`, [
+      'krishna',
+      'कृष्ण',
+      'जगन्नाथ',
+      'radha',
+      'राधा',
+      'govardhan',
+      'गोवर्धन',
+    ]);
+  if (filter === 'hanuman')
+    return includesAnyKeyword(`${deity} ${name}`, [
+      'hanuman',
+      'हनुमान',
+      'balaji',
+      'बालाजी',
+    ]);
+  if (filter === 'ganesh')
+    return includesAnyKeyword(`${deity} ${name} ${type}`, [
+      'ganesh',
+      'गणेश',
+    ]);
+  if (filter === 'jain')
+    return includesAnyKeyword(`${deity} ${name} ${type}`, ['jain', 'जैन']);
 
   if (filter === 'temple')
     return includesKeyword(type, 'temple') || includesKeyword(type, 'mandir');
@@ -1811,24 +1956,104 @@ function matchesTempleFilter(temple, filter) {
   return type === String(filter || '').toLowerCase();
 }
 
+function getTempleTypeLabel(type = '') {
+  const normalizedType = String(type || '').trim().toLowerCase();
+  const templeTypeLabels = {
+    jyotirlinga: 'ज्योतिर्लिंग',
+    'shakti peeth': 'शक्ति पीठ',
+    'shakti peeth / dham': 'शक्ति पीठ / धाम',
+    vaishnava: 'वैष्णव',
+    heritage: 'धरोहर',
+    'char dham': 'चार धाम',
+    'hindu temple': 'हिंदू मंदिर',
+    'hindu temple / dham': 'हिंदू मंदिर / धाम',
+    'hindu temple / pilgrimage': 'हिंदू मंदिर / तीर्थ',
+    'hindu temple / teerth': 'हिंदू मंदिर / तीर्थ',
+    'hindu temple / monastery': 'हिंदू मंदिर / मठ',
+    'hindu temple / gurudwara': 'हिंदू मंदिर / गुरुद्वारा',
+    'ancient peeth / temple': 'प्राचीन पीठ / मंदिर',
+    'peetham / math': 'पीठ / मठ',
+    'pilgrimage / sacred hill': 'तीर्थ / पवित्र पर्वत',
+    'city / pilgrimage': 'नगर / तीर्थ',
+    'temple / town': 'मंदिर / नगर',
+    'ganesh temple': 'गणेश मंदिर',
+    'jain temple': 'जैन मंदिर',
+    'saint shrine': 'संत समाधि स्थल',
+  };
+
+  return templeTypeLabels[normalizedType] || String(type || '');
+}
+
 function buildTemplesPage() {
   // Build filters
   const filtersEl = document.getElementById('templeFilters');
-  if (!filtersEl || filtersEl.innerHTML !== '') return; // Already built
-  filtersEl.innerHTML = templeCategories
-    .map(
-      (cat) => `
-    <button
-      class="temple-filter-btn ${cat.id === 'all' ? 'active' : ''}"
-      onclick="filterTemples('${cat.id}', this)"
-      data-category="${cat.id}"
-    >${cat.label}</button>
-  `,
-    )
-    .join('');
+  if (!filtersEl) return;
+  if (filtersEl.innerHTML === '') {
+    renderTempleFilters();
+  }
 
+  setupTempleViewToggle();
   setupTempleSearch();
   renderTemples('all');
+}
+
+function getTempleFiltersHtml() {
+  const activeIndex = Math.max(
+    templeCategories.findIndex((cat) => cat.id === activeTempleFilter),
+    0,
+  );
+  const visibleIndexes = templeFiltersExpanded
+    ? templeCategories.map((_, idx) => idx)
+    : Array.from(
+        new Set([
+          ...templeCategories
+            .slice(0, TEMPLE_VISIBLE_FILTER_COUNT)
+            .map((_, idx) => idx),
+          activeIndex,
+        ]),
+      ).sort((left, right) => left - right);
+
+  const buttonsHtml = visibleIndexes
+    .map((idx) => {
+      const cat = templeCategories[idx];
+      return `
+      <button
+        class="temple-filter-btn ${cat.id === activeTempleFilter ? 'active' : ''}"
+        onclick="filterTemples('${cat.id}', this)"
+        data-category="${cat.id}"
+      >${cat.label}</button>
+    `;
+    })
+    .join('');
+
+  const toggleHtml =
+    templeCategories.length > TEMPLE_VISIBLE_FILTER_COUNT
+      ? `
+      <button
+        class="temple-filter-btn temple-filter-toggle"
+        type="button"
+        onclick="toggleTempleFilters(event)"
+      >${templeFiltersExpanded ? 'कम..' : 'और..'}</button>
+    `
+      : '';
+
+  return `${buttonsHtml}${toggleHtml}`;
+}
+
+function renderTempleFilters() {
+  const filtersEl = document.getElementById('templeFilters');
+  if (!filtersEl) return;
+  filtersEl.innerHTML = getTempleFiltersHtml();
+}
+
+function toggleTempleFilters(event) {
+  if (event) event.stopPropagation();
+  templeFiltersExpanded = !templeFiltersExpanded;
+  renderTempleFilters();
+}
+
+if (typeof window !== 'undefined') {
+  window.toggleTempleFilters = toggleTempleFilters;
 }
 
 function getFilteredTemples(filter) {
@@ -1851,7 +2076,7 @@ function getTempleCardHtml(temple, idx) {
     <div class="temple-card" onclick="showTempleDetailsPage('${temple.id}')" style="animation-delay:${animationDelay}s; background:${temple.gradient}; --temple-color:${temple.color};">
       <div class="temple-card-top">
         <div class="temple-emoji-badge">${temple.emoji}</div>
-        <div class="temple-type-badge">${temple.type}</div>
+        <div class="temple-type-badge">${getTempleTypeLabel(temple.type)}</div>
       </div>
       <div class="temple-card-body">
         <h3 class="temple-name">${temple.name}</h3>
@@ -1878,6 +2103,7 @@ function renderTemples(filter, options = {}) {
   activeTempleFilter = filter;
   const grid = document.getElementById('templesGrid');
   if (!grid) return;
+  applyTempleViewMode(activeTempleViewMode);
 
   if (reset) {
     templeFilteredList = getFilteredTemples(filter);
@@ -1937,10 +2163,17 @@ function maybeLoadMoreTemplesOnScroll() {
 }
 
 function filterTemples(category, btn) {
+  activeTempleFilter = category;
+  renderTempleFilters();
+  btn =
+    btn ||
+    document.querySelector(
+      `#templeFilters .temple-filter-btn[data-category="${category}"]`,
+    );
   document
     .querySelectorAll('#templeFilters .temple-filter-btn')
     .forEach((b) => b.classList.remove('active'));
-  btn.classList.add('active');
+  if (btn) btn.classList.add('active');
   const grid = document.getElementById('templesGrid');
   if (!grid) return;
   grid.style.opacity = '0';
@@ -1965,13 +2198,16 @@ function setupTempleSearch() {
   searchInput.value = activeTempleSearchQuery;
   syncClearButton();
 
-  searchInput.addEventListener('input', (event) => {
-    activeTempleSearchQuery = event.target.value;
-    renderTemples(activeTempleFilter, { reset: true });
-    syncClearButton();
-  });
+  if (!searchInput.dataset.bound) {
+    searchInput.addEventListener('input', (event) => {
+      activeTempleSearchQuery = event.target.value;
+      renderTemples(activeTempleFilter, { reset: true });
+      syncClearButton();
+    });
+    searchInput.dataset.bound = 'true';
+  }
 
-  if (clearBtn) {
+  if (clearBtn && !clearBtn.dataset.bound) {
     clearBtn.addEventListener('click', () => {
       activeTempleSearchQuery = '';
       searchInput.value = '';
@@ -1979,6 +2215,7 @@ function setupTempleSearch() {
       syncClearButton();
       searchInput.focus();
     });
+    clearBtn.dataset.bound = 'true';
   }
 }
 
@@ -1991,7 +2228,7 @@ function getTempleDetailHeaderHtml(temple) {
           <h2>${temple.name}</h2>
           <p>${temple.nameEn}</p>
           <div class="temple-modal-meta">
-            <span class="temple-modal-type">${temple.type}</span>
+            <span class="temple-modal-type">${getTempleTypeLabel(temple.type)}</span>
             <a class="temple-type-link" href="https://www.google.com/maps/search/${temple.mapQuery}" target="_blank" rel="noopener">🗺️ Google Maps</a>
           </div>
         </div>
@@ -2441,6 +2678,7 @@ window.addEventListener('load', () => {
 
     createParticles();
     loadHomeViewMode();
+    loadTempleViewMode();
     setupHomeViewToggle();
     setupHomeSearch();
     buildHomeGrid();
