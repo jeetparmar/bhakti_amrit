@@ -1,7 +1,7 @@
 // ============ PARTICLES ============
 function createParticles() {
   const container = document.getElementById('particles');
-  const symbols = ['🪔', '✨', '🌸', '⭐', '🕉️'];
+  const symbols = ['🕉️', '✨', '🌸', '⭐', '🪔', '🏹', '🌺', '🌼'];
   for (let i = 0; i < 15; i++) {
     const p = document.createElement('div');
     p.className = 'particle';
@@ -431,7 +431,9 @@ function updateUrlState({
         : `/${encodeURIComponent(safeDeity)}/${encodeURIComponent(safeTab)}`;
     url.search = '';
   } else if (pageId === 'temple-detail') {
-    const safeTempleId = templesData.some((t) => t.id === templeId) ? templeId : '';
+    const safeTempleId = templesData.some((t) => t.id === templeId)
+      ? templeId
+      : '';
     url.pathname = safeTempleId
       ? `/temples/${encodeURIComponent(safeTempleId)}`
       : '/temples';
@@ -1018,7 +1020,8 @@ function showDeityPage(key, options = {}) {
 
   // Preserve where the user came from for back navigation.
   deityReturnHomeType = getSafeHomeType(activeHomeType);
-  deityReturnHomeNavId = activeHomeNavId || getNavIdByHomeType(deityReturnHomeType);
+  deityReturnHomeNavId =
+    activeHomeNavId || getNavIdByHomeType(deityReturnHomeType);
 
   // If a deity is opened directly from "मुख्य पृष्ठ", highlight its type menu.
   if (activeHomeNavId === 'home' || activeHomeType === 'all') {
@@ -1138,7 +1141,9 @@ function renderAbout(data) {
         sectionContent = `<p>${section.content}</p>`;
       } else if (Array.isArray(section.items) && section.items.length) {
         sectionContent = `<ul>${section.items
-          .map((item) => `<li><strong>${item.label}:</strong> ${item.text}</li>`)
+          .map(
+            (item) => `<li><strong>${item.label}:</strong> ${item.text}</li>`,
+          )
           .join('')}</ul>`;
       }
 
