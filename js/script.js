@@ -106,6 +106,7 @@ const validDeityTabs = [
   'chalisa',
   'katha',
   'mantra',
+  'extra',
   'temples',
 ];
 
@@ -559,15 +560,29 @@ function hasMantrasContent(data) {
   return Array.isArray(data) && data.length > 0;
 }
 
+function getExtraContentData(deityKey = '') {
+  if (!deityKey) return null;
+  const store =
+    typeof extraContent !== 'undefined'
+      ? extraContent
+      : typeof window !== 'undefined'
+        ? window.extraContent
+        : null;
+  const data = store?.[deityKey];
+  return data && typeof data === 'object' ? data : null;
+}
+
 function getAvailableDeityTabs(key) {
   const deity = deities[key];
   if (!deity) return ['about', 'temples'];
 
+  const extraData = getExtraContentData(key);
   const tabs = ['about'];
   if (hasLyricsContent(deity.aarti)) tabs.push('aarti');
   if (hasLyricsContent(deity.chalisa)) tabs.push('chalisa');
   if (hasLyricsContent(deity.katha)) tabs.push('katha');
   if (hasMantrasContent(deity.mantras)) tabs.push('mantra');
+  if (hasLyricsContent(extraData)) tabs.push('extra');
   tabs.push('temples');
   return tabs;
 }
@@ -623,6 +638,13 @@ function getHomeCardHtml(key, deity, index) {
           const kathaLabel = kathaCount > 1 ? `कथा (${kathaCount})` : 'कथा';
           tags.push(
             `<span class="tag tag-katha" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'katha' })">${kathaLabel}</span>`,
+          );
+        }
+        const extraData = getExtraContentData(key);
+        if (hasLyricsContent(extraData)) {
+          const extraTag = escapeHtml(extraData?.tag || 'अतिरिक्त');
+          tags.push(
+            `<span class="tag tag-extra" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'extra' })">${extraTag}</span>`,
           );
         }
         const templeCount = getHomeTempleCount(key);
@@ -1017,6 +1039,8 @@ function showDeityPage(key, options = {}) {
   const resolvedKey = resolveDeityKey(key);
   const deity = deities[resolvedKey];
   if (!deity) return;
+  const extraData = getExtraContentData(resolvedKey);
+  const extraTag = escapeHtml(extraData?.tag || 'अतिरिक्त');
 
   // Preserve where the user came from for back navigation.
   deityReturnHomeType = getSafeHomeType(activeHomeType);
@@ -1071,6 +1095,9 @@ function showDeityPage(key, options = {}) {
     hasMantrasContent(deity.mantras)
       ? `<button class="tab-btn ${activeDeityTab === 'mantra' ? 'active' : ''}" onclick="showTab('mantra', this)">🕉️ मंत्र</button>`
       : '',
+    hasLyricsContent(extraData)
+      ? `<button class="tab-btn ${activeDeityTab === 'extra' ? 'active' : ''}" onclick="showTab('extra', this)">✨ ${extraTag}</button>`
+      : '',
     `<button class="tab-btn ${activeDeityTab === 'temples' ? 'active' : ''}" onclick="showTab('temples', this)">🛕 मंदिर</button>`,
   ].join('');
   tabs.innerHTML = `
@@ -1106,6 +1133,11 @@ function showDeityPage(key, options = {}) {
       <div class="lyrics-box">
         <div class="mantra-grid">${renderMantras(deity.mantras, resolvedKey)}</div>
       </div>
+    </div>
+  </div>
+  <div id="tab-extra" class="text-content ${activeDeityTab === 'extra' ? 'active' : ''}">
+    <div class="deity-tab-wrap">
+      <div class="lyrics-box">${renderLyrics(extraData)}</div>
     </div>
   </div>
   <div id="tab-temples" class="text-content ${activeDeityTab === 'temples' ? 'active' : ''}">
