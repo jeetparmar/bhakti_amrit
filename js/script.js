@@ -94,6 +94,7 @@ let activeHomeSearchQuery = '';
 let activeDeityKey = '';
 let activeDeityTab = 'about';
 let activeKathaSlug = '';
+let activeExtraIndex = 0;
 let activeTempleDetailId = '';
 let activeFestivalDetailId = '';
 const HOME_BATCH_SIZE = 60;
@@ -673,6 +674,41 @@ function getExtraContentData(deityKey = '') {
   return data && typeof data === 'object' ? data : null;
 }
 
+function getExtraEntries(data) {
+  if (!data) return [];
+  if (Array.isArray(data)) return data.filter(Boolean);
+  if (Array.isArray(data.items)) return data.items.filter(Boolean);
+  return [data];
+}
+
+function getExtraEntryLabel(entry, idx = 0) {
+  if (typeof entry?.tag === 'string' && entry.tag.trim().length > 0) {
+    return entry.tag;
+  }
+  if (typeof entry?.title === 'string' && entry.title.trim().length > 0) {
+    return entry.title;
+  }
+  return `अतिरिक्त ${idx + 1}`;
+}
+
+function getExtraTabLabel(data) {
+  const entries = getExtraEntries(data);
+  if (!entries.length) return 'अतिरिक्त';
+  if (entries.length === 1) return getExtraEntryLabel(entries[0], 0);
+  if (typeof data?.tag === 'string' && data.tag.trim().length > 0) {
+    return data.tag;
+  }
+  return 'अतिरिक्त';
+}
+
+function getSafeExtraIndex(data, requestedIndex = 0) {
+  const entries = getExtraEntries(data);
+  if (!entries.length) return 0;
+  const parsed = Number.parseInt(requestedIndex, 10);
+  const safeIndex = Number.isNaN(parsed) ? 0 : parsed;
+  return Math.max(0, Math.min(safeIndex, entries.length - 1));
+}
+
 function getAvailableDeityTabs(key) {
   const deity = deities[key];
   if (!deity) return ['about', 'temples'];
@@ -726,10 +762,13 @@ function getHomeTagsHtml(key, deity) {
   }
   const extraData = getExtraContentData(key);
   if (hasLyricsContent(extraData)) {
-    const extraTag = escapeHtml(extraData?.tag || 'अतिरिक्त');
-    tags.push(
-      `<span class="tag tag-extra" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'extra' })">${extraTag}</span>`,
-    );
+    const extraEntries = getExtraEntries(extraData);
+    extraEntries.forEach((entry, idx) => {
+      const extraTag = escapeHtml(getExtraEntryLabel(entry, idx));
+      tags.push(
+        `<span class="tag tag-extra" onclick="event.stopPropagation(); showDeityPage('${key}', { initialTab: 'extra', initialExtraIndex: ${idx} })">${extraTag}</span>`,
+      );
+    });
   }
   const templeCount = getHomeTempleCount(key);
   if (templeCount > 0) {
@@ -1175,7 +1214,7 @@ function showDeityPage(key, options = {}) {
   const deity = deities[resolvedKey];
   if (!deity) return;
   const extraData = getExtraContentData(resolvedKey);
-  const extraTag = escapeHtml(extraData?.tag || 'अतिरिक्त');
+  const extraTag = escapeHtml(getExtraTabLabel(extraData));
 
   // Preserve where the user came from for back navigation.
   deityReturnHomeType = getSafeHomeType(activeHomeType);
@@ -1197,6 +1236,10 @@ function showDeityPage(key, options = {}) {
   activeKathaSlug = getSafeKathaSlug(
     resolvedKey,
     options.initialKathaSlug || activeKathaSlug,
+  );
+  activeExtraIndex = getSafeExtraIndex(
+    extraData,
+    options.initialExtraIndex ?? activeExtraIndex,
   );
   if (!availableTabs.includes(activeDeityTab)) activeDeityTab = 'about';
 
@@ -1296,7 +1339,7 @@ function showDeityPage(key, options = {}) {
       <div class="deity-tab-content">
         <div class="lyrics-box">
           ${getSectionReadingButtonHtml()}
-          ${renderLyrics(extraData)}
+          ${renderExtraContent(extraData)}
         </div>
       </div>
     </div>
@@ -1387,6 +1430,34 @@ function renderLyrics(data) {
   return `${titleHtml}${linesHtml}`;
 }
 
+function renderExtraContent(data) {
+  const entries = getExtraEntries(data);
+  if (!entries.length) return 'जल्द ही आ रहा है...';
+  if (entries.length === 1) {
+    activeExtraIndex = 0;
+    return renderLyrics(entries[0]);
+  }
+
+  const safeIndex = getSafeExtraIndex(data, activeExtraIndex);
+  const selected = entries[safeIndex];
+  activeExtraIndex = safeIndex;
+
+  const navHtml = `<div class="katha-list">${entries
+    .map((entry, idx) => {
+      const activeClass = idx === safeIndex ? ' active' : '';
+      const label = escapeHtml(getExtraEntryLabel(entry, idx));
+      return `<button class="tab-btn${activeClass}" onclick="openExtraEntry('${activeDeityKey}', ${idx})">${label}</button>`;
+    })
+    .join('')}</div><br/>`;
+
+  return `${navHtml}${renderLyrics(selected)}`;
+}
+
+function openExtraEntry(deityKey, index) {
+  if (!deities[deityKey]) return;
+  showDeityPage(deityKey, { initialTab: 'extra', initialExtraIndex: index });
+}
+
 function renderKatha(deityKey, data) {
   const entries = getKathaEntries(data, deityKey);
   if (!entries.length) return 'जल्द ही आ रहा है...';
@@ -1452,6 +1523,7 @@ function showTab(tabId, btn) {
   if (btn) btn.classList.add('active');
   activeDeityTab = safeTab;
   if (safeTab !== 'katha') activeKathaSlug = '';
+  if (safeTab !== 'extra') activeExtraIndex = 0;
   if (activeDeityKey) {
     updateUrlState({
       typeId: activeHomeType,
@@ -1774,8 +1846,9 @@ function getFilteredTemples(filter) {
 }
 
 function getTempleCardHtml(temple, idx) {
+  const animationDelay = Math.min(idx, 7) * 0.06;
   return `
-    <div class="temple-card" onclick="showTempleDetailsPage('${temple.id}')" style="animation-delay:${idx * 0.06}s; background:${temple.gradient}; --temple-color:${temple.color};">
+    <div class="temple-card" onclick="showTempleDetailsPage('${temple.id}')" style="animation-delay:${animationDelay}s; background:${temple.gradient}; --temple-color:${temple.color};">
       <div class="temple-card-top">
         <div class="temple-emoji-badge">${temple.emoji}</div>
         <div class="temple-type-badge">${temple.type}</div>
@@ -1832,7 +1905,7 @@ function renderTemples(filter, options = {}) {
   if (!nextBatch.length) return;
 
   const batchHtml = nextBatch
-    .map((temple, idx) => getTempleCardHtml(temple, renderedTempleCount + idx))
+    .map((temple, idx) => getTempleCardHtml(temple, idx))
     .join('');
   grid.insertAdjacentHTML('beforeend', batchHtml);
   renderedTempleCount += nextBatch.length;

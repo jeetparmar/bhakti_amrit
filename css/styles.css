@@ -1933,7 +1933,7 @@ footer {
   color: rgba(255, 248, 231, 0.75);
   font-family: 'Tiro Devanagari Hindi', serif;
   font-size: 0.88rem;
-  padding: 7px 18px;
+  padding: 5px 10px;
   border-radius: 30px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -2013,12 +2013,16 @@ footer {
   font-size: 0.65rem;
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  padding: 4px 10px;
+  padding: 3px 10px;
   border-radius: 20px;
   border: 1px solid var(--temple-color, var(--gold));
   color: var(--temple-color, var(--gold));
   font-family: 'EB Garamond', serif;
   background: rgba(0, 0, 0, 0.3);
+  max-width: 9.5rem;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.35;
 }
 
 .temple-card-body {
