@@ -255,6 +255,31 @@ function getSafeDeityTab(tabId = 'about') {
   return validDeityTabs.includes(tabId) ? tabId : 'about';
 }
 
+function resolveDeityTabFromPathSegment(deityKey = '', tabSegment = 'about') {
+  const normalized = String(tabSegment || '')
+    .trim()
+    .toLowerCase();
+  if (deityKey === 'ram' && (normalized === 'stuti' || normalized === 'extra'))
+    return 'extra';
+  return getSafeDeityTab(normalized);
+}
+
+function isValidDeityTabPathSegment(deityKey = '', tabSegment = '') {
+  const normalized = String(tabSegment || '')
+    .trim()
+    .toLowerCase();
+  if (!normalized) return false;
+  if (deityKey === 'ram' && (normalized === 'stuti' || normalized === 'extra'))
+    return true;
+  return validDeityTabs.includes(normalized);
+}
+
+function getDeityTabPathSegment(deityKey = '', tabId = 'about') {
+  const safeTab = getSafeDeityTab(tabId);
+  if (deityKey === 'ram' && safeTab === 'extra') return 'stuti';
+  return safeTab;
+}
+
 function getPathState() {
   const segments = window.location.pathname
     .split('/')
@@ -306,8 +331,12 @@ function getPathState() {
   if (segments.length === 3) {
     const [rawDeityKey, tabId, kathaSlug] = segments;
     const deityKey = resolveDeityKey(rawDeityKey);
-    const safeTab = getSafeDeityTab(tabId);
-    if (deities[deityKey] && safeTab === 'katha') {
+    const safeTab = resolveDeityTabFromPathSegment(deityKey, tabId);
+    if (
+      deities[deityKey] &&
+      isValidDeityTabPathSegment(deityKey, tabId) &&
+      safeTab === 'katha'
+    ) {
       return { pageId: '', templeId: '', deityKey, tabId: safeTab, kathaSlug };
     }
   }
@@ -315,8 +344,8 @@ function getPathState() {
   if (segments.length === 2) {
     const [rawDeityKey, tabId] = segments;
     const deityKey = resolveDeityKey(rawDeityKey);
-    const safeTab = getSafeDeityTab(tabId);
-    if (deities[deityKey] && safeTab === tabId) {
+    const safeTab = resolveDeityTabFromPathSegment(deityKey, tabId);
+    if (deities[deityKey] && isValidDeityTabPathSegment(deityKey, tabId)) {
       return {
         pageId: '',
         templeId: '',
@@ -424,12 +453,13 @@ function updateUrlState({
     safeDeity && safeTab === 'katha'
       ? getSafeKathaSlug(safeDeity, kathaSlug)
       : '';
+  const safeTabPath = getDeityTabPathSegment(safeDeity, safeTab);
 
   if (safeDeity) {
     url.pathname =
       safeTab === 'katha' && safeKathaSlug
-        ? `/${encodeURIComponent(safeDeity)}/${encodeURIComponent(safeTab)}/${encodeURIComponent(safeKathaSlug)}`
-        : `/${encodeURIComponent(safeDeity)}/${encodeURIComponent(safeTab)}`;
+        ? `/${encodeURIComponent(safeDeity)}/${encodeURIComponent(safeTabPath)}/${encodeURIComponent(safeKathaSlug)}`
+        : `/${encodeURIComponent(safeDeity)}/${encodeURIComponent(safeTabPath)}`;
     url.search = '';
   } else if (pageId === 'temple-detail') {
     const safeTempleId = templesData.some((t) => t.id === templeId)
@@ -485,7 +515,11 @@ function applyUrlState() {
   const typeId = getSafeHomeType(rawType);
   const navId = getNavIdByHomeType(typeId);
   const queryDeity = params.get('deity') || '';
-  const queryTab = getSafeDeityTab(params.get('tab') || 'about');
+  const resolvedQueryDeity = resolveDeityKey(queryDeity);
+  const queryTab = resolveDeityTabFromPathSegment(
+    resolvedQueryDeity,
+    params.get('tab') || 'about',
+  );
   const queryKathaSlug = params.get('katha') || '';
   const deityKey = pathDeity || resolveDeityKey(queryDeity);
   const tabId = pathDeity ? pathTab : queryTab;
