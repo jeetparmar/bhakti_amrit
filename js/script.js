@@ -264,12 +264,44 @@ function getSafeDeityTab(tabId = 'about') {
   return validDeityTabs.includes(tabId) ? tabId : 'about';
 }
 
+function getExtraEntrySlug(entry, idx = 0) {
+  if (typeof entry?.slug === 'string' && entry.slug.trim().length > 0) {
+    return entry.slug.trim().toLowerCase();
+  }
+  return idx === 0 ? 'extra' : `extra-${idx + 1}`;
+}
+
+function getExtraEntryAliases(entry, idx = 0) {
+  const aliases = [getExtraEntrySlug(entry, idx)];
+  if (Array.isArray(entry?.aliases)) {
+    entry.aliases.forEach((alias) => {
+      if (typeof alias !== 'string' || !alias.trim()) return;
+      aliases.push(alias.trim().toLowerCase());
+    });
+  }
+  return [...new Set(aliases)];
+}
+
+function getExtraIndexFromPathSegment(deityKey = '', tabSegment = '') {
+  const normalized = String(tabSegment || '')
+    .trim()
+    .toLowerCase();
+  if (!normalized) return -1;
+
+  const extraData = getExtraContentData(deityKey);
+  const entries = getExtraEntries(extraData);
+  if (!entries.length) return -1;
+
+  return entries.findIndex((entry, idx) =>
+    getExtraEntryAliases(entry, idx).includes(normalized),
+  );
+}
+
 function resolveDeityTabFromPathSegment(deityKey = '', tabSegment = 'about') {
   const normalized = String(tabSegment || '')
     .trim()
     .toLowerCase();
-  if (deityKey === 'ram' && (normalized === 'stuti' || normalized === 'extra'))
-    return 'extra';
+  if (getExtraIndexFromPathSegment(deityKey, normalized) >= 0) return 'extra';
   return getSafeDeityTab(normalized);
 }
 
@@ -278,14 +310,24 @@ function isValidDeityTabPathSegment(deityKey = '', tabSegment = '') {
     .trim()
     .toLowerCase();
   if (!normalized) return false;
-  if (deityKey === 'ram' && (normalized === 'stuti' || normalized === 'extra'))
-    return true;
+  if (getExtraIndexFromPathSegment(deityKey, normalized) >= 0) return true;
   return validDeityTabs.includes(normalized);
 }
 
-function getDeityTabPathSegment(deityKey = '', tabId = 'about') {
+function getDeityTabPathSegment(
+  deityKey = '',
+  tabId = 'about',
+  extraIndex = activeExtraIndex,
+) {
   const safeTab = getSafeDeityTab(tabId);
-  if (deityKey === 'ram' && safeTab === 'extra') return 'stuti';
+  if (safeTab === 'extra') {
+    const extraData = getExtraContentData(deityKey);
+    const entries = getExtraEntries(extraData);
+    if (entries.length) {
+      const safeIndex = getSafeExtraIndex(extraData, extraIndex);
+      return getExtraEntrySlug(entries[safeIndex], safeIndex);
+    }
+  }
   return safeTab;
 }
 
@@ -302,6 +344,7 @@ function getPathState() {
       deityKey: '',
       tabId: 'about',
       kathaSlug: '',
+      extraIndex: 0,
     };
   }
 
@@ -313,6 +356,7 @@ function getPathState() {
       deityKey: '',
       tabId: 'about',
       kathaSlug: '',
+      extraIndex: 0,
     };
   }
 
@@ -323,6 +367,7 @@ function getPathState() {
       deityKey: '',
       tabId: 'about',
       kathaSlug: '',
+      extraIndex: 0,
     };
   }
 
@@ -334,6 +379,7 @@ function getPathState() {
       deityKey: '',
       tabId: 'about',
       kathaSlug: '',
+      extraIndex: 0,
     };
   }
 
@@ -341,12 +387,21 @@ function getPathState() {
     const [rawDeityKey, tabId, kathaSlug] = segments;
     const deityKey = resolveDeityKey(rawDeityKey);
     const safeTab = resolveDeityTabFromPathSegment(deityKey, tabId);
+    const extraIndex =
+      safeTab === 'extra' ? getExtraIndexFromPathSegment(deityKey, tabId) : 0;
     if (
       deities[deityKey] &&
       isValidDeityTabPathSegment(deityKey, tabId) &&
       safeTab === 'katha'
     ) {
-      return { pageId: '', templeId: '', deityKey, tabId: safeTab, kathaSlug };
+      return {
+        pageId: '',
+        templeId: '',
+        deityKey,
+        tabId: safeTab,
+        kathaSlug,
+        extraIndex,
+      };
     }
   }
 
@@ -354,6 +409,8 @@ function getPathState() {
     const [rawDeityKey, tabId] = segments;
     const deityKey = resolveDeityKey(rawDeityKey);
     const safeTab = resolveDeityTabFromPathSegment(deityKey, tabId);
+    const extraIndex =
+      safeTab === 'extra' ? getExtraIndexFromPathSegment(deityKey, tabId) : 0;
     if (deities[deityKey] && isValidDeityTabPathSegment(deityKey, tabId)) {
       return {
         pageId: '',
@@ -361,6 +418,7 @@ function getPathState() {
         deityKey,
         tabId: safeTab,
         kathaSlug: '',
+        extraIndex,
       };
     }
   }
@@ -372,6 +430,7 @@ function getPathState() {
     deityKey: '',
     tabId: 'about',
     kathaSlug: '',
+    extraIndex: 0,
   };
 }
 
@@ -450,6 +509,7 @@ function updateUrlState({
   pageId = '',
   templeId = activeTempleDetailId,
   festivalId = activeFestivalDetailId,
+  extraIndex = activeExtraIndex,
   replace = false,
 } = {}) {
   const url = new URL(window.location.href);
@@ -462,7 +522,15 @@ function updateUrlState({
     safeDeity && safeTab === 'katha'
       ? getSafeKathaSlug(safeDeity, kathaSlug)
       : '';
-  const safeTabPath = getDeityTabPathSegment(safeDeity, safeTab);
+  const safeExtraIndex =
+    safeDeity && safeTab === 'extra'
+      ? getSafeExtraIndex(getExtraContentData(safeDeity), extraIndex)
+      : 0;
+  const safeTabPath = getDeityTabPathSegment(
+    safeDeity,
+    safeTab,
+    safeExtraIndex,
+  );
 
   if (safeDeity) {
     url.pathname =
@@ -505,6 +573,7 @@ function updateUrlState({
       deityKey: safeDeity || null,
       tabId: safeDeity ? safeTab : null,
       kathaSlug: safeDeity && safeTab === 'katha' ? safeKathaSlug : null,
+      extraIndex: safeDeity && safeTab === 'extra' ? safeExtraIndex : null,
     },
     '',
     `${url.pathname}${url.search}`,
@@ -520,6 +589,7 @@ function applyUrlState() {
   const pathDeity = pathState.deityKey;
   const pathTab = pathState.tabId;
   const pathKathaSlug = pathState.kathaSlug || '';
+  const pathExtraIndex = pathState.extraIndex ?? 0;
   const rawType = params.get('type') || 'all';
   const typeId = getSafeHomeType(rawType);
   const navId = getNavIdByHomeType(typeId);
@@ -561,12 +631,14 @@ function applyUrlState() {
       skipUrl: true,
       initialTab: tabId,
       initialKathaSlug: kathaSlug,
+      initialExtraIndex: pathExtraIndex,
     });
     updateUrlState({
       typeId: activeHomeType,
       deityKey,
       tabId,
       kathaSlug,
+      extraIndex: tabId === 'extra' ? pathExtraIndex : 0,
       replace: true,
     });
     return;
@@ -1470,6 +1542,7 @@ function showDeityPage(key, options = {}) {
       deityKey: resolvedKey,
       tabId: activeDeityTab,
       kathaSlug: activeDeityTab === 'katha' ? activeKathaSlug : '',
+      extraIndex: activeDeityTab === 'extra' ? activeExtraIndex : 0,
     });
   }
 }
@@ -1638,6 +1711,7 @@ function showTab(tabId, btn) {
       deityKey: activeDeityKey,
       tabId: safeTab,
       kathaSlug: safeTab === 'katha' ? activeKathaSlug : '',
+      extraIndex: safeTab === 'extra' ? activeExtraIndex : 0,
     });
   }
 }

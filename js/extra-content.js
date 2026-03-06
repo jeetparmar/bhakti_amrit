@@ -1,5 +1,6 @@
 const extraContent = {
   ram: {
+    slug: 'stuti',
     tag: 'स्तुति',
     title: '॥ 🏹 श्री राम स्तुति 🏹 ॥',
     lines: [
@@ -45,6 +46,7 @@ const extraContent = {
     tag: 'अतिरिक्त',
     items: [
       {
+        slug: 'bajrang-baan',
         tag: 'बजरंग बाण',
         title: '॥ श्री बजरंग बाण ॥',
         lines: [
@@ -143,6 +145,7 @@ const extraContent = {
         ],
       },
       {
+        slug: 'sankat-mochan',
         tag: 'संकटमोचन',
         title: '॥ संकटमोचन हनुमान अष्टक ॥',
         lines: [
@@ -198,6 +201,8 @@ const extraContent = {
     tag: 'अतिरिक्त',
     items: [
       {
+        slug: 'aarti-2',
+        aliases: ['arti-2'],
         tag: 'आरती (2)',
         title: '॥ ⚖️ श्री शनिदेव जी की आरती ⚖️ ॥',
         lines: [
@@ -259,6 +264,8 @@ const extraContent = {
         ],
       },
       {
+        slug: 'chalisha-2',
+        aliases: ['chalisa-2'],
         tag: 'चालीसा (2)',
         title: '॥ ⚖️ श्री शनि चालीसा ⚖️ ॥',
         lines: [
