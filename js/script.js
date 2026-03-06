@@ -501,6 +501,15 @@ function getSafeKathaSlug(deityKey = '', requestedSlug = '') {
   return selected ? selected.slug : entries[0].slug;
 }
 
+function getSelectedKathaEntry(deityKey, data) {
+  const entries = getKathaEntries(data, deityKey);
+  if (!entries.length) return null;
+  const safeSlug = getSafeKathaSlug(deityKey, activeKathaSlug);
+  const selected = entries.find((item) => item.slug === safeSlug) || entries[0];
+  activeKathaSlug = selected.slug;
+  return selected;
+}
+
 function updateUrlState({
   typeId = activeHomeType,
   deityKey = '',
@@ -793,6 +802,104 @@ function escapeHtml(value = '') {
     .replace(/'/g, '&#39;');
 }
 
+const HINDI_READING_WORDS_PER_MINUTE = 140;
+const hindiNumberFormatter =
+  typeof Intl !== 'undefined' && typeof Intl.NumberFormat === 'function'
+    ? new Intl.NumberFormat('hi-IN-u-nu-deva')
+    : null;
+
+function formatHindiNumber(value) {
+  if (hindiNumberFormatter) return hindiNumberFormatter.format(value);
+  return String(value);
+}
+
+function stripHtmlToPlainText(value = '') {
+  return String(value || '')
+    .replace(/<br\s*\/?>/gi, ' ')
+    .replace(/<\/(p|div|li|h[1-6])>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function getWordCountFromText(value = '') {
+  const plainText = stripHtmlToPlainText(value);
+  if (!plainText) return 0;
+  const words = plainText.match(/[\p{L}\p{N}]+/gu);
+  return Array.isArray(words) ? words.length : 0;
+}
+
+function getHindiReadTimeLabelFromText(value = '') {
+  const wordCount = getWordCountFromText(value);
+  if (!wordCount) return '';
+  const minutes = Math.max(
+    1,
+    Math.ceil(wordCount / HINDI_READING_WORDS_PER_MINUTE),
+  );
+  return `${formatHindiNumber(minutes)} मिनट में पढ़ें`;
+}
+
+function getLyricsReadableText(data) {
+  if (typeof data === 'string') return data;
+  if (!data || typeof data !== 'object') return '';
+
+  const parts = [];
+  if (typeof data.title === 'string') parts.push(data.title);
+  if (typeof data.content === 'string') parts.push(data.content);
+
+  if (Array.isArray(data.lines)) {
+    data.lines.forEach((line) => {
+      if (!line || typeof line !== 'object') return;
+      if (typeof line.text === 'string') parts.push(line.text);
+      if (typeof line.refrain === 'string') parts.push(line.refrain);
+    });
+  }
+
+  return parts.join(' ');
+}
+
+function getAboutReadableText(data) {
+  if (typeof data === 'string') return data;
+  if (!Array.isArray(data)) return '';
+
+  return data
+    .map((section) => {
+      if (!section || typeof section !== 'object') return '';
+      const parts = [];
+      if (typeof section.title === 'string') parts.push(section.title);
+      if (typeof section.content === 'string') parts.push(section.content);
+      if (Array.isArray(section.items)) {
+        section.items.forEach((item) => {
+          if (!item || typeof item !== 'object') return;
+          if (typeof item.label === 'string') parts.push(item.label);
+          if (typeof item.text === 'string') parts.push(item.text);
+        });
+      }
+      return parts.join(' ');
+    })
+    .filter(Boolean)
+    .join(' ');
+}
+
+function getMantrasReadableText(mantras) {
+  if (!Array.isArray(mantras)) return '';
+  return mantras
+    .map((mantra) => {
+      if (!mantra || typeof mantra !== 'object') return '';
+      return [mantra.type, mantra.text, mantra.meaning]
+        .filter((part) => typeof part === 'string' && part.trim().length > 0)
+        .join(' ');
+    })
+    .filter(Boolean)
+    .join(' ');
+}
+
 function hasLyricsContent(data) {
   if (Array.isArray(data?.items) && data.items.length > 0) return true;
   if (Array.isArray(data?.extraKathas) && data.extraKathas.length > 0)
@@ -853,6 +960,14 @@ function getSafeExtraIndex(data, requestedIndex = 0) {
   const parsed = Number.parseInt(requestedIndex, 10);
   const safeIndex = Number.isNaN(parsed) ? 0 : parsed;
   return Math.max(0, Math.min(safeIndex, entries.length - 1));
+}
+
+function getSelectedExtraEntry(data) {
+  const entries = getExtraEntries(data);
+  if (!entries.length) return null;
+  const safeIndex = getSafeExtraIndex(data, activeExtraIndex);
+  activeExtraIndex = safeIndex;
+  return entries[safeIndex] || null;
 }
 
 function getAvailableDeityTabs(key) {
@@ -1395,6 +1510,8 @@ function showDeityPage(key, options = {}) {
   if (!deity) return;
   const extraData = getExtraContentData(resolvedKey);
   const extraTag = escapeHtml(getExtraTabLabel(extraData));
+  const deityAboutData =
+    typeof aboutData !== 'undefined' ? aboutData[resolvedKey] : null;
 
   // Preserve where the user came from for back navigation.
   deityReturnHomeType = getSafeHomeType(activeHomeType);
@@ -1422,6 +1539,27 @@ function showDeityPage(key, options = {}) {
     options.initialExtraIndex ?? activeExtraIndex,
   );
   if (!availableTabs.includes(activeDeityTab)) activeDeityTab = 'about';
+
+  const aboutReadTime = getHindiReadTimeLabelFromText(
+    getAboutReadableText(deityAboutData),
+  );
+  const aartiReadTime = getHindiReadTimeLabelFromText(
+    getLyricsReadableText(deity.aarti),
+  );
+  const chalisaReadTime = getHindiReadTimeLabelFromText(
+    getLyricsReadableText(deity.chalisa),
+  );
+  const selectedKatha = getSelectedKathaEntry(resolvedKey, deity.katha);
+  const kathaReadTime = getHindiReadTimeLabelFromText(
+    getLyricsReadableText(selectedKatha),
+  );
+  const mantraReadTime = getHindiReadTimeLabelFromText(
+    getMantrasReadableText(deity.mantras),
+  );
+  const selectedExtraEntry = getSelectedExtraEntry(extraData);
+  const extraReadTime = getHindiReadTimeLabelFromText(
+    getLyricsReadableText(selectedExtraEntry),
+  );
 
   // Build header
   const imgSrc = getValidDeityImage(deity.img);
@@ -1470,7 +1608,8 @@ function showDeityPage(key, options = {}) {
     <div class="deity-tab-wrap deity-tab-wrap-no-padding">
       <div class="deity-tab-content">
         <div class="lyrics-box about-content about-content-merged">
-          ${renderAbout(aboutData[resolvedKey])}
+          ${getSectionMetaHtml({ readTimeLabel: aboutReadTime })}
+          ${renderAbout(deityAboutData)}
         </div>
       </div>
     </div>
@@ -1479,7 +1618,10 @@ function showDeityPage(key, options = {}) {
     <div class="deity-tab-wrap">
       <div class="deity-tab-content">
         <div class="lyrics-box">
-          ${getSectionReadingButtonHtml()}
+          ${getSectionMetaHtml({
+            readTimeLabel: aartiReadTime,
+            showReadingMode: true,
+          })}
           ${renderLyrics(deity.aarti)}
         </div>
       </div>
@@ -1489,7 +1631,10 @@ function showDeityPage(key, options = {}) {
     <div class="deity-tab-wrap">
       <div class="deity-tab-content">
         <div class="lyrics-box">
-          ${getSectionReadingButtonHtml()}
+          ${getSectionMetaHtml({
+            readTimeLabel: chalisaReadTime,
+            showReadingMode: true,
+          })}
           ${renderLyrics(deity.chalisa)}
         </div>
       </div>
@@ -1499,7 +1644,10 @@ function showDeityPage(key, options = {}) {
     <div class="deity-tab-wrap">
       <div class="deity-tab-content">
         <div class="lyrics-box">
-          ${getSectionReadingButtonHtml()}
+          ${getSectionMetaHtml({
+            readTimeLabel: kathaReadTime,
+            showReadingMode: true,
+          })}
           ${renderKatha(resolvedKey, deity.katha)}
         </div>
       </div>
@@ -1509,6 +1657,7 @@ function showDeityPage(key, options = {}) {
     <div class="deity-tab-wrap">
       <div class="deity-tab-content">
         <div class="lyrics-box">
+          ${getSectionMetaHtml({ readTimeLabel: mantraReadTime })}
           <div class="mantra-grid">${renderMantras(deity.mantras, resolvedKey)}</div>
         </div>
       </div>
@@ -1518,7 +1667,10 @@ function showDeityPage(key, options = {}) {
     <div class="deity-tab-wrap">
       <div class="deity-tab-content">
         <div class="lyrics-box">
-          ${getSectionReadingButtonHtml()}
+          ${getSectionMetaHtml({
+            readTimeLabel: extraReadTime,
+            showReadingMode: true,
+          })}
           ${renderExtraContent(extraData)}
         </div>
       </div>
@@ -1572,12 +1724,29 @@ function renderAbout(data) {
     .join('');
 }
 
-function getSectionReadingButtonHtml() {
+function getSectionMetaHtml({
+  readTimeLabel = '',
+  showReadingMode = false,
+} = {}) {
+  if (!readTimeLabel && !showReadingMode) return '';
+
   return `<div class="deity-tab-actions">
-    <button class="section-reading-btn" type="button" onclick="openReadingModeFromSection(this)" title="पठन मोड" aria-label="पठन मोड">
+    ${
+      readTimeLabel
+        ? `<span class="section-read-time" aria-label="${escapeHtml(readTimeLabel)}">
+      <span class="section-read-time-icon" aria-hidden="true">⏱️</span>
+      <span class="section-read-time-label">${escapeHtml(readTimeLabel)}</span>
+    </span>`
+        : ''
+    }
+    ${
+      showReadingMode
+        ? `<button class="section-reading-btn" type="button" onclick="openReadingModeFromSection(this)" title="पठन मोड" aria-label="पठन मोड">
       <span class="section-reading-icon" aria-hidden="true">📖</span>
       <span class="section-reading-label">पठन मोड</span>
-    </button>
+    </button>`
+        : ''
+    }
   </div>`;
 }
 
@@ -1619,9 +1788,9 @@ function renderExtraContent(data) {
     return renderLyrics(entries[0]);
   }
 
-  const safeIndex = getSafeExtraIndex(data, activeExtraIndex);
-  const selected = entries[safeIndex];
-  activeExtraIndex = safeIndex;
+  const selected = getSelectedExtraEntry(data);
+  if (!selected) return 'जल्द ही आ रहा है...';
+  const safeIndex = activeExtraIndex;
 
   const navHtml = `<div class="katha-list">${entries
     .map((entry, idx) => {
@@ -1643,9 +1812,8 @@ function renderKatha(deityKey, data) {
   const entries = getKathaEntries(data, deityKey);
   if (!entries.length) return 'जल्द ही आ रहा है...';
 
-  const safeSlug = getSafeKathaSlug(deityKey, activeKathaSlug);
-  const selected = entries.find((item) => item.slug === safeSlug) || entries[0];
-  activeKathaSlug = selected.slug;
+  const selected = getSelectedKathaEntry(deityKey, data);
+  if (!selected) return 'जल्द ही आ रहा है...';
 
   const navHtml =
     entries.length > 1

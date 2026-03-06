@@ -1575,6 +1575,10 @@ body.reduced-effects .deity-card:hover {
   margin-top: 0;
 }
 
+.about-content-merged .deity-tab-actions + h3 {
+  margin-top: 0;
+}
+
 .about-content-merged p:last-child,
 .about-content-merged ul:last-child {
   margin-bottom: 0;
@@ -1823,6 +1827,16 @@ footer {
     min-height: 34px;
     padding: 6px 8px;
     justify-content: center;
+  }
+
+  .deity-tab-actions {
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .section-read-time {
+    padding: 6px 10px;
+    font-size: 0.76rem;
   }
 
   .section-reading-label {
@@ -2639,11 +2653,44 @@ footer {
   padding: 0;
 }
 
+.deity-tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
 .deity-tab-actions {
-  position: absolute;
-  top: 25px;
-  right: 35px;
-  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 18px;
+}
+
+.section-read-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 175, 55, 0.34);
+  background: rgba(212, 175, 55, 0.08);
+  color: rgba(255, 248, 231, 0.88);
+  font-family: 'Tiro Devanagari Hindi', serif;
+  font-size: 0.84rem;
+  line-height: 1;
+}
+
+.section-read-time-icon {
+  line-height: 1;
+}
+
+.section-read-time-label {
+  white-space: nowrap;
 }
 
 .section-reading-btn {
@@ -2658,6 +2705,7 @@ footer {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  margin-left: auto;
   transition: all 0.2s ease;
 }
 
