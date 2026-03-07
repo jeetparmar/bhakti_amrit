@@ -496,6 +496,7 @@ function getKathaEntries(data = null, deityKey = '') {
     const entries = [];
     const marker = '<div class="title-line">॥ १६ सोमवार व्रत कथा ॥</div>';
     let primaryContent = data.content || '';
+    const primaryBlocks = getLyricsBlocks(data);
 
     if (
       deityKey === 'shiva' &&
@@ -507,22 +508,34 @@ function getKathaEntries(data = null, deityKey = '') {
         .replace(/<br\/><br\/>$/, '');
     }
 
-    if (
-      typeof primaryContent === 'string' &&
-      primaryContent.trim().length > 0
-    ) {
-      entries.push({
+    if (hasRenderableLyricsBody(data)) {
+      const primaryEntry = {
         slug: data.slug || 'somvar-vrat-katha',
         title: data.title || '',
-        content: primaryContent,
-      });
+      };
+
+      if (
+        typeof primaryContent === 'string' &&
+        primaryContent.trim().length > 0
+      ) {
+        primaryEntry.content = primaryContent;
+      }
+
+      if (Array.isArray(data.lines) && data.lines.length > 0) {
+        primaryEntry.lines = data.lines;
+      }
+
+      if (primaryBlocks.length > 0) {
+        primaryEntry.blocks = primaryBlocks;
+      }
+
+      entries.push(primaryEntry);
     }
 
     if (Array.isArray(data.extraKathas)) {
       data.extraKathas.forEach((item) => {
         if (!item || typeof item !== 'object') return;
-        if (typeof item.content !== 'string' || !item.content.trim().length)
-          return;
+        if (!hasRenderableLyricsBody(item)) return;
         entries.push(item);
       });
     }
@@ -856,6 +869,57 @@ function escapeHtml(value = '') {
     .replace(/'/g, '&#39;');
 }
 
+function handleContentImageError(img) {
+  if (!img || typeof img !== 'object') return;
+
+  const figure =
+    typeof img.closest === 'function' ? img.closest('.katha-figure') : null;
+  const media =
+    typeof img.closest === 'function' ? img.closest('.katha-media') : null;
+  const mediaBlock =
+    typeof img.closest === 'function'
+      ? img.closest('.lyrics-block-media')
+      : null;
+
+  if (figure && typeof figure.remove === 'function') {
+    figure.remove();
+  } else if (typeof img.remove === 'function') {
+    img.remove();
+  }
+
+  if (media && !media.querySelector('img') && typeof media.remove === 'function') {
+    media.remove();
+  }
+
+  if (
+    mediaBlock &&
+    !mediaBlock.querySelector('img') &&
+    typeof mediaBlock.remove === 'function'
+  ) {
+    mediaBlock.remove();
+  }
+}
+
+function decorateContentHtml(value = '') {
+  return String(value || '').replace(/<img\b([^>]*?)\/?>/gi, (match, attrs) => {
+    let nextAttrs = attrs || '';
+
+    if (!/\bloading\s*=/.test(nextAttrs)) nextAttrs += ' loading="lazy"';
+    if (!/\bdecoding\s*=/.test(nextAttrs)) nextAttrs += ' decoding="async"';
+
+    if (/\bonerror\s*=/.test(nextAttrs)) {
+      nextAttrs = nextAttrs.replace(
+        /\bonerror\s*=\s*(['"])(.*?)\1/i,
+        (fullMatch, quote) => ` onerror=${quote}handleContentImageError(this)${quote}`,
+      );
+    } else {
+      nextAttrs += ' onerror="handleContentImageError(this)"';
+    }
+
+    return `<img${nextAttrs}>`;
+  });
+}
+
 const HINDI_READING_WORDS_PER_MINUTE = 140;
 const hindiNumberFormatter =
   typeof Intl !== 'undefined' && typeof Intl.NumberFormat === 'function'
@@ -899,6 +963,49 @@ function getHindiReadTimeLabelFromText(value = '') {
   return `${formatHindiNumber(minutes)} मिनट में पढ़ें`;
 }
 
+function normalizeLyricsMedia(media) {
+  if (!media) return [];
+  const items = Array.isArray(media) ? media : [media];
+  return items.filter(
+    (item) =>
+      item &&
+      typeof item === 'object' &&
+      typeof item.src === 'string' &&
+      item.src.trim().length > 0,
+  );
+}
+
+function getLyricsBlocks(data) {
+  if (!data || typeof data !== 'object') return [];
+  const blocks = Array.isArray(data.blocks)
+    ? data.blocks
+    : Array.isArray(data.content)
+      ? data.content
+      : [];
+  return blocks.filter((block) => {
+    if (!block || typeof block !== 'object') return false;
+    if (block.type === 'image') return normalizeLyricsMedia(block).length > 0;
+    if (normalizeLyricsMedia(block.mediaBefore).length > 0) return true;
+    if (normalizeLyricsMedia(block.mediaAfter).length > 0) return true;
+    if (typeof block.html === 'string' && block.html.trim().length > 0)
+      return true;
+    if (typeof block.text === 'string' && block.text.trim().length > 0)
+      return true;
+    return (
+      typeof block.content === 'string' && block.content.trim().length > 0
+    );
+  });
+}
+
+function hasRenderableLyricsBody(data) {
+  if (typeof data === 'string') return data.trim().length > 0;
+  if (!data || typeof data !== 'object') return false;
+  if (typeof data.content === 'string' && data.content.trim().length > 0)
+    return true;
+  if (Array.isArray(data.lines) && data.lines.length > 0) return true;
+  return getLyricsBlocks(data).length > 0;
+}
+
 function getLyricsReadableText(data) {
   if (typeof data === 'string') return data;
   if (!data || typeof data !== 'object') return '';
@@ -906,6 +1013,22 @@ function getLyricsReadableText(data) {
   const parts = [];
   if (typeof data.title === 'string') parts.push(data.title);
   if (typeof data.content === 'string') parts.push(data.content);
+
+  getLyricsBlocks(data).forEach((block) => {
+    if (!block || typeof block !== 'object') return;
+
+    if (typeof block.text === 'string') parts.push(block.text);
+    if (typeof block.content === 'string') parts.push(block.content);
+    if (typeof block.html === 'string') parts.push(block.html);
+
+    normalizeLyricsMedia(block.type === 'image' ? block : block.mediaBefore)
+      .concat(normalizeLyricsMedia(block.mediaAfter))
+      .forEach((mediaItem) => {
+        if (typeof mediaItem.alt === 'string') parts.push(mediaItem.alt);
+        if (typeof mediaItem.caption === 'string')
+          parts.push(mediaItem.caption);
+      });
+  });
 
   if (Array.isArray(data.lines)) {
     data.lines.forEach((line) => {
@@ -958,11 +1081,7 @@ function hasLyricsContent(data) {
   if (Array.isArray(data?.items) && data.items.length > 0) return true;
   if (Array.isArray(data?.extraKathas) && data.extraKathas.length > 0)
     return true;
-  if (typeof data === 'string') return data.trim().length > 0;
-  if (data && typeof data.content === 'string') {
-    return data.content.trim().length > 0;
-  }
-  return Boolean(data && Array.isArray(data.lines) && data.lines.length > 0);
+  return hasRenderableLyricsBody(data);
 }
 
 function hasMantrasContent(data) {
@@ -1835,8 +1954,89 @@ function renderLyrics(data) {
   const titleHtml = data.title
     ? `<div class="title-line">${data.title}</div>`
     : '';
+
+  const renderLyricsMedia = (mediaItem, placement = '') => {
+    const mediaList = normalizeLyricsMedia(mediaItem);
+    if (!mediaList.length) return '';
+
+    return mediaList
+      .map((item) => {
+        const altText = escapeHtml(
+          item.alt || item.caption || data.title || 'भक्ति चित्र',
+        );
+        const captionHtml =
+          typeof item.caption === 'string' && item.caption.trim().length > 0
+            ? `<figcaption>${escapeHtml(item.caption)}</figcaption>`
+            : '';
+        const alignClass =
+          item.align === 'left' || item.align === 'right'
+            ? ` align-${item.align}`
+            : '';
+        const placementClass = placement ? ` katha-figure-${placement}` : '';
+
+        return `<figure class="katha-figure${placementClass}${alignClass}">
+          <img src="${escapeHtml(item.src)}" alt="${altText}" loading="lazy" decoding="async" onerror="handleContentImageError(this)">
+          ${captionHtml}
+        </figure>`;
+      })
+      .join('');
+  };
+
+  const renderLyricsMediaGroup = (mediaItem, placement = '') => {
+    const mediaHtml = renderLyricsMedia(mediaItem, placement);
+    if (!mediaHtml) return '';
+    const placementClass = placement ? ` katha-media-${placement}` : '';
+    return `<div class="katha-media${placementClass}">${mediaHtml}</div>`;
+  };
+
+  const blocks = getLyricsBlocks(data);
+  if (blocks.length > 0) {
+    const blocksHtml = blocks
+      .map((block) => {
+        if (!block || typeof block !== 'object') return '';
+
+        const beforeMedia = renderLyricsMediaGroup(block.mediaBefore, 'before');
+        const afterMedia = renderLyricsMediaGroup(block.mediaAfter, 'after');
+
+        if (block.type === 'image') {
+          const mediaHtml = renderLyricsMediaGroup(block, 'standalone');
+          return mediaHtml
+            ? `<div class="lyrics-block lyrics-block-media">${mediaHtml}</div>`
+            : '';
+        }
+
+        const rawHtml =
+          typeof block.html === 'string' && block.html.trim().length > 0
+            ? block.html
+            : '';
+        const text =
+          typeof block.text === 'string'
+            ? block.text
+            : typeof block.content === 'string'
+              ? block.content
+              : '';
+        const bodyHtml = rawHtml
+          ? decorateContentHtml(rawHtml)
+          : text
+            ? block.type === 'refrain'
+              ? `<div class="refrain">${decorateContentHtml(text)}</div>`
+              : `<div class="stanza">${decorateContentHtml(text)}</div>`
+            : '';
+
+        if (!beforeMedia && !bodyHtml && !afterMedia) return '';
+
+        return `<div class="lyrics-block">${beforeMedia}${bodyHtml}${afterMedia}</div>`;
+      })
+      .filter(Boolean)
+      .join('');
+
+    if (blocksHtml) {
+      return `${titleHtml}<div class="lyrics-flow">${blocksHtml}</div>`;
+    }
+  }
+
   if (typeof data.content === 'string' && data.content.trim().length > 0) {
-    return `${titleHtml}<div class="stanza">${data.content}</div>`;
+    return `${titleHtml}<div class="stanza">${decorateContentHtml(data.content)}</div>`;
   }
   if (!Array.isArray(data.lines) || !data.lines.length)
     return 'जल्द ही आ रहा है...';
@@ -1844,14 +2044,16 @@ function renderLyrics(data) {
   const linesHtml = data.lines
     .map((line) => {
       if (line.type === 'refrain') {
-        return `<div class="refrain">${line.text}</div>`;
+        return `<div class="refrain">${decorateContentHtml(line.text)}</div>`;
       } else if (line.type === 'stanza') {
         const refrainHtml = line.refrain
-          ? `<div class="refrain">${line.refrain}</div>`
+          ? `<div class="refrain">${decorateContentHtml(line.refrain)}</div>`
           : '';
-        return `<div class="stanza">${line.text}${refrainHtml}</div>`;
+        return `<div class="stanza">${decorateContentHtml(line.text)}${refrainHtml}</div>`;
       }
-      return line.text;
+      return typeof line.text === 'string'
+        ? decorateContentHtml(line.text)
+        : line.text;
     })
     .join('');
 

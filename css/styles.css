@@ -1568,6 +1568,74 @@ body.reduced-effects .deity-card:hover {
   margin-bottom: 25px;
 }
 
+.lyrics-box .lyrics-flow {
+  display: grid;
+  gap: 26px;
+}
+
+.lyrics-box .lyrics-block {
+  display: grid;
+  gap: 18px;
+}
+
+.lyrics-box .lyrics-flow > .lyrics-block > .stanza,
+.lyrics-box .lyrics-flow > .lyrics-block > .refrain {
+  margin-bottom: 0;
+}
+
+.lyrics-box .katha-media {
+  display: grid;
+  gap: 16px;
+}
+
+.lyrics-box .katha-figure,
+.lyrics-box .stanza img {
+  margin: 0 auto;
+  width: min(100%, 720px);
+}
+
+.lyrics-box .katha-figure {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 22px;
+  background: linear-gradient(
+    180deg,
+    rgba(var(--gold-rgb), 0.08),
+    rgba(var(--saffron-rgb), 0.04)
+  );
+  border: 1px solid rgba(var(--gold-rgb), 0.18);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
+}
+
+.lyrics-box .katha-figure.align-left {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.lyrics-box .katha-figure.align-right {
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.lyrics-box .katha-figure img,
+.lyrics-box .stanza img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+  border: 1px solid rgba(var(--gold-rgb), 0.14);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+  object-fit: cover;
+}
+
+.lyrics-box .katha-figure figcaption {
+  text-align: center;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: rgba(var(--cream-rgb), 0.82);
+}
+
 .lyrics-box .refrain {
   color: var(--saffron-light);
   font-weight: bold;
@@ -2028,6 +2096,29 @@ footer {
   .lyrics-box {
     padding: 20px;
     font-size: 1rem;
+  }
+
+  .lyrics-box .lyrics-flow {
+    gap: 20px;
+  }
+
+  .lyrics-box .lyrics-block {
+    gap: 14px;
+  }
+
+  .lyrics-box .katha-figure {
+    width: 100%;
+    padding: 10px;
+    border-radius: 18px;
+  }
+
+  .lyrics-box .katha-figure img,
+  .lyrics-box .stanza img {
+    border-radius: 12px;
+  }
+
+  .lyrics-box .katha-figure figcaption {
+    font-size: 0.88rem;
   }
 
   .content-header {
