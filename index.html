@@ -128,73 +128,76 @@
       >
         <span class="nav-icon-emoji">🏠</span> मुख्य पृष्ठ
       </button>
-      <button
-        class="nav-arrow left"
-        onclick="scrollNav(-1)"
-        aria-label="Scroll Left"
-      >
-        ‹
-      </button>
-      <div class="nav-inner-wrapper">
-        <div class="nav-inner" id="navInner">
+      <div class="nav-primary" id="navInner">
+        <button
+          class="nav-btn"
+          onclick="showHomeByType('देव', 'type-dev')"
+          data-page="type-dev"
+        >
+          <span class="nav-icon-emoji">🕉️</span> देव
+        </button>
+        <button
+          class="nav-btn"
+          onclick="showHomeByType('देवी', 'type-devi')"
+          data-page="type-devi"
+        >
+          <span class="nav-icon-emoji">🌺</span> देवी
+        </button>
+        <div class="nav-overflow" id="navOverflow">
           <button
-            class="nav-btn"
-            onclick="showHomeByType('देव', 'type-dev')"
-            data-page="type-dev"
+            id="navMoreButton"
+            class="nav-btn nav-more-btn"
+            type="button"
+            aria-label="More menu"
+            aria-controls="navMoreMenu"
+            aria-expanded="false"
           >
-            <span class="nav-icon-emoji">🕉️</span> देव
+            <span class="nav-more-icon" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+            </span>
+            <span class="sr-only">More menu</span>
           </button>
-          <button
-            class="nav-btn"
-            onclick="showHomeByType('देवी', 'type-devi')"
-            data-page="type-devi"
-          >
-            <span class="nav-icon-emoji">🌺</span> देवी
-          </button>
-          <button
-            class="nav-btn"
-            onclick="showHomeByType('अवतार', 'type-avatar')"
-            data-page="type-avatar"
-          >
-            <span class="nav-icon-emoji">🏹</span> अवतार
-          </button>
-          <button
-            class="nav-btn"
-            onclick="showHomeByType('ग्रह देव', 'type-grah-dev')"
-            data-page="type-grah-dev"
-          >
-            <span class="nav-icon-emoji">🪐</span> ग्रह देव
-          </button>
-          <button
-            class="nav-btn"
-            onclick="showHomeByType('लोक देव', 'type-lok-dev')"
-            data-page="type-lok-dev"
-          >
-            <span class="nav-icon-emoji">🎠</span> लोक देव
-          </button>
-          <button
-            class="nav-btn"
-            onclick="showTemplesMenuPage()"
-            data-page="temples"
-          >
-            <span class="nav-icon-emoji">🛕</span> प्रसिद्ध मंदिर
-          </button>
-          <button
-            class="nav-btn"
-            onclick="showFestivalsMenuPage()"
-            data-page="festivals"
-          >
-            <span class="nav-icon-emoji">🎉</span> प्रसिद्ध त्योहार
-          </button>
+          <div class="nav-overflow-menu" id="navMoreMenu">
+            <button
+              class="nav-btn"
+              onclick="showHomeByType('अवतार', 'type-avatar')"
+              data-page="type-avatar"
+            >
+              <span class="nav-icon-emoji">🏹</span> अवतार
+            </button>
+            <button
+              class="nav-btn"
+              onclick="showHomeByType('ग्रह देव', 'type-grah-dev')"
+              data-page="type-grah-dev"
+            >
+              <span class="nav-icon-emoji">🪐</span> ग्रह देव
+            </button>
+            <button
+              class="nav-btn"
+              onclick="showHomeByType('लोक देव', 'type-lok-dev')"
+              data-page="type-lok-dev"
+            >
+              <span class="nav-icon-emoji">🎠</span> लोक देव
+            </button>
+            <button
+              class="nav-btn"
+              onclick="showTemplesMenuPage()"
+              data-page="temples"
+            >
+              <span class="nav-icon-emoji">🛕</span> प्रसिद्ध मंदिर
+            </button>
+            <button
+              class="nav-btn"
+              onclick="showFestivalsMenuPage()"
+              data-page="festivals"
+            >
+              <span class="nav-icon-emoji">🎉</span> प्रसिद्ध त्योहार
+            </button>
+          </div>
         </div>
       </div>
-      <button
-        class="nav-arrow right"
-        onclick="scrollNav(1)"
-        aria-label="Scroll Right"
-      >
-        ›
-      </button>
     </nav>
 
     <div class="main-container">
@@ -202,12 +205,13 @@
       <div id="page-home" class="page active">
         <div class="home-title-row">
           <div class="section-title">
-            <span class="diya">🪔</span> देव-देवी संग्रह
+            <span class="diya" id="homeSectionIcon" aria-hidden="true">🪔</span>
+            <span id="homeSectionTitleText">देव-देवी संग्रह</span>
           </div>
         </div>
         <div class="home-hero-row">
-          <div class="section-subtitle">
-            किसी भी देवता का नाम चुनें और उनकी आरती, चालीसा व मंत्र पढ़ें
+          <div class="section-subtitle" id="homeSectionSubtitle">
+            किसी भी देव-देवी का नाम चुनें और उनकी आरती, चालीसा व मंत्र पढ़ें
           </div>
           <div class="home-search-wrap">
             <div class="home-search-controls">

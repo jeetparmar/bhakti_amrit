@@ -3,7 +3,9 @@ function createParticles() {
   const container = document.getElementById('particles');
   if (!container) return;
   const symbols = ['🕉️', '✨', '🌸', '⭐', '🪔', '🏹', '🌺', '🌼'];
-  const particleCount = window.matchMedia('(max-width: 768px)').matches ? 8 : 15;
+  const particleCount = window.matchMedia('(max-width: 768px)').matches
+    ? 8
+    : 15;
   for (let i = 0; i < particleCount; i++) {
     const p = document.createElement('div');
     p.className = 'particle';
@@ -258,6 +260,57 @@ function getHomeSearchPlaceholder(typeId = activeHomeType) {
   };
   const safeType = getSafeHomeType(typeId);
   return placeholders[safeType] || placeholders.all;
+}
+
+function getHomeSectionMeta(typeId = activeHomeType) {
+  const sectionMeta = {
+    all: {
+      icon: '🪔',
+      title: 'देव-देवी संग्रह',
+      subtitle:
+        'किसी भी देव-देवी का नाम चुनें और उनकी आरती, चालीसा व मंत्र पढ़ें',
+    },
+    देव: {
+      icon: '🕉️',
+      title: 'देव संग्रह',
+      subtitle: 'किसी भी देव का नाम चुनें और उनकी आरती, चालीसा व मंत्र पढ़ें',
+    },
+    देवी: {
+      icon: '🌺',
+      title: 'देवी संग्रह',
+      subtitle: 'किसी भी देवी का नाम चुनें और उनकी आरती, चालीसा व मंत्र पढ़ें',
+    },
+    अवतार: {
+      icon: '🏹',
+      title: 'अवतार संग्रह',
+      subtitle: 'किसी भी अवतार का नाम चुनें और उनकी आरती, चालीसा व मंत्र पढ़ें',
+    },
+    'ग्रह देव': {
+      icon: '🪐',
+      title: 'ग्रह देव संग्रह',
+      subtitle:
+        'किसी भी ग्रह देव का नाम चुनें और उनकी आरती, चालीसा व मंत्र पढ़ें',
+    },
+    'लोक देव': {
+      icon: '🎠',
+      title: 'लोक देव संग्रह',
+      subtitle:
+        'किसी भी लोक देव का नाम चुनें और उनकी आरती, चालीसा व मंत्र पढ़ें',
+    },
+  };
+  const safeType = getSafeHomeType(typeId);
+  return sectionMeta[safeType] || sectionMeta.all;
+}
+
+function updateHomeSectionHeader(typeId = activeHomeType) {
+  const sectionMeta = getHomeSectionMeta(typeId);
+  const iconEl = document.getElementById('homeSectionIcon');
+  const titleText = document.getElementById('homeSectionTitleText');
+  const subtitleText = document.getElementById('homeSectionSubtitle');
+
+  if (iconEl) iconEl.textContent = sectionMeta.icon;
+  if (titleText) titleText.textContent = sectionMeta.title;
+  if (subtitleText) subtitleText.textContent = sectionMeta.subtitle;
 }
 
 function getSafeDeityTab(tabId = 'about') {
@@ -657,6 +710,7 @@ function applyUrlState() {
 }
 
 function buildHomeGrid() {
+  updateHomeSectionHeader(activeHomeType);
   renderHomeGrid(activeHomeType, activeHomeSearchQuery);
 }
 
@@ -1042,9 +1096,7 @@ function getHomeTagsHtml(key, deity) {
   const isExpanded = expandedHomeTags.has(key);
   const hasHiddenTags = tags.length > HOME_VISIBLE_TAG_COUNT;
   const visibleTags =
-    hasHiddenTags && !isExpanded
-      ? tags.slice(0, HOME_VISIBLE_TAG_COUNT)
-      : tags;
+    hasHiddenTags && !isExpanded ? tags.slice(0, HOME_VISIBLE_TAG_COUNT) : tags;
   const toggleHtml = hasHiddenTags
     ? `<button class="tag tag-toggle" type="button" onclick="toggleHomeTags(event, '${key}')">${isExpanded ? 'कम..' : 'और..'}</button>`
     : '';
@@ -1218,6 +1270,7 @@ function showHomeByType(typeId = 'all', navId = 'home', options = {}) {
   activeDeityTab = 'about';
   activeTempleDetailId = '';
   activeFestivalDetailId = '';
+  updateHomeSectionHeader(safeType);
   showPage('home', safeNavId);
   const grid = document.getElementById('homeGrid');
   const searchInput = document.getElementById('homeSearchInput');
@@ -1286,31 +1339,62 @@ function setupHomeSearch() {
 }
 
 // ============ NAVIGATION ============
-function scrollNav(direction) {
-  const container = document.querySelector('.nav-inner-wrapper');
-  const scrollAmount = 200;
-  container.scrollBy({
-    left: direction * scrollAmount,
-    behavior: 'smooth',
-  });
+function setNavOverflowOpen(isOpen) {
+  const navOverflow = document.getElementById('navOverflow');
+  const navMoreButton = document.getElementById('navMoreButton');
+  if (!navOverflow || !navMoreButton) return;
+  navOverflow.classList.toggle('open', Boolean(isOpen));
+  navMoreButton.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
 }
 
-function updateArrowVisibility() {
-  const container = document.querySelector('.nav-inner-wrapper');
-  const leftArrow = document.querySelector('.nav-arrow.left');
-  const rightArrow = document.querySelector('.nav-arrow.right');
+function closeNavOverflow() {
+  setNavOverflowOpen(false);
+}
 
-  if (!container || !leftArrow || !rightArrow) return;
+function toggleNavOverflow(force) {
+  const navOverflow = document.getElementById('navOverflow');
+  if (!navOverflow) return;
+  const shouldOpen =
+    typeof force === 'boolean'
+      ? force
+      : !navOverflow.classList.contains('open');
+  setNavOverflowOpen(shouldOpen);
+}
 
-  const canScroll = container.scrollWidth > container.clientWidth + 5;
+function syncNavOverflowState() {
+  const navOverflow = document.getElementById('navOverflow');
+  const navMoreButton = document.getElementById('navMoreButton');
+  if (!navOverflow || !navMoreButton) return;
+  const hasActiveOverflowItem = Boolean(
+    navOverflow.querySelector('.nav-overflow-menu .nav-btn.active'),
+  );
+  navMoreButton.classList.toggle('active', hasActiveOverflowItem);
+}
 
-  container.classList.toggle('is-scrollable', canScroll);
-  leftArrow.style.display = container.scrollLeft > 5 ? 'flex' : 'none';
-  rightArrow.style.display =
-    canScroll &&
-    container.scrollLeft + container.clientWidth < container.scrollWidth - 5
-      ? 'flex'
-      : 'none';
+function setupNavOverflow() {
+  const navOverflow = document.getElementById('navOverflow');
+  const navMoreButton = document.getElementById('navMoreButton');
+  const navMoreMenu = document.getElementById('navMoreMenu');
+  if (!navOverflow || !navMoreButton || !navMoreMenu) return;
+  if (navOverflow.dataset.ready === 'true') return;
+  navOverflow.dataset.ready = 'true';
+
+  navMoreButton.addEventListener('click', (event) => {
+    event.stopPropagation();
+    toggleNavOverflow();
+  });
+
+  navMoreMenu.querySelectorAll('.nav-btn').forEach((button) => {
+    button.addEventListener('click', () => {
+      closeNavOverflow();
+    });
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!navOverflow.contains(event.target)) {
+      closeNavOverflow();
+    }
+  });
 }
 
 function updateSiteTitleByLang() {
@@ -1442,6 +1526,7 @@ function syncSiteHeaderByPage(pageId) {
 }
 
 function showPage(pageId, navId) {
+  closeNavOverflow();
   if (pageId !== 'deity') closeReadingMode();
   document
     .querySelectorAll('.page')
@@ -1493,15 +1578,8 @@ function syncNav(pageId) {
   document.querySelectorAll('.nav-btn').forEach((b) => {
     const isActive = b.dataset.page === pageId;
     b.classList.toggle('active', isActive);
-    if (isActive) {
-      b.scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest',
-        inline: 'center',
-      });
-    }
   });
-  updateArrowVisibility();
+  syncNavOverflowState();
 }
 
 function showDeityPage(key, options = {}) {
@@ -2167,10 +2245,7 @@ function matchesTempleFilter(temple, filter) {
       'बालाजी',
     ]);
   if (filter === 'ganesh')
-    return includesAnyKeyword(`${deity} ${name} ${type}`, [
-      'ganesh',
-      'गणेश',
-    ]);
+    return includesAnyKeyword(`${deity} ${name} ${type}`, ['ganesh', 'गणेश']);
   if (filter === 'jain')
     return includesAnyKeyword(`${deity} ${name} ${type}`, ['jain', 'जैन']);
 
@@ -2199,7 +2274,9 @@ function matchesTempleFilter(temple, filter) {
 }
 
 function getTempleTypeLabel(type = '') {
-  const normalizedType = String(type || '').trim().toLowerCase();
+  const normalizedType = String(type || '')
+    .trim()
+    .toLowerCase();
   const templeTypeLabels = {
     jyotirlinga: 'ज्योतिर्लिंग',
     'shakti peeth': 'शक्ति पीठ',
@@ -2930,8 +3007,8 @@ window.addEventListener('load', () => {
     loadTempleViewMode();
     setupHomeViewToggle();
     setupHomeSearch();
+    setupNavOverflow();
     buildHomeGrid();
-    updateArrowVisibility();
     updateSiteTitleByLang();
     syncDefaultSiteHeaderHeight();
 
@@ -2940,11 +3017,6 @@ window.addEventListener('load', () => {
       attributes: true,
       attributeFilter: ['lang'],
     });
-
-    const navWrapper = document.querySelector('.nav-inner-wrapper');
-    if (navWrapper) {
-      navWrapper.addEventListener('scroll', updateArrowVisibility);
-    }
   } catch (error) {
     console.error('App initialization failed:', error);
     hideLoader();
@@ -2971,10 +3043,14 @@ window.addEventListener('popstate', () => {
 
 window.addEventListener('resize', () => {
   syncDefaultSiteHeaderHeight();
+  if (window.innerWidth > 600) closeNavOverflow();
+  syncNavOverflowState();
 });
 
 window.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape') closeReadingMode();
+  if (event.key !== 'Escape') return;
+  closeReadingMode();
+  closeNavOverflow();
 });
 
 window.addEventListener('DOMContentLoaded', () => {
