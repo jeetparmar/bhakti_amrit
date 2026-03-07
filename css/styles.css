@@ -1568,6 +1568,37 @@ body.reduced-effects .deity-card:hover {
   margin-bottom: 25px;
 }
 
+.lyrics-box .lyrics-line-item {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.lyrics-box .lyrics-line-item:last-child {
+  margin-bottom: 0;
+}
+
+.lyrics-box .lyrics-line-item > .stanza,
+.lyrics-box .lyrics-line-item > .refrain {
+  margin-bottom: 0;
+}
+
+.lyrics-box .lyrics-line-meaning {
+  display: none;
+  width: min(100%, 760px);
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: rgba(var(--gold-rgb), 0.08);
+  border: 1px solid rgba(var(--gold-rgb), 0.18);
+  color: rgba(var(--cream-rgb), 0.9);
+  font-size: 1.02rem;
+  line-height: 1.85;
+}
+
+.lyrics-box.lyrics-meanings-expanded .lyrics-line-meaning {
+  display: block;
+}
+
 .lyrics-box .lyrics-flow {
   display: grid;
   gap: 26px;
@@ -2106,6 +2137,21 @@ footer {
     gap: 14px;
   }
 
+  .lyrics-box .lyrics-line-item {
+    gap: 10px;
+  }
+
+  .section-action-btn {
+    font-size: 0.9rem;
+  }
+
+  .lyrics-box .lyrics-line-meaning {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 0.95rem;
+    line-height: 1.75;
+  }
+
   .lyrics-box .katha-figure {
     width: 100%;
     padding: 10px;
@@ -2146,7 +2192,7 @@ footer {
     display: none;
   }
 
-  .section-reading-btn {
+  .section-action-btn {
     min-width: 34px;
     min-height: 34px;
     padding: 6px 8px;
@@ -2163,7 +2209,8 @@ footer {
     font-size: 0.76rem;
   }
 
-  .section-reading-label {
+  .section-reading-label,
+  .section-meaning-label {
     display: none;
   }
 }
@@ -3031,7 +3078,7 @@ footer {
   white-space: nowrap;
 }
 
-.section-reading-btn {
+.section-action-btn {
   border: 1px solid rgba(var(--gold-rgb), 0.45);
   background: rgba(var(--dark-rgb), 0.55);
   color: var(--cream);
@@ -3043,17 +3090,27 @@ footer {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin-left: auto;
   transition: all 0.2s ease;
 }
 
-.section-reading-btn:hover {
+.section-action-btn:hover {
   border-color: var(--gold);
   color: var(--gold);
 }
 
+.lyrics-box.lyrics-meanings-expanded .section-meaning-btn {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(var(--gold-rgb), 0.12);
+}
+
 .section-reading-icon {
   line-height: 1;
+}
+
+.section-meaning-icon {
+  line-height: 1;
+  font-weight: 700;
 }
 
 .deity-temples-intro {

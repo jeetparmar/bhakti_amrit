@@ -1036,9 +1036,15 @@ function getLyricsReadableText(data) {
 
   if (Array.isArray(data.lines)) {
     data.lines.forEach((line) => {
+      if (typeof line === 'string') {
+        parts.push(line);
+        return;
+      }
       if (!line || typeof line !== 'object') return;
       if (typeof line.text === 'string') parts.push(line.text);
       if (typeof line.refrain === 'string') parts.push(line.refrain);
+      const hindiText = getLyricsLineHindiText(line);
+      if (hindiText) parts.push(hindiText);
     });
   }
 
@@ -1821,6 +1827,7 @@ function showDeityPage(key, options = {}) {
         <div class="lyrics-box">
           ${getSectionMetaHtml({
             readTimeLabel: aartiReadTime,
+            showLyricsMeaningToggle: hasLyricsHindiMeanings(deity.aarti),
             showReadingMode: true,
           })}
           ${renderLyrics(deity.aarti)}
@@ -1834,6 +1841,7 @@ function showDeityPage(key, options = {}) {
         <div class="lyrics-box">
           ${getSectionMetaHtml({
             readTimeLabel: chalisaReadTime,
+            showLyricsMeaningToggle: hasLyricsHindiMeanings(deity.chalisa),
             showReadingMode: true,
           })}
           ${renderLyrics(deity.chalisa)}
@@ -1870,6 +1878,7 @@ function showDeityPage(key, options = {}) {
         <div class="lyrics-box">
           ${getSectionMetaHtml({
             readTimeLabel: extraReadTime,
+            showLyricsMeaningToggle: hasLyricsHindiMeanings(selectedExtraEntry),
             showReadingMode: true,
           })}
           ${renderExtraContent(extraData)}
@@ -1928,8 +1937,9 @@ function renderAbout(data) {
 function getSectionMetaHtml({
   readTimeLabel = '',
   showReadingMode = false,
+  showLyricsMeaningToggle = false,
 } = {}) {
-  if (!readTimeLabel && !showReadingMode) return '';
+  if (!readTimeLabel && !showReadingMode && !showLyricsMeaningToggle) return '';
 
   return `<div class="deity-tab-actions">
     ${
@@ -1941,14 +1951,103 @@ function getSectionMetaHtml({
         : ''
     }
     ${
+      showLyricsMeaningToggle
+        ? `<button class="section-action-btn section-meaning-btn" type="button" onclick="toggleLyricsMeanings(this)" aria-expanded="false" data-collapsed-label="हिंदी में समझें" data-expanded-label="हिंदी अर्थ छुपाएं" title="हिंदी में समझें" aria-label="हिंदी में समझें">
+      <span class="section-meaning-icon" aria-hidden="true">अ</span>
+      <span class="section-meaning-label">हिंदी में समझें</span>
+    </button>`
+        : ''
+    }
+    ${
       showReadingMode
-        ? `<button class="section-reading-btn" type="button" onclick="openReadingModeFromSection(this)" title="पठन मोड" aria-label="पठन मोड">
+        ? `<button class="section-action-btn section-reading-btn" type="button" onclick="openReadingModeFromSection(this)" title="पठन मोड" aria-label="पठन मोड">
       <span class="section-reading-icon" aria-hidden="true">📖</span>
       <span class="section-reading-label">पठन मोड</span>
     </button>`
         : ''
     }
   </div>`;
+}
+
+function getLyricsLineHindiText(line) {
+  if (!line || typeof line !== 'object') return '';
+
+  const candidates = [
+    line.hindiMeaning,
+    line.hindiText,
+    line.meaningHindi,
+    line.meaning,
+    line.hindi,
+  ];
+  const match = candidates.find(
+    (value) => typeof value === 'string' && value.trim().length > 0,
+  );
+
+  return match || '';
+}
+
+function hasLyricsHindiMeanings(data) {
+  if (!data || typeof data !== 'object') return false;
+
+  if (
+    Array.isArray(data.lines) &&
+    data.lines.some((line) => getLyricsLineHindiText(line))
+  ) {
+    return true;
+  }
+
+  return getLyricsBlocks(data).some((block) => getLyricsLineHindiText(block));
+}
+
+function renderLyricsLineMeaning(line) {
+  const hindiText = getLyricsLineHindiText(line);
+  if (!hindiText) return '';
+
+  return `<div class="lyrics-line-meaning">${decorateContentHtml(hindiText)}</div>`;
+}
+
+function toggleLyricsMeanings(trigger) {
+  const lyricsBox = trigger?.closest('.lyrics-box');
+  if (!lyricsBox) return;
+
+  const isExpanded = lyricsBox.classList.toggle('lyrics-meanings-expanded');
+  const labelEl = trigger.querySelector('.section-meaning-label');
+  const expandedLabel = trigger.dataset.expandedLabel || 'हिंदी अर्थ छुपाएं';
+  const collapsedLabel = trigger.dataset.collapsedLabel || 'हिंदी में समझें';
+
+  trigger.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+  trigger.setAttribute(
+    'title',
+    isExpanded ? expandedLabel : collapsedLabel,
+  );
+  if (labelEl) {
+    labelEl.textContent = isExpanded ? expandedLabel : collapsedLabel;
+  }
+}
+
+function renderLyricsLine(line) {
+  if (typeof line === 'string') {
+    return `<div class="lyrics-line-item">${decorateContentHtml(line)}</div>`;
+  }
+  if (!line || typeof line !== 'object') return '';
+
+  let bodyHtml = '';
+  if (line.type === 'refrain') {
+    bodyHtml = `<div class="refrain">${decorateContentHtml(line.text)}</div>`;
+  } else if (line.type === 'stanza') {
+    const refrainHtml = line.refrain
+      ? `<div class="refrain">${decorateContentHtml(line.refrain)}</div>`
+      : '';
+    bodyHtml = `<div class="stanza">${decorateContentHtml(line.text)}${refrainHtml}</div>`;
+  } else {
+    bodyHtml =
+      typeof line.text === 'string' ? decorateContentHtml(line.text) : line.text;
+  }
+
+  const meaningHtml = renderLyricsLineMeaning(line);
+  if (!bodyHtml && !meaningHtml) return '';
+
+  return `<div class="lyrics-line-item">${bodyHtml}${meaningHtml}</div>`;
 }
 
 function renderLyrics(data) {
@@ -2026,10 +2125,12 @@ function renderLyrics(data) {
               ? `<div class="refrain">${decorateContentHtml(text)}</div>`
               : `<div class="stanza">${decorateContentHtml(text)}</div>`
             : '';
+        const meaningHtml = renderLyricsLineMeaning(block);
 
-        if (!beforeMedia && !bodyHtml && !afterMedia) return '';
+        if (!beforeMedia && !bodyHtml && !meaningHtml && !afterMedia)
+          return '';
 
-        return `<div class="lyrics-block">${beforeMedia}${bodyHtml}${afterMedia}</div>`;
+        return `<div class="lyrics-block">${beforeMedia}${bodyHtml}${meaningHtml}${afterMedia}</div>`;
       })
       .filter(Boolean)
       .join('');
@@ -2045,21 +2146,7 @@ function renderLyrics(data) {
   if (!Array.isArray(data.lines) || !data.lines.length)
     return 'जल्द ही आ रहा है...';
 
-  const linesHtml = data.lines
-    .map((line) => {
-      if (line.type === 'refrain') {
-        return `<div class="refrain">${decorateContentHtml(line.text)}</div>`;
-      } else if (line.type === 'stanza') {
-        const refrainHtml = line.refrain
-          ? `<div class="refrain">${decorateContentHtml(line.refrain)}</div>`
-          : '';
-        return `<div class="stanza">${decorateContentHtml(line.text)}${refrainHtml}</div>`;
-      }
-      return typeof line.text === 'string'
-        ? decorateContentHtml(line.text)
-        : line.text;
-    })
-    .join('');
+  const linesHtml = data.lines.map((line) => renderLyricsLine(line)).join('');
 
   return `${titleHtml}${linesHtml}`;
 }
