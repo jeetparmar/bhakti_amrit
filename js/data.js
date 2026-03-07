@@ -104,6 +104,14 @@ const deities = {
     desc: 'कर्म फल दाता, सूर्य पुत्र, न्याय के देवता',
     img: 'icons/shani.webp',
   },
+  brihaspati: {
+    name: 'श्री बृहस्पति देव',
+    english: 'Shri Brihaspati Dev',
+    emoji: '📜',
+    color: '#EF6C00',
+    desc: 'वेदज्ञ, गुरु, न्याय के देवता',
+    img: 'icons/brihaspati.webp',
+  },
   gopal: {
     name: 'श्री गोपाल',
     english: 'Shri Gopal',

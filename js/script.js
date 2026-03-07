@@ -35,6 +35,7 @@ const deityTypeMap = {
   kali: 'देवी',
   khatu_shyam: 'लोक देव',
   shani: 'ग्रह देव',
+  brihaspati: 'ग्रह देव',
   gopal: 'अवतार',
   brahma: 'देव',
   bhairav: 'देव',
@@ -887,7 +888,11 @@ function handleContentImageError(img) {
     img.remove();
   }
 
-  if (media && !media.querySelector('img') && typeof media.remove === 'function') {
+  if (
+    media &&
+    !media.querySelector('img') &&
+    typeof media.remove === 'function'
+  ) {
     media.remove();
   }
 
@@ -910,7 +915,8 @@ function decorateContentHtml(value = '') {
     if (/\bonerror\s*=/.test(nextAttrs)) {
       nextAttrs = nextAttrs.replace(
         /\bonerror\s*=\s*(['"])(.*?)\1/i,
-        (fullMatch, quote) => ` onerror=${quote}handleContentImageError(this)${quote}`,
+        (fullMatch, quote) =>
+          ` onerror=${quote}handleContentImageError(this)${quote}`,
       );
     } else {
       nextAttrs += ' onerror="handleContentImageError(this)"';
@@ -991,9 +997,7 @@ function getLyricsBlocks(data) {
       return true;
     if (typeof block.text === 'string' && block.text.trim().length > 0)
       return true;
-    return (
-      typeof block.content === 'string' && block.content.trim().length > 0
-    );
+    return typeof block.content === 'string' && block.content.trim().length > 0;
   });
 }
 
@@ -2202,6 +2206,7 @@ const deityTempleMap = {
   kali: ['काली'],
   khatu_shyam: ['खाटू श्याम'],
   shani: ['शनि'],
+  brihaspati: ['बृहस्पति', 'बृहस्पतेश्वर', 'गुरु भगवान'],
   gopal: ['कृष्ण', 'Krishna'],
   brahma: ['ब्रह्मा'],
   bhairav: ['भैरव'],
@@ -2243,6 +2248,11 @@ const deityTempleMap = {
 
 const deityTempleIdMap = {
   annapurna: ['annapurna-temple'],
+  brihaspati: [
+    'brihaspati-dham-temple',
+    'brihaspateeshwar-temple',
+    'alangudi-guru-bhagavan-temple',
+  ],
   gayatri: ['gayatri-dham-haridwar', 'panch-gayatri-dham'],
   narmada: ['omkareshwar', 'maheshwar', 'hoshangabad', 'mandla'],
   parshuram: ['parshuram-temple-bihar'],

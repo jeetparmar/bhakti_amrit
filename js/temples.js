@@ -1782,4 +1782,61 @@ const templesData = [
     gradient:
       'linear-gradient(135deg, rgba(77,182,172,0.15), rgba(0,105,92,0.08))',
   },
+  {
+    id: 'brihaspati-dham-temple',
+    name: 'बृहस्पति धाम मंदिर',
+    nameEn: 'Brihaspati Dham Temple',
+    state: 'उत्तर प्रदेश',
+    deity: 'बृहस्पति देव (गुरु ग्रह)',
+    type: 'Hindu Temple',
+    emoji: '🛕🪐',
+    desc: 'बृहस्पति देव को समर्पित प्रसिद्ध मंदिर, जहाँ गुरु ग्रह की पूजा की जाती है।',
+    history:
+      'बृहस्पति धाम मंदिर उत्तर प्रदेश में स्थित है और यह देवगुरु बृहस्पति को समर्पित है। श्रद्धालु यहाँ विशेष रूप से गुरु दोष शांति, ज्ञान और समृद्धि की कामना से पूजा-अर्चना करने आते हैं।',
+    timings: '6:00AM – 8:00PM',
+    bestTime: 'गुरुवार, विशेष गुरु पूजा',
+    location: 'उत्तर प्रदेश, भारत',
+    mapQuery: 'Brihaspati+Dham+Temple+Uttar+Pradesh',
+    color: '#FFD54F',
+    gradient:
+      'linear-gradient(135deg, rgba(255,213,79,0.15), rgba(255,179,0,0.08))',
+  },
+  {
+    id: 'brihaspateeshwar-temple',
+    name: 'बृहस्पतेश्वर मंदिर',
+    nameEn: 'Brihaspateeshwar Temple',
+    state: 'महाराष्ट्र',
+    deity: 'भगवान शिव (बृहस्पतेश्वर रूप)',
+    type: 'Hindu Temple',
+    emoji: '🛕🕉️',
+    desc: 'महाराष्ट्र में स्थित प्राचीन मंदिर, जहाँ भगवान शिव के बृहस्पतेश्वर रूप की पूजा की जाती है।',
+    history:
+      'बृहस्पतेश्वर मंदिर महाराष्ट्र में स्थित है और यह भगवान शिव के विशेष रूप बृहस्पतेश्वर को समर्पित है। यहाँ श्रद्धालु विशेष रूप से गुरु ग्रह से संबंधित दोषों की शांति और आध्यात्मिक उन्नति के लिए पूजा करने आते हैं।',
+    timings: '6:00AM – 8:00PM',
+    bestTime: 'गुरुवार, महाशिवरात्रि',
+    location: 'महाराष्ट्र, भारत',
+    mapQuery: 'Brihaspateeshwar+Temple+Maharashtra',
+    color: '#90CAF9',
+    gradient:
+      'linear-gradient(135deg, rgba(144,202,249,0.15), rgba(25,118,210,0.08))',
+  },
+  {
+    id: 'alangudi-guru-bhagavan-temple',
+    name: 'आलंगुडी गुरु भगवान मंदिर',
+    nameEn: 'Alangudi Guru Bhagavan Temple',
+    state: 'तमिलनाडु',
+    deity: 'गुरु भगवान (बृहस्पति)',
+    type: 'Hindu Temple',
+    emoji: '🛕🪐',
+    desc: 'तमिलनाडु के आलंगुडी में स्थित प्रसिद्ध मंदिर, जो गुरु ग्रह (बृहस्पति) को समर्पित है।',
+    history:
+      'आलंगुडी गुरु भगवान मंदिर तमिलनाडु में स्थित है और यह नवग्रह मंदिरों में से एक प्रमुख मंदिर माना जाता है। यहाँ श्रद्धालु विशेष रूप से गुरु ग्रह की कृपा प्राप्त करने और गुरु दोष की शांति के लिए पूजा-अर्चना करते हैं।',
+    timings: '6:00AM – 8:30PM',
+    bestTime: 'गुरुवार, गुरु परिवर्तन, नवग्रह पूजा',
+    location: 'आलंगुडी, तंजावुर जिला, तमिलनाडु',
+    mapQuery: 'Alangudi+Guru+Bhagavan+Temple+Tamil+Nadu',
+    color: '#FFD54F',
+    gradient:
+      'linear-gradient(135deg, rgba(255,213,79,0.15), rgba(255,179,0,0.08))',
+  },
 ];
