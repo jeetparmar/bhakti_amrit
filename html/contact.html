@@ -49,6 +49,7 @@
       href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi:ital@0;1&family=Cinzel+Decorative:wght@400;700;900&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap"
       rel="stylesheet"
     />
+    <script src="../js/theme.js"></script>
     <link rel="stylesheet" href="../css/styles.css" />
     <style>
       .contact-page {
@@ -59,15 +60,15 @@
       }
 
       .contact-hero {
-        border: 1px solid rgba(212, 175, 55, 0.32);
+        border: 1px solid rgba(var(--gold-rgb), 0.32);
         border-radius: 22px;
         background: linear-gradient(
           145deg,
-          rgba(26, 10, 0, 0.86),
-          rgba(74, 14, 14, 0.66)
+          rgba(var(--dark-rgb), 0.86),
+          rgba(var(--maroon-rgb), 0.66)
         );
         padding: clamp(20px, 4vw, 36px);
-        box-shadow: 0 18px 34px rgba(0, 0, 0, 0.35);
+        box-shadow: 0 18px 34px rgba(var(--shadow-rgb), 0.35);
       }
 
       .contact-eyebrow {
@@ -87,7 +88,7 @@
 
       .contact-hero p {
         margin-top: 12px;
-        color: rgba(255, 248, 231, 0.9);
+        color: rgba(var(--cream-rgb), 0.9);
         line-height: 1.8;
       }
 
@@ -99,9 +100,9 @@
       }
 
       .contact-metric {
-        border: 1px solid rgba(255, 248, 231, 0.2);
+        border: 1px solid rgba(var(--cream-rgb), 0.2);
         border-radius: 12px;
-        background: rgba(255, 248, 231, 0.06);
+        background: rgba(var(--cream-rgb), 0.06);
         padding: 12px;
       }
 
@@ -112,7 +113,7 @@
       }
 
       .contact-metric span {
-        color: rgba(255, 248, 231, 0.82);
+        color: rgba(var(--cream-rgb), 0.82);
         font-size: 0.9rem;
       }
 
@@ -123,9 +124,9 @@
       }
 
       .contact-card {
-        border: 1px solid rgba(212, 175, 55, 0.3);
+        border: 1px solid rgba(var(--gold-rgb), 0.3);
         border-radius: 18px;
-        background: rgba(26, 10, 0, 0.72);
+        background: rgba(var(--dark-rgb), 0.72);
         padding: 18px;
       }
 
@@ -136,7 +137,7 @@
 
       .contact-card p {
         margin-top: 10px;
-        color: rgba(255, 248, 231, 0.86);
+        color: rgba(var(--cream-rgb), 0.86);
         line-height: 1.75;
       }
 
@@ -147,21 +148,21 @@
       }
 
       .contact-item {
-        border: 1px solid rgba(255, 179, 71, 0.28);
-        background: rgba(255, 107, 0, 0.08);
+        border: 1px solid rgba(var(--saffron-light-rgb), 0.28);
+        background: rgba(var(--saffron-rgb), 0.08);
         border-radius: 12px;
         padding: 10px;
       }
 
       .contact-item strong {
-        color: #ffd08d;
+        color: var(--saffron-light);
         display: block;
         margin-bottom: 4px;
       }
 
       .contact-item span,
       .contact-item a {
-        color: rgba(255, 248, 231, 0.9);
+        color: rgba(var(--cream-rgb), 0.9);
         font-size: 0.92rem;
         text-decoration: none;
         word-break: break-word;
@@ -187,14 +188,14 @@
       }
 
       .contact-btn-primary {
-        color: #2b1300;
-        background: linear-gradient(120deg, #f1882b, #d4af37);
+        color: var(--text);
+        background: var(--action-gradient);
       }
 
       .contact-btn-secondary {
         color: var(--cream);
-        border: 1px solid rgba(255, 248, 231, 0.36);
-        background: rgba(255, 248, 231, 0.08);
+        border: 1px solid rgba(var(--cream-rgb), 0.36);
+        background: rgba(var(--cream-rgb), 0.08);
       }
 
       @media (max-width: 840px) {

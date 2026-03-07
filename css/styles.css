@@ -1,4 +1,5 @@
 :root {
+  color-scheme: dark;
   --gold: #d4af37;
   --deep-gold: #b8860b;
   --saffron: #ff6b00;
@@ -9,7 +10,102 @@
   --dark: #1a0a00;
   --text: #2c1810;
   --lotus-pink: #e8748a;
+  --gold-rgb: 212, 175, 55;
+  --deep-gold-rgb: 184, 134, 11;
+  --saffron-rgb: 255, 107, 0;
+  --saffron-light-rgb: 255, 179, 71;
+  --crimson-rgb: 139, 0, 0;
+  --maroon-rgb: 74, 14, 14;
+  --cream-rgb: 255, 248, 231;
+  --dark-rgb: 26, 10, 0;
+  --text-rgb: 44, 24, 16;
+  --shadow-rgb: 0, 0, 0;
+  --white-rgb: 255, 255, 255;
+  --page-background: linear-gradient(
+    180deg,
+    rgba(var(--dark-rgb), 1) 0%,
+    rgba(var(--maroon-rgb), 0.94) 100%
+  );
+  --title-gradient: linear-gradient(
+    135deg,
+    var(--gold),
+    var(--saffron-light),
+    var(--gold),
+    var(--saffron)
+  );
+  --action-gradient: linear-gradient(120deg, var(--saffron), var(--gold));
+  --hero-panel-background: linear-gradient(
+    145deg,
+    rgba(var(--dark-rgb), 0.86),
+    rgba(var(--maroon-rgb), 0.66)
+  );
   --font-size-multiplier: 1;
+}
+
+:root[data-theme='sunrise'] {
+  --gold: #d9b65c;
+  --deep-gold: #b9852e;
+  --saffron: #eb7d34;
+  --saffron-light: #f5c87d;
+  --crimson: #b35656;
+  --maroon: #6b3941;
+  --cream: #fff4dd;
+  --dark: #4a251f;
+  --text: #2f1812;
+  --gold-rgb: 217, 182, 92;
+  --deep-gold-rgb: 185, 133, 46;
+  --saffron-rgb: 235, 125, 52;
+  --saffron-light-rgb: 245, 200, 125;
+  --crimson-rgb: 179, 86, 86;
+  --maroon-rgb: 107, 57, 65;
+  --cream-rgb: 255, 244, 221;
+  --dark-rgb: 74, 37, 31;
+  --text-rgb: 47, 24, 18;
+  --shadow-rgb: 58, 28, 24;
+}
+
+:root[data-theme='saffron'] {
+  --gold: #e1ad2d;
+  --deep-gold: #c57c0a;
+  --saffron: #ff7a00;
+  --saffron-light: #ffd37d;
+  --crimson: #aa3f1f;
+  --maroon: #5d1f08;
+  --cream: #fff3da;
+  --dark: #341104;
+  --text: #2b1206;
+  --gold-rgb: 225, 173, 45;
+  --deep-gold-rgb: 197, 124, 10;
+  --saffron-rgb: 255, 122, 0;
+  --saffron-light-rgb: 255, 211, 125;
+  --crimson-rgb: 170, 63, 31;
+  --maroon-rgb: 93, 31, 8;
+  --cream-rgb: 255, 243, 218;
+  --dark-rgb: 52, 17, 4;
+  --text-rgb: 43, 18, 6;
+  --shadow-rgb: 18, 8, 2;
+}
+
+:root[data-theme='lotus'] {
+  --gold: #f2c96d;
+  --deep-gold: #c88f54;
+  --saffron: #f58f97;
+  --saffron-light: #ffd0c9;
+  --crimson: #d25d8a;
+  --maroon: #6c2f57;
+  --cream: #fff1f5;
+  --dark: #4a2341;
+  --text: #2d1326;
+  --gold-rgb: 242, 201, 109;
+  --deep-gold-rgb: 200, 143, 84;
+  --saffron-rgb: 245, 143, 151;
+  --saffron-light-rgb: 255, 208, 201;
+  --crimson-rgb: 210, 93, 138;
+  --maroon-rgb: 108, 47, 87;
+  --cream-rgb: 255, 241, 245;
+  --dark-rgb: 74, 35, 65;
+  --text-rgb: 45, 19, 38;
+  --shadow-rgb: 53, 22, 41;
 }
 
 html {
@@ -27,16 +123,16 @@ img {
   display: block;
   max-width: 100%;
   border-radius: 14px;
-  border: 1px solid rgba(255, 248, 231, 0.28);
+  border: 1px solid rgba(var(--cream-rgb), 0.28);
   background: linear-gradient(
     145deg,
-    rgba(255, 248, 231, 0.16),
-    rgba(212, 175, 55, 0.1)
+    rgba(var(--cream-rgb), 0.16),
+    rgba(var(--gold-rgb), 0.1)
   );
   box-shadow:
-    0 14px 32px rgba(0, 0, 0, 0.45),
-    0 8px 18px rgba(255, 107, 0, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    0 14px 32px rgba(var(--shadow-rgb), 0.45),
+    0 8px 18px rgba(var(--saffron-rgb), 0.18),
+    inset 0 1px 0 rgba(var(--white-rgb), 0.35);
   backdrop-filter: blur(10px) saturate(120%);
   -webkit-backdrop-filter: blur(10px) saturate(120%);
   transition:
@@ -46,7 +142,7 @@ img {
 }
 
 body {
-  background: var(--dark);
+  background: var(--page-background);
   color: var(--cream);
   font-family: 'Tiro Devanagari Hindi', serif;
   overflow-x: hidden;
@@ -65,17 +161,17 @@ body::before {
   background:
     radial-gradient(
       ellipse 80% 60% at 50% -10%,
-      rgba(212, 175, 55, 0.15) 0%,
+      rgba(var(--gold-rgb), 0.15) 0%,
       transparent 60%
     ),
     radial-gradient(
       ellipse 60% 40% at 80% 80%,
-      rgba(255, 107, 0, 0.1) 0%,
+      rgba(var(--saffron-rgb), 0.1) 0%,
       transparent 50%
     ),
     radial-gradient(
       ellipse 40% 60% at 10% 60%,
-      rgba(139, 0, 0, 0.1) 0%,
+      rgba(var(--crimson-rgb), 0.1) 0%,
       transparent 50%
     );
   pointer-events: none;
@@ -107,6 +203,14 @@ body::before {
   animation: rotateSlow 60s linear infinite;
 }
 
+.mandala-stroke-primary {
+  stroke: var(--gold);
+}
+
+.mandala-stroke-secondary {
+  stroke: var(--saffron);
+}
+
 @keyframes rotateSlow {
   to {
     transform: translate(-50%, -50%) rotate(360deg);
@@ -119,11 +223,11 @@ header {
   z-index: 10;
   text-align: center;
   padding: 40px 20px 30px;
-  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+  border-bottom: 1px solid rgba(var(--gold-rgb), 0.3);
   background: linear-gradient(
     180deg,
-    rgba(26, 10, 0, 0.95) 0%,
-    rgba(26, 10, 0, 0.7) 100%
+    rgba(var(--dark-rgb), 0.95) 0%,
+    rgba(var(--dark-rgb), 0.7) 100%
   );
   backdrop-filter: blur(10px);
 }
@@ -134,17 +238,17 @@ header {
   display: block;
   animation: glow 3s ease-in-out infinite alternate;
   margin-bottom: 8px;
-  filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.8));
+  filter: drop-shadow(0 0 20px rgba(var(--gold-rgb), 0.8));
 }
 
 @keyframes glow {
   from {
-    filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.5));
+    filter: drop-shadow(0 0 10px rgba(var(--gold-rgb), 0.5));
   }
 
   to {
-    filter: drop-shadow(0 0 30px rgba(212, 175, 55, 1))
-      drop-shadow(0 0 60px rgba(255, 107, 0, 0.5));
+    filter: drop-shadow(0 0 30px rgba(var(--gold-rgb), 1))
+      drop-shadow(0 0 60px rgba(var(--saffron-rgb), 0.5));
   }
 }
 
@@ -152,7 +256,7 @@ header h1 {
   font-family: 'Cinzel Decorative', cursive;
   font-size: clamp(1.6rem, 4vw, 3rem);
   font-weight: 900;
-  background: linear-gradient(135deg, #d4af37, #ffb347, #d4af37, #ff6b00);
+  background: var(--title-gradient);
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -168,7 +272,7 @@ header h1 {
 }
 
 header p {
-  color: rgba(255, 248, 231, 0.6);
+  color: rgba(var(--cream-rgb), 0.6);
   font-size: 0.95rem;
   margin-top: 8px;
   font-family: 'EB Garamond', serif;
@@ -202,10 +306,10 @@ nav {
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: rgba(26, 10, 0, 0.85);
+  background: rgba(var(--dark-rgb), 0.85);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
-  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+  border-bottom: 1px solid rgba(var(--gold-rgb), 0.3);
   display: flex;
   align-items: center;
   padding: 6px 10px;
@@ -247,7 +351,7 @@ nav {
 }
 
 .nav-more-btn[aria-expanded='true']:not(.active) {
-  background: rgba(255, 248, 231, 0.1);
+  background: rgba(var(--cream-rgb), 0.1);
   border-color: var(--gold);
   color: var(--cream);
 }
@@ -291,9 +395,9 @@ nav {
 }
 
 .nav-btn {
-  background: rgba(255, 248, 231, 0.05);
-  border: 1px solid rgba(212, 175, 55, 0.2);
-  color: rgba(255, 248, 231, 0.8);
+  background: rgba(var(--cream-rgb), 0.05);
+  border: 1px solid rgba(var(--gold-rgb), 0.2);
+  color: rgba(var(--cream-rgb), 0.8);
   font-family: 'Tiro Devanagari Hindi', serif;
   font-size: 0.9rem;
   padding: 5px 10px;
@@ -317,12 +421,12 @@ nav {
   height: 22px;
   border-radius: 50%;
   object-fit: cover;
-  border: 1px solid rgba(212, 175, 55, 0.5);
-  box-shadow: 0 0 5px rgba(212, 175, 55, 0.2);
+  border: 1px solid rgba(var(--gold-rgb), 0.5);
+  box-shadow: 0 0 5px rgba(var(--gold-rgb), 0.2);
 }
 
 .nav-btn.active .nav-icon {
-  border-color: rgba(26, 10, 0, 0.4);
+  border-color: rgba(var(--dark-rgb), 0.4);
 }
 
 .nav-icon-emoji {
@@ -335,12 +439,12 @@ nav {
   color: var(--dark);
   border-color: transparent;
   font-weight: 700;
-  box-shadow: 0 4px 15px rgba(255, 107, 0, 0.4);
+  box-shadow: 0 4px 15px rgba(var(--saffron-rgb), 0.4);
   transform: translateY(-1px);
 }
 
 .nav-btn:hover:not(.active) {
-  background: rgba(255, 248, 231, 0.1);
+  background: rgba(var(--cream-rgb), 0.1);
   border-color: var(--gold);
   color: var(--cream);
 }
@@ -362,15 +466,15 @@ nav {
   position: absolute;
   inset: -7px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 248, 231, 0.4);
+  border: 1px solid rgba(var(--cream-rgb), 0.4);
   background: radial-gradient(
     circle at center,
-    rgba(255, 179, 71, 0.2),
-    rgba(255, 179, 71, 0) 70%
+    rgba(var(--saffron-light-rgb), 0.2),
+    rgba(var(--saffron-light-rgb), 0) 70%
   );
   box-shadow:
-    0 0 26px rgba(255, 107, 0, 0.38),
-    0 0 10px rgba(212, 175, 55, 0.3);
+    0 0 26px rgba(var(--saffron-rgb), 0.38),
+    0 0 10px rgba(var(--gold-rgb), 0.3);
   z-index: -1;
   pointer-events: none;
   animation: controlPulse 2.1s ease-out infinite;
@@ -380,13 +484,13 @@ nav {
 .font-size-btn {
   display: inline-flex;
   align-items: center;
-  border: 1px solid rgba(255, 248, 231, 0.4);
+  border: 1px solid rgba(var(--cream-rgb), 0.4);
   background: linear-gradient(
     145deg,
-    rgba(255, 248, 231, 0.18),
-    rgba(212, 175, 55, 0.1)
+    rgba(var(--cream-rgb), 0.18),
+    rgba(var(--gold-rgb), 0.1)
   );
-  color: rgba(255, 248, 231, 0.9);
+  color: rgba(var(--cream-rgb), 0.9);
   border-radius: 999px;
   cursor: pointer;
   font-family: 'Tiro Devanagari Hindi', serif;
@@ -394,8 +498,8 @@ nav {
   line-height: 1;
   transition: all 0.25s ease;
   box-shadow:
-    0 8px 22px rgba(0, 0, 0, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    0 8px 22px rgba(var(--shadow-rgb), 0.28),
+    inset 0 1px 0 rgba(var(--white-rgb), 0.35);
   backdrop-filter: blur(10px) saturate(125%);
   -webkit-backdrop-filter: blur(10px) saturate(125%);
   white-space: nowrap;
@@ -421,16 +525,16 @@ nav {
   transform: translate(-50%, 6px);
   opacity: 0;
   pointer-events: none;
-  background: rgba(26, 10, 0, 0.95);
+  background: rgba(var(--dark-rgb), 0.95);
   color: var(--cream);
-  border: 1px solid rgba(212, 175, 55, 0.55);
+  border: 1px solid rgba(var(--gold-rgb), 0.55);
   border-radius: 8px;
   padding: 6px 8px;
   font-family: 'Tiro Devanagari Hindi', serif;
   font-size: 0.72rem;
   line-height: 1.15;
   white-space: nowrap;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 8px 18px rgba(var(--shadow-rgb), 0.35);
   transition:
     opacity 0.2s ease,
     transform 0.2s ease;
@@ -455,7 +559,7 @@ nav {
   background: linear-gradient(
     120deg,
     transparent 25%,
-    rgba(255, 255, 255, 0.18) 48%,
+    rgba(var(--white-rgb), 0.18) 48%,
     transparent 72%
   );
   transform: translateX(-70%);
@@ -470,18 +574,18 @@ nav {
 
 .font-size-btn .label {
   font-size: 0.78rem;
-  color: rgba(255, 248, 231, 0.72);
+  color: rgba(var(--cream-rgb), 0.72);
 }
 
 .quick-nav-btn:hover,
 .font-size-btn:hover {
-  border-color: rgba(255, 248, 231, 0.4);
-  color: #fff8e7;
+  border-color: rgba(var(--cream-rgb), 0.4);
+  color: var(--cream);
   transform: translateY(-1px);
   box-shadow:
-    0 0 24px rgba(212, 175, 55, 0.35),
-    0 14px 28px rgba(255, 107, 0, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+    0 0 24px rgba(var(--gold-rgb), 0.35),
+    0 14px 28px rgba(var(--saffron-rgb), 0.28),
+    inset 0 1px 0 rgba(var(--white-rgb), 0.45);
 }
 
 .font-size-btn:hover::before {
@@ -493,12 +597,12 @@ nav {
   background: linear-gradient(135deg, var(--saffron), var(--gold));
   color: var(--dark);
   box-shadow:
-    0 0 30px rgba(255, 107, 0, 0.45),
-    0 10px 22px rgba(255, 107, 0, 0.4);
+    0 0 30px rgba(var(--saffron-rgb), 0.45),
+    0 10px 22px rgba(var(--saffron-rgb), 0.4);
 }
 
 .font-size-btn.active-scaling .label {
-  color: rgba(26, 10, 0, 0.84);
+  color: rgba(var(--text-rgb), 0.84);
 }
 
 @keyframes floatControl {
@@ -515,16 +619,16 @@ nav {
 @keyframes fontSizeBtnGlow {
   0% {
     box-shadow:
-      0 0 12px rgba(212, 175, 55, 0.18),
-      0 8px 22px rgba(0, 0, 0, 0.28),
-      inset 0 1px 0 rgba(255, 255, 255, 0.35);
+      0 0 12px rgba(var(--gold-rgb), 0.18),
+      0 8px 22px rgba(var(--shadow-rgb), 0.28),
+      inset 0 1px 0 rgba(var(--white-rgb), 0.35);
   }
 
   100% {
     box-shadow:
-      0 0 22px rgba(255, 107, 0, 0.35),
-      0 10px 24px rgba(0, 0, 0, 0.32),
-      inset 0 1px 0 rgba(255, 255, 255, 0.45);
+      0 0 22px rgba(var(--saffron-rgb), 0.35),
+      0 10px 24px rgba(var(--shadow-rgb), 0.32),
+      inset 0 1px 0 rgba(var(--white-rgb), 0.45);
   }
 }
 
@@ -570,9 +674,9 @@ nav {
   gap: 6px;
   padding: 4px;
   border-radius: 999px;
-  border: 1px solid rgba(212, 175, 55, 0.28);
-  background: rgba(255, 248, 231, 0.06);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(var(--gold-rgb), 0.28);
+  background: rgba(var(--cream-rgb), 0.06);
+  box-shadow: inset 0 1px 0 rgba(var(--white-rgb), 0.14);
   flex: 0 0 auto;
   height: 44px;
   box-sizing: border-box;
@@ -585,7 +689,7 @@ nav {
   padding: 0 12px;
   min-width: 72px;
   background: transparent;
-  color: rgba(255, 248, 231, 0.7);
+  color: rgba(var(--cream-rgb), 0.7);
   font-family: 'Tiro Devanagari Hindi', serif;
   font-size: 0.82rem;
   cursor: pointer;
@@ -603,7 +707,7 @@ nav {
   background: linear-gradient(135deg, var(--saffron), var(--gold));
   color: var(--dark);
   font-weight: 700;
-  box-shadow: 0 4px 10px rgba(255, 107, 0, 0.32);
+  box-shadow: 0 4px 10px rgba(var(--saffron-rgb), 0.32);
 }
 
 .home-search-wrap {
@@ -656,8 +760,8 @@ nav {
 .home-search-input {
   width: min(520px, 100%);
   height: 100%;
-  background: rgba(255, 248, 231, 0.07);
-  border: 1px solid rgba(212, 175, 55, 0.35);
+  background: rgba(var(--cream-rgb), 0.07);
+  border: 1px solid rgba(var(--gold-rgb), 0.35);
   color: var(--cream);
   font-family: 'Tiro Devanagari Hindi', serif;
   font-size: 0.95rem;
@@ -671,7 +775,7 @@ nav {
 }
 
 .home-search-input::placeholder {
-  color: rgba(255, 248, 231, 0.45);
+  color: rgba(var(--cream-rgb), 0.45);
 }
 
 .home-search-input::-webkit-search-cancel-button,
@@ -690,8 +794,8 @@ nav {
 
 .home-search-input:focus {
   border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
-  background: rgba(255, 248, 231, 0.1);
+  box-shadow: 0 0 0 3px rgba(var(--gold-rgb), 0.15);
+  background: rgba(var(--cream-rgb), 0.1);
 }
 
 .home-search-clear {
@@ -699,10 +803,10 @@ nav {
   right: 8px;
   width: 28px;
   height: 28px;
-  border: 1px solid rgba(212, 175, 55, 0.45);
+  border: 1px solid rgba(var(--gold-rgb), 0.45);
   border-radius: 999px;
-  background: rgba(255, 248, 231, 0.1);
-  color: rgba(255, 248, 231, 0.8);
+  background: rgba(var(--cream-rgb), 0.1);
+  color: rgba(var(--cream-rgb), 0.8);
   font-size: 0.8rem;
   cursor: pointer;
   display: inline-flex;
@@ -815,11 +919,11 @@ nav {
 .home-empty-state {
   grid-column: 1 / -1;
   text-align: center;
-  border: 1px dashed rgba(212, 175, 55, 0.35);
-  background: rgba(255, 248, 231, 0.04);
+  border: 1px dashed rgba(var(--gold-rgb), 0.35);
+  background: rgba(var(--cream-rgb), 0.04);
   border-radius: 16px;
   padding: 26px 16px;
-  color: rgba(255, 248, 231, 0.85);
+  color: rgba(var(--cream-rgb), 0.85);
 }
 
 .home-empty-icon {
@@ -835,7 +939,7 @@ nav {
 
 .home-empty-subtitle {
   font-size: 0.85rem;
-  color: rgba(255, 248, 231, 0.6);
+  color: rgba(var(--cream-rgb), 0.6);
 }
 
 .deity-filters {
@@ -846,9 +950,9 @@ nav {
 }
 
 .deity-filter-btn {
-  background: rgba(255, 248, 231, 0.05);
-  border: 1px solid rgba(212, 175, 55, 0.25);
-  color: rgba(255, 248, 231, 0.75);
+  background: rgba(var(--cream-rgb), 0.05);
+  border: 1px solid rgba(var(--gold-rgb), 0.25);
+  color: rgba(var(--cream-rgb), 0.75);
   font-family: 'Tiro Devanagari Hindi', serif;
   font-size: 0.88rem;
   padding: 7px 18px;
@@ -864,17 +968,17 @@ nav {
   color: var(--dark);
   border-color: transparent;
   font-weight: 700;
-  box-shadow: 0 4px 15px rgba(255, 107, 0, 0.35);
+  box-shadow: 0 4px 15px rgba(var(--saffron-rgb), 0.35);
   transform: translateY(-2px);
 }
 
 .deity-card {
   background: linear-gradient(
     145deg,
-    rgba(255, 107, 0, 0.08),
-    rgba(212, 175, 55, 0.05)
+    rgba(var(--saffron-rgb), 0.08),
+    rgba(var(--gold-rgb), 0.05)
   );
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  border: 1px solid rgba(var(--gold-rgb), 0.2);
   border-radius: 16px;
   overflow: hidden;
   cursor: pointer;
@@ -912,8 +1016,8 @@ body.reduced-effects .deity-card:hover {
   inset: 0;
   background: linear-gradient(
     135deg,
-    rgba(255, 107, 0, 0.15),
-    rgba(212, 175, 55, 0.1)
+    rgba(var(--saffron-rgb), 0.15),
+    rgba(var(--gold-rgb), 0.1)
   );
   opacity: 0;
   transition: opacity 0.3s;
@@ -924,8 +1028,8 @@ body.reduced-effects .deity-card:hover {
   transform: translateY(-8px) scale(1.02);
   border-color: var(--gold);
   box-shadow:
-    0 20px 40px rgba(212, 175, 55, 0.2),
-    0 0 0 1px rgba(255, 107, 0, 0.3);
+    0 20px 40px rgba(var(--gold-rgb), 0.2),
+    0 0 0 1px rgba(var(--saffron-rgb), 0.3);
 }
 
 .deity-card:hover::before {
@@ -959,8 +1063,8 @@ body.reduced-effects .deity-card:hover {
   font-size: 5rem;
   background: linear-gradient(
     135deg,
-    rgba(212, 175, 55, 0.1),
-    rgba(255, 107, 0, 0.05)
+    rgba(var(--gold-rgb), 0.1),
+    rgba(var(--saffron-rgb), 0.05)
   );
 }
 
@@ -970,9 +1074,9 @@ body.reduced-effects .deity-card:hover {
   z-index: 2;
   background: linear-gradient(
     180deg,
-    rgba(26, 10, 0, 0.82) 0%,
-    rgba(26, 10, 0, 0.94) 35%,
-    rgba(26, 10, 0, 0.94) 100%
+    rgba(var(--dark-rgb), 0.82) 0%,
+    rgba(var(--dark-rgb), 0.94) 35%,
+    rgba(var(--dark-rgb), 0.94) 100%
   );
   display: flex;
   flex-direction: column;
@@ -996,7 +1100,7 @@ body.reduced-effects .deity-card:hover {
 
 .deity-meta {
   font-size: 0.75rem;
-  color: rgba(255, 248, 231, 0.5);
+  color: rgba(var(--cream-rgb), 0.5);
 }
 
 .deity-type-badge {
@@ -1006,18 +1110,18 @@ body.reduced-effects .deity-card:hover {
   letter-spacing: 1px;
   padding: 4px 10px;
   border-radius: 20px;
-  border: 1px solid rgba(212, 175, 55, 0.45);
+  border: 1px solid rgba(var(--gold-rgb), 0.45);
   color: var(--gold);
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.12),
-    rgba(255, 255, 255, 0.03)
+    rgba(var(--white-rgb), 0.12),
+    rgba(var(--white-rgb), 0.03)
   );
   backdrop-filter: blur(8px) saturate(130%);
   -webkit-backdrop-filter: blur(8px) saturate(130%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.22),
-    0 8px 20px rgba(0, 0, 0, 0.32);
+    inset 0 1px 0 rgba(var(--white-rgb), 0.22),
+    0 8px 20px rgba(var(--shadow-rgb), 0.32);
 }
 
 .deity-tags {
@@ -1041,14 +1145,14 @@ body.reduced-effects .deity-card:hover {
   transition: all 0.25s ease;
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.12),
-    rgba(255, 255, 255, 0.03)
+    rgba(var(--white-rgb), 0.12),
+    rgba(var(--white-rgb), 0.03)
   );
   backdrop-filter: blur(8px) saturate(130%);
   -webkit-backdrop-filter: blur(8px) saturate(130%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.22),
-    0 8px 20px rgba(0, 0, 0, 0.32);
+    inset 0 1px 0 rgba(var(--white-rgb), 0.22),
+    0 8px 20px rgba(var(--shadow-rgb), 0.32);
   font-weight: 600;
   white-space: nowrap;
 }
@@ -1057,17 +1161,17 @@ body.reduced-effects .deity-card:hover {
   transform: translateY(-1px) scale(1.02);
   filter: brightness(1.12);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.28),
-    0 10px 24px rgba(0, 0, 0, 0.38);
+    inset 0 1px 0 rgba(var(--white-rgb), 0.28),
+    0 10px 24px rgba(var(--shadow-rgb), 0.38);
 }
 
 .tag-toggle {
   appearance: none;
   -webkit-appearance: none;
   font: inherit;
-  color: rgba(255, 248, 231, 0.9);
-  border-color: rgba(255, 248, 231, 0.28);
-  background: rgba(255, 248, 231, 0.08);
+  color: rgba(var(--cream-rgb), 0.9);
+  border-color: rgba(var(--cream-rgb), 0.28);
+  background: rgba(var(--cream-rgb), 0.08);
 }
 
 .tag-aarti {
@@ -1076,8 +1180,8 @@ body.reduced-effects .deity-card:hover {
 }
 
 .tag-aarti:hover {
-  background: rgba(255, 107, 0, 0.15);
-  box-shadow: 0 2px 8px rgba(255, 107, 0, 0.2);
+  background: rgba(var(--saffron-rgb), 0.15);
+  box-shadow: 0 2px 8px rgba(var(--saffron-rgb), 0.2);
 }
 
 .tag-chalisa {
@@ -1154,7 +1258,7 @@ body.reduced-effects .deity-card:hover {
   background: linear-gradient(
     135deg,
     rgba(125, 249, 255, 0.05),
-    rgba(212, 175, 55, 0.06)
+    rgba(var(--gold-rgb), 0.06)
   );
   border: 1px solid rgba(125, 249, 255, 0.2);
   border-radius: 16px;
@@ -1204,7 +1308,7 @@ body.reduced-effects .deity-card:hover {
 .mantra-text {
   font-size: 1.5rem;
   line-height: 2;
-  color: #fff8e7;
+  color: var(--cream);
   font-weight: bold;
   text-shadow: 0 0 20px rgba(125, 249, 255, 0.2);
   margin-bottom: 12px;
@@ -1212,7 +1316,7 @@ body.reduced-effects .deity-card:hover {
 
 .mantra-meaning {
   font-size: 1.1rem;
-  color: rgba(255, 248, 231, 0.55);
+  color: rgba(var(--cream-rgb), 0.55);
   font-family: 'EB Garamond', serif;
   font-style: italic;
   line-height: 1.7;
@@ -1279,10 +1383,10 @@ body.reduced-effects .deity-card:hover {
   padding: 25px;
   background: linear-gradient(
     135deg,
-    rgba(212, 175, 55, 0.08),
-    rgba(255, 107, 0, 0.05)
+    rgba(var(--gold-rgb), 0.08),
+    rgba(var(--saffron-rgb), 0.05)
   );
-  border: 1px solid rgba(212, 175, 55, 0.25);
+  border: 1px solid rgba(var(--gold-rgb), 0.25);
   border-radius: 20px;
 }
 
@@ -1290,7 +1394,7 @@ body.reduced-effects .deity-card:hover {
   margin: 0;
   border-radius: 0;
   border: 0;
-  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+  border-bottom: 1px solid rgba(var(--gold-rgb), 0.3);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1303,8 +1407,8 @@ body.reduced-effects .deity-card:hover {
   overflow: hidden;
   background: linear-gradient(
     180deg,
-    rgba(26, 10, 0, 0.95) 0%,
-    rgba(26, 10, 0, 0.7) 100%
+    rgba(var(--dark-rgb), 0.95) 0%,
+    rgba(var(--dark-rgb), 0.7) 100%
   );
   backdrop-filter: blur(10px);
 }
@@ -1329,11 +1433,11 @@ body.reduced-effects .deity-card:hover {
   height: 100px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid rgba(212, 175, 55, 0.7);
+  border: 2px solid rgba(var(--gold-rgb), 0.7);
   box-shadow:
-    0 0 24px rgba(212, 175, 55, 0.35),
-    0 10px 24px rgba(0, 0, 0, 0.38),
-    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    0 0 24px rgba(var(--gold-rgb), 0.35),
+    0 10px 24px rgba(var(--shadow-rgb), 0.38),
+    inset 0 1px 0 rgba(var(--white-rgb), 0.35);
   flex-shrink: 0;
 }
 
@@ -1342,12 +1446,12 @@ body.reduced-effects .deity-card:hover {
   height: 100px;
   border-radius: 50%;
   border: 3px solid var(--gold);
-  box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+  box-shadow: 0 0 25px rgba(var(--gold-rgb), 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 3.5rem;
-  background: rgba(212, 175, 55, 0.1);
+  background: rgba(var(--gold-rgb), 0.1);
   flex-shrink: 0;
 }
 
@@ -1358,7 +1462,7 @@ body.reduced-effects .deity-card:hover {
 }
 
 .content-header-text p {
-  color: rgba(255, 248, 231, 0.6);
+  color: rgba(var(--cream-rgb), 0.6);
   margin-top: 5px;
   font-style: italic;
   font-family: 'EB Garamond', serif;
@@ -1376,9 +1480,9 @@ body.reduced-effects .deity-card:hover {
 }
 
 .tab-btn {
-  background: rgba(255, 248, 231, 0.05);
-  border: 1px solid rgba(212, 175, 55, 0.3);
-  color: rgba(255, 248, 231, 0.7);
+  background: rgba(var(--cream-rgb), 0.05);
+  border: 1px solid rgba(var(--gold-rgb), 0.3);
+  color: rgba(var(--cream-rgb), 0.7);
   padding: 10px 25px;
   border-radius: 30px;
   cursor: pointer;
@@ -1397,7 +1501,7 @@ body.reduced-effects .deity-card:hover {
   color: var(--dark);
   border-color: transparent;
   font-weight: bold;
-  box-shadow: 0 4px 15px rgba(255, 107, 0, 0.3);
+  box-shadow: 0 4px 15px rgba(var(--saffron-rgb), 0.3);
 }
 
 .katha-list {
@@ -1436,10 +1540,10 @@ body.reduced-effects .deity-card:hover {
 .lyrics-box {
   background: linear-gradient(
     145deg,
-    rgba(212, 175, 55, 0.06),
-    rgba(255, 107, 0, 0.03)
+    rgba(var(--gold-rgb), 0.06),
+    rgba(var(--saffron-rgb), 0.03)
   );
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  border: 1px solid rgba(var(--gold-rgb), 0.2);
   border-radius: 16px;
   padding: 35px 40px;
   line-height: 2.2;
@@ -1455,7 +1559,7 @@ body.reduced-effects .deity-card:hover {
   top: -20px;
   right: 20px;
   font-size: 120px;
-  color: rgba(212, 175, 55, 0.04);
+  color: rgba(var(--gold-rgb), 0.04);
   pointer-events: none;
   font-family: serif;
 }
@@ -1469,8 +1573,8 @@ body.reduced-effects .deity-card:hover {
   font-weight: bold;
   text-align: center;
   padding: 10px 0;
-  border-top: 1px dashed rgba(212, 175, 55, 0.3);
-  border-bottom: 1px dashed rgba(212, 175, 55, 0.3);
+  border-top: 1px dashed rgba(var(--gold-rgb), 0.3);
+  border-bottom: 1px dashed rgba(var(--gold-rgb), 0.3);
   margin: 20px 0;
 }
 
@@ -1480,21 +1584,21 @@ body.reduced-effects .deity-card:hover {
   font-size: 1.4rem;
   font-weight: bold;
   margin-bottom: 20px;
-  text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+  text-shadow: 0 0 20px rgba(var(--gold-rgb), 0.5);
 }
 
 #tab-chalisa .lyrics-box .title-line {
-  border-bottom: 1px solid rgba(212, 175, 55, 0.35);
+  border-bottom: 1px solid rgba(var(--gold-rgb), 0.35);
   padding-bottom: 10px;
 }
 
 #tab-katha .lyrics-box .title-line {
-  border-bottom: 1px solid rgba(212, 175, 55, 0.35);
+  border-bottom: 1px solid rgba(var(--gold-rgb), 0.35);
   padding-bottom: 10px;
 }
 
 #tab-extra .lyrics-box .title-line {
-  border-bottom: 1px solid rgba(212, 175, 55, 0.35);
+  border-bottom: 1px solid rgba(var(--gold-rgb), 0.35);
   padding-bottom: 10px;
 }
 
@@ -1509,7 +1613,7 @@ body.reduced-effects .deity-card:hover {
   font-size: 1.35rem;
   margin: 30px 0 15px;
   padding-bottom: 10px;
-  border-bottom: 1px solid rgba(255, 107, 0, 0.3);
+  border-bottom: 1px solid rgba(var(--saffron-rgb), 0.3);
   display: flex;
   align-items: center;
   gap: 12px;
@@ -1522,7 +1626,7 @@ body.reduced-effects .deity-card:hover {
 
 .about-content p {
   margin-bottom: 20px;
-  color: rgba(255, 248, 231, 0.9);
+  color: rgba(var(--cream-rgb), 0.9);
   text-align: justify;
   font-size: 1.15rem;
 }
@@ -1535,7 +1639,7 @@ body.reduced-effects .deity-card:hover {
 }
 
 .about-content li {
-  background: rgba(255, 248, 231, 0.03);
+  background: rgba(var(--cream-rgb), 0.03);
   padding: 15px 20px;
   border-radius: 12px;
   border-left: 3px solid var(--gold);
@@ -1544,7 +1648,7 @@ body.reduced-effects .deity-card:hover {
 
 .about-content li:hover {
   transform: translateX(5px);
-  background: rgba(255, 248, 231, 0.06);
+  background: rgba(var(--cream-rgb), 0.06);
 }
 
 .about-content strong {
@@ -1554,10 +1658,10 @@ body.reduced-effects .deity-card:hover {
 }
 
 .about-content .info-section {
-  background: rgba(212, 175, 55, 0.04);
+  background: rgba(var(--gold-rgb), 0.04);
   padding: 25px;
   border-radius: 15px;
-  border: 1px solid rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(var(--gold-rgb), 0.1);
   margin-bottom: 30px;
 }
 
@@ -1576,7 +1680,7 @@ body.reduced-effects .deity-card:hover {
 
 .back-btn {
   background: none;
-  border: 1px solid rgba(212, 175, 55, 0.4);
+  border: 1px solid rgba(var(--gold-rgb), 0.4);
   color: var(--gold);
   padding: 10px 20px;
   border-radius: 30px;
@@ -1591,7 +1695,7 @@ body.reduced-effects .deity-card:hover {
 }
 
 .back-btn:hover {
-  background: rgba(212, 175, 55, 0.1);
+  background: rgba(var(--gold-rgb), 0.1);
   transform: translateX(-3px);
 }
 
@@ -1610,11 +1714,11 @@ body.reduced-effects .deity-card:hover {
   content: '';
   flex: 1;
   height: 1px;
-  background: linear-gradient(90deg, rgba(212, 175, 55, 0.5), transparent);
+  background: linear-gradient(90deg, rgba(var(--gold-rgb), 0.5), transparent);
 }
 
 .section-subtitle {
-  color: rgba(255, 248, 231, 0.5);
+  color: rgba(var(--cream-rgb), 0.5);
   font-size: 0.9rem;
   margin-bottom: 25px;
   font-style: italic;
@@ -1631,14 +1735,14 @@ body.reduced-effects .deity-card:hover {
   0%,
   100% {
     text-shadow:
-      0 0 10px #ff6b00,
-      0 0 20px #ffb347;
+      0 0 10px var(--saffron),
+      0 0 20px var(--saffron-light);
   }
 
   50% {
     text-shadow:
-      0 0 5px #ff6b00,
-      0 0 10px #ffb347;
+      0 0 5px var(--saffron),
+      0 0 10px var(--saffron-light);
   }
 }
 
@@ -1646,8 +1750,8 @@ body.reduced-effects .deity-card:hover {
 footer {
   text-align: center;
   padding: 30px 20px;
-  border-top: 1px solid rgba(212, 175, 55, 0.2);
-  color: rgba(255, 248, 231, 0.4);
+  border-top: 1px solid rgba(var(--gold-rgb), 0.2);
+  color: rgba(var(--cream-rgb), 0.4);
   font-size: 0.85rem;
   font-family: 'EB Garamond', serif;
   font-style: italic;
@@ -1661,10 +1765,12 @@ footer {
   align-items: center;
   gap: 10px;
   font-style: normal;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .footer-links a {
-  color: rgba(255, 248, 231, 0.78);
+  color: rgba(var(--cream-rgb), 0.78);
   text-decoration: none;
   border-bottom: 1px solid transparent;
   transition: all 0.2s ease;
@@ -1673,7 +1779,80 @@ footer {
 .footer-links a:hover {
   color: var(--gold);
   border-bottom-color: var(--gold);
-  text-shadow: 0 0 12px rgba(212, 175, 55, 0.35);
+  text-shadow: 0 0 12px rgba(var(--gold-rgb), 0.35);
+}
+
+.footer-theme-switcher {
+  margin-top: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.footer-theme-label {
+  color: rgba(var(--cream-rgb), 0.62);
+  font-size: 0.74rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.footer-theme-options {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.footer-theme-btn {
+  border: 1px solid rgba(var(--gold-rgb), 0.26);
+  background: rgba(var(--cream-rgb), 0.06);
+  color: rgba(var(--cream-rgb), 0.82);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font: inherit;
+  font-style: normal;
+  font-size: 0.84rem;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition:
+    transform 0.22s ease,
+    border-color 0.22s ease,
+    color 0.22s ease,
+    background 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.footer-theme-btn::before {
+  content: '';
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--theme-chip, var(--gold));
+  box-shadow: 0 0 0 2px rgba(var(--white-rgb), 0.14);
+}
+
+.footer-theme-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(var(--gold-rgb), 0.45);
+  color: var(--cream);
+  box-shadow:
+    0 10px 20px rgba(var(--shadow-rgb), 0.18),
+    0 0 18px rgba(var(--gold-rgb), 0.18);
+}
+
+.footer-theme-btn.active {
+  border-color: rgba(var(--gold-rgb), 0.54);
+  background: var(--action-gradient);
+  color: var(--text);
+  box-shadow:
+    0 14px 28px rgba(var(--shadow-rgb), 0.22),
+    0 0 0 1px rgba(var(--gold-rgb), 0.15);
 }
 
 /* SCROLLBAR */
@@ -1682,7 +1861,7 @@ footer {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(26, 10, 0, 0.5);
+  background: rgba(var(--dark-rgb), 0.5);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -1745,11 +1924,11 @@ footer {
     min-width: min(180px, calc(100vw - 20px));
     padding: 10px;
     border-radius: 20px;
-    border: 1px solid rgba(212, 175, 55, 0.25);
-    background: rgba(26, 10, 0, 0.92);
+    border: 1px solid rgba(var(--gold-rgb), 0.25);
+    background: rgba(var(--dark-rgb), 0.92);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
-    box-shadow: 0 18px 44px rgba(26, 10, 0, 0.42);
+    box-shadow: 0 18px 44px rgba(var(--dark-rgb), 0.42);
     z-index: 1010;
   }
 
@@ -1901,7 +2080,7 @@ footer {
 .loader {
   position: fixed;
   inset: 0;
-  background: var(--dark);
+  background: var(--page-background);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1932,13 +2111,13 @@ footer {
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   transition: none;
-  filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.55))
-    drop-shadow(0 0 24px rgba(255, 107, 0, 0.35));
+  filter: drop-shadow(0 0 10px rgba(var(--gold-rgb), 0.55))
+    drop-shadow(0 0 24px rgba(var(--saffron-rgb), 0.35));
 }
 
 .loader-text {
   margin-top: -8px;
-  color: rgba(255, 248, 231, 0.6);
+  color: rgba(var(--cream-rgb), 0.6);
   font-family: 'EB Garamond', serif;
   font-style: italic;
   animation: pulse 1.5s ease-in-out infinite;
@@ -2021,9 +2200,9 @@ footer {
 }
 
 .temple-filter-btn {
-  background: rgba(255, 248, 231, 0.05);
-  border: 1px solid rgba(212, 175, 55, 0.25);
-  color: rgba(255, 248, 231, 0.75);
+  background: rgba(var(--cream-rgb), 0.05);
+  border: 1px solid rgba(var(--gold-rgb), 0.25);
+  color: rgba(var(--cream-rgb), 0.75);
   font-family: 'Tiro Devanagari Hindi', serif;
   font-size: 0.88rem;
   padding: 5px 10px;
@@ -2039,7 +2218,7 @@ footer {
   color: var(--dark);
   border-color: transparent;
   font-weight: 700;
-  box-shadow: 0 4px 15px rgba(255, 107, 0, 0.35);
+  box-shadow: 0 4px 15px rgba(var(--saffron-rgb), 0.35);
   transform: translateY(-2px);
 }
 
@@ -2084,12 +2263,12 @@ footer {
   gap: 6px;
   flex-direction: column;
   align-items: center;
-  border-right: 1px solid rgba(212, 175, 55, 0.12);
+  border-right: 1px solid rgba(var(--gold-rgb), 0.12);
   min-height: 100%;
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.04),
-    rgba(255, 255, 255, 0.01)
+    rgba(var(--white-rgb), 0.04),
+    rgba(var(--white-rgb), 0.01)
   );
 }
 
@@ -2106,7 +2285,7 @@ footer {
 }
 
 .temple-card {
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  border: 1px solid rgba(var(--gold-rgb), 0.2);
   border-radius: 20px;
   overflow: hidden;
   cursor: pointer;
@@ -2115,6 +2294,20 @@ footer {
   display: flex;
   flex-direction: column;
   position: relative;
+  background:
+    linear-gradient(
+      165deg,
+      rgba(var(--dark-rgb), 0.78) 0%,
+      rgba(var(--maroon-rgb), 0.72) 100%
+    ),
+    var(
+      --card-accent-gradient,
+      linear-gradient(
+        135deg,
+        rgba(var(--gold-rgb), 0.1),
+        rgba(var(--saffron-rgb), 0.05)
+      )
+    );
 }
 
 @keyframes templeCardIn {
@@ -2133,9 +2326,9 @@ footer {
   transform: translateY(-8px) scale(1.02);
   border-color: var(--temple-color, var(--gold));
   box-shadow:
-    0 20px 50px rgba(0, 0, 0, 0.4),
-    0 0 0 1px var(--temple-color, rgba(212, 175, 55, 0.3)),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    0 20px 50px rgba(var(--shadow-rgb), 0.4),
+    0 0 0 1px var(--temple-color, rgba(var(--gold-rgb), 0.3)),
+    inset 0 1px 0 rgba(var(--white-rgb), 0.06);
 }
 
 .temple-card-top {
@@ -2147,7 +2340,7 @@ footer {
 
 .temple-emoji-badge {
   font-size: 2.4rem;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0 2px 8px rgba(var(--shadow-rgb), 0.5));
   transition: transform 0.3s ease;
 }
 
@@ -2164,7 +2357,7 @@ footer {
   border: 1px solid var(--temple-color, var(--gold));
   color: var(--temple-color, var(--gold));
   font-family: 'EB Garamond', serif;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(var(--shadow-rgb), 0.3);
   max-width: 9.5rem;
   white-space: normal;
   text-align: center;
@@ -2193,7 +2386,7 @@ footer {
   font-weight: 700;
   margin-bottom: 3px;
   line-height: 1.35;
-  text-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+  text-shadow: 0 0 20px rgba(var(--shadow-rgb), 0.8);
 }
 
 .temples-grid.table-view .temple-name {
@@ -2204,7 +2397,7 @@ footer {
 
 .temple-name-en {
   font-size: 0.72rem;
-  color: rgba(255, 248, 231, 0.4);
+  color: rgba(var(--cream-rgb), 0.4);
   font-family: 'EB Garamond', serif;
   font-style: italic;
   margin-bottom: 10px;
@@ -2236,13 +2429,13 @@ footer {
 
 .temple-state {
   font-size: 0.78rem;
-  color: rgba(255, 248, 231, 0.6);
+  color: rgba(var(--cream-rgb), 0.6);
   font-family: 'EB Garamond', serif;
 }
 
 .temple-desc {
   font-size: 0.85rem;
-  color: rgba(255, 248, 231, 0.75);
+  color: rgba(var(--cream-rgb), 0.75);
   line-height: 1.65;
   margin-bottom: 12px;
 }
@@ -2256,9 +2449,9 @@ footer {
   font-size: 0.75rem;
   padding: 4px 12px;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px dashed rgba(255, 248, 231, 0.2);
-  color: rgba(255, 248, 231, 0.6);
+  background: rgba(var(--white-rgb), 0.05);
+  border: 1px dashed rgba(var(--cream-rgb), 0.2);
+  color: rgba(var(--cream-rgb), 0.6);
 }
 
 .temples-grid.table-view .temple-deity-badge {
@@ -2286,8 +2479,8 @@ footer {
   align-items: center;
   justify-content: space-between;
   padding: 12px 18px;
-  border-top: 1px solid rgba(212, 175, 55, 0.12);
-  background: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid rgba(var(--gold-rgb), 0.12);
+  background: rgba(var(--shadow-rgb), 0.2);
   transition: background 0.3s;
 }
 
@@ -2301,8 +2494,8 @@ footer {
   justify-content: center;
   gap: 4px;
   border-top: 0;
-  border-left: 1px solid rgba(212, 175, 55, 0.12);
-  background: rgba(255, 255, 255, 0.02);
+  border-left: 1px solid rgba(var(--gold-rgb), 0.12);
+  background: rgba(var(--white-rgb), 0.02);
 }
 
 .temple-card:hover .temple-card-footer {
@@ -2345,7 +2538,7 @@ footer {
 .temple-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(10, 5, 0, 0.88);
+  background: rgba(var(--dark-rgb), 0.88);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   z-index: 9000;
@@ -2366,10 +2559,10 @@ footer {
 .temple-modal {
   background: linear-gradient(
     160deg,
-    rgba(30, 15, 0, 0.97) 0%,
-    rgba(20, 8, 0, 0.99) 100%
+    rgba(var(--dark-rgb), 0.97) 0%,
+    rgba(var(--dark-rgb), 0.99) 100%
   );
-  border: 1px solid rgba(212, 175, 55, 0.3);
+  border: 1px solid rgba(var(--gold-rgb), 0.3);
   border-radius: 24px;
   width: 100%;
   max-width: 860px;
@@ -2377,9 +2570,9 @@ footer {
   overflow: hidden;
   position: relative;
   box-shadow:
-    0 40px 80px rgba(0, 0, 0, 0.7),
-    0 0 0 1px rgba(255, 107, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    0 40px 80px rgba(var(--shadow-rgb), 0.7),
+    0 0 0 1px rgba(var(--saffron-rgb), 0.1),
+    inset 0 1px 0 rgba(var(--white-rgb), 0.05);
   transform: scale(0.92) translateY(20px);
   transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
@@ -2393,7 +2586,7 @@ footer {
   inset: 0;
   display: none;
   z-index: 9100;
-  background: rgba(10, 5, 2, 0.82);
+  background: rgba(var(--dark-rgb), 0.82);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   padding: 0;
@@ -2411,8 +2604,8 @@ footer {
   border: 0;
   background: linear-gradient(
     145deg,
-    rgba(26, 10, 0, 0.96),
-    rgba(58, 24, 0, 0.92)
+    rgba(var(--dark-rgb), 0.96),
+    rgba(var(--dark-rgb), 0.92)
   );
   box-shadow: none;
   display: flex;
@@ -2424,8 +2617,8 @@ footer {
   top: 14px;
   right: 14px;
   z-index: 2;
-  border: 1px solid rgba(212, 175, 55, 0.45);
-  background: rgba(255, 248, 231, 0.08);
+  border: 1px solid rgba(var(--gold-rgb), 0.45);
+  background: rgba(var(--cream-rgb), 0.08);
   color: var(--cream);
   border-radius: 999px;
   width: 38px;
@@ -2458,8 +2651,8 @@ footer {
   position: absolute;
   top: 16px;
   right: 16px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(212, 175, 55, 0.3);
+  background: rgba(var(--white-rgb), 0.08);
+  border: 1px solid rgba(var(--gold-rgb), 0.3);
   color: var(--gold);
   width: 36px;
   height: 36px;
@@ -2474,7 +2667,7 @@ footer {
 }
 
 .temple-modal-close:hover {
-  background: rgba(212, 175, 55, 0.2);
+  background: rgba(var(--gold-rgb), 0.2);
   transform: scale(1.1) rotate(90deg);
 }
 
@@ -2484,7 +2677,7 @@ footer {
   justify-content: flex-start;
   gap: 20px;
   padding: 28px 28px 20px;
-  border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+  border-bottom: 1px solid rgba(var(--gold-rgb), 0.15);
 }
 
 .temple-modal-hero-main {
@@ -2496,7 +2689,7 @@ footer {
 
 .temple-modal-emoji {
   font-size: 3.5rem;
-  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.6));
+  filter: drop-shadow(0 4px 16px rgba(var(--shadow-rgb), 0.6));
   flex-shrink: 0;
 }
 
@@ -2510,7 +2703,7 @@ footer {
 
 .temple-modal-hero p {
   font-size: 0.98rem;
-  color: rgba(255, 248, 231, 0.45);
+  color: rgba(var(--cream-rgb), 0.45);
   font-family: 'EB Garamond', serif;
   font-style: italic;
 }
@@ -2545,8 +2738,8 @@ footer {
 }
 
 .temple-type-link:hover {
-  color: #ffcf40;
-  border-bottom-color: #ffcf40;
+  color: var(--saffron-light);
+  border-bottom-color: var(--saffron-light);
 }
 
 .temple-modal-body {
@@ -2556,16 +2749,16 @@ footer {
 .temple-detail-shell {
   background: linear-gradient(
     160deg,
-    rgba(30, 15, 0, 0.97) 0%,
-    rgba(20, 8, 0, 0.99) 100%
+    rgba(var(--dark-rgb), 0.97) 0%,
+    rgba(var(--dark-rgb), 0.99) 100%
   );
-  border: 1px solid rgba(212, 175, 55, 0.3);
+  border: 1px solid rgba(var(--gold-rgb), 0.3);
   border-radius: 24px;
   overflow: hidden;
   box-shadow:
-    0 40px 80px rgba(0, 0, 0, 0.55),
-    0 0 0 1px rgba(255, 107, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    0 40px 80px rgba(var(--shadow-rgb), 0.55),
+    0 0 0 1px rgba(var(--saffron-rgb), 0.1),
+    inset 0 1px 0 rgba(var(--white-rgb), 0.05);
 }
 
 .temple-detail-body .temple-history p {
@@ -2586,16 +2779,16 @@ footer {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  background: rgba(255, 248, 231, 0.04);
-  border: 1px solid rgba(212, 175, 55, 0.12);
+  background: rgba(var(--cream-rgb), 0.04);
+  border: 1px solid rgba(var(--gold-rgb), 0.12);
   border-radius: 14px;
   padding: 14px 16px;
   transition: all 0.25s;
 }
 
 .temple-info-card:hover {
-  background: rgba(255, 248, 231, 0.07);
-  border-color: rgba(212, 175, 55, 0.25);
+  background: rgba(var(--cream-rgb), 0.07);
+  border-color: rgba(var(--gold-rgb), 0.25);
   transform: translateY(-2px);
 }
 
@@ -2609,14 +2802,14 @@ footer {
   font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: rgba(255, 248, 231, 0.35);
+  color: rgba(var(--cream-rgb), 0.35);
   font-family: 'EB Garamond', serif;
   margin-bottom: 4px;
 }
 
 .temple-info-val {
   font-size: 1.12rem;
-  color: rgba(255, 248, 231, 0.85);
+  color: rgba(var(--cream-rgb), 0.85);
   line-height: 1.4;
 }
 
@@ -2645,7 +2838,7 @@ footer {
 
 .temple-history p {
   font-size: 1.35rem;
-  color: rgba(255, 248, 231, 0.75);
+  color: rgba(var(--cream-rgb), 0.75);
   line-height: 1.75;
   font-family: 'EB Garamond', serif;
   max-height: min(34vh, 280px);
@@ -2655,8 +2848,8 @@ footer {
 }
 
 .temple-history {
-  background: rgba(212, 175, 55, 0.04);
-  border: 1px solid rgba(212, 175, 55, 0.15);
+  background: rgba(var(--gold-rgb), 0.04);
+  border: 1px solid rgba(var(--gold-rgb), 0.15);
   border-radius: 14px;
   padding: 20px;
   margin-bottom: 20px;
@@ -2668,10 +2861,10 @@ footer {
 .deity-temples-empty {
   background: linear-gradient(
     145deg,
-    rgba(255, 107, 0, 0.08),
-    rgba(212, 175, 55, 0.05)
+    rgba(var(--saffron-rgb), 0.08),
+    rgba(var(--gold-rgb), 0.05)
   );
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  border: 1px solid rgba(var(--gold-rgb), 0.2);
   border-radius: 16px;
   padding: 22px 20px;
   text-align: center;
@@ -2680,12 +2873,12 @@ footer {
 .deity-temples-empty-icon {
   font-size: 2.2rem;
   margin-bottom: 10px;
-  filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.35));
+  filter: drop-shadow(0 0 10px rgba(var(--gold-rgb), 0.35));
 }
 
 .deity-temples-empty p {
   margin: 0;
-  color: rgba(255, 248, 231, 0.8);
+  color: rgba(var(--cream-rgb), 0.8);
   font-size: 1.08rem;
   line-height: 1.7;
   font-family: 'Tiro Devanagari Hindi', serif;
@@ -2697,10 +2890,10 @@ footer {
   padding: 0;
   background: linear-gradient(
     165deg,
-    rgba(26, 10, 0, 0.9) 0%,
-    rgba(42, 20, 0, 0.8) 100%
+    rgba(var(--dark-rgb), 0.9) 0%,
+    rgba(var(--dark-rgb), 0.8) 100%
   );
-  box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.45);
+  box-shadow: inset 0 0 50px rgba(var(--shadow-rgb), 0.45);
 }
 
 .deity-tab-wrap-no-padding {
@@ -2731,9 +2924,9 @@ footer {
   min-height: 34px;
   padding: 6px 12px;
   border-radius: 999px;
-  border: 1px solid rgba(212, 175, 55, 0.34);
-  background: rgba(212, 175, 55, 0.08);
-  color: rgba(255, 248, 231, 0.88);
+  border: 1px solid rgba(var(--gold-rgb), 0.34);
+  background: rgba(var(--gold-rgb), 0.08);
+  color: rgba(var(--cream-rgb), 0.88);
   font-family: 'Tiro Devanagari Hindi', serif;
   font-size: 0.84rem;
   line-height: 1;
@@ -2748,8 +2941,8 @@ footer {
 }
 
 .section-reading-btn {
-  border: 1px solid rgba(212, 175, 55, 0.45);
-  background: rgba(26, 10, 0, 0.55);
+  border: 1px solid rgba(var(--gold-rgb), 0.45);
+  background: rgba(var(--dark-rgb), 0.55);
   color: var(--cream);
   border-radius: 999px;
   padding: 6px 10px;
@@ -2779,7 +2972,7 @@ footer {
   gap: 10px;
   flex-wrap: wrap;
   margin-bottom: 16px;
-  color: rgba(255, 248, 231, 0.72);
+  color: rgba(var(--cream-rgb), 0.72);
   font-size: 1.02rem;
   text-align: center;
 }
@@ -2790,8 +2983,8 @@ footer {
   justify-content: center;
   padding: 6px 12px;
   border-radius: 999px;
-  border: 1px solid rgba(212, 175, 55, 0.35);
-  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(var(--gold-rgb), 0.35);
+  background: rgba(var(--gold-rgb), 0.12);
   color: var(--gold);
   font-size: 0.92rem;
   font-weight: 700;
@@ -2814,14 +3007,14 @@ footer {
   font-family: 'Tiro Devanagari Hindi', serif;
   font-size: 1.05rem;
   cursor: pointer;
-  box-shadow: 0 6px 20px rgba(255, 107, 0, 0.4);
+  box-shadow: 0 6px 20px rgba(var(--saffron-rgb), 0.4);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .deity-temples-all-btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 30px rgba(255, 107, 0, 0.5);
-  background: linear-gradient(135deg, #ff8c00, #ffcf40);
+  box-shadow: 0 12px 30px rgba(var(--saffron-rgb), 0.5);
+  background: var(--action-gradient);
 }
 
 /* Temple page responsive */
@@ -2854,7 +3047,7 @@ footer {
 
   .temples-grid.table-view .temple-card-footer {
     grid-column: 3;
-    border-left: 1px solid rgba(212, 175, 55, 0.12);
+    border-left: 1px solid rgba(var(--gold-rgb), 0.12);
     border-top: 0;
     min-width: 54px;
     padding: 8px 6px;

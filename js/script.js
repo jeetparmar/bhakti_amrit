@@ -2123,7 +2123,7 @@ function renderDeityTemples(deityKey) {
     .map(
       (temple, idx) => `
     <div class="temple-card deity-temple-card" onclick="openTempleModal('${temple.id}')"
-         style="animation-delay:${idx * 0.08}s; background:${temple.gradient}; --temple-color:${temple.color};">
+         style="animation-delay:${idx * 0.08}s; --card-accent-gradient:${temple.gradient}; --temple-color:${temple.color};">
       <div class="temple-card-top">
         <div class="temple-emoji-badge">${temple.emoji}</div>
         <div class="temple-type-badge">${getTempleTypeLabel(temple.type)}</div>
@@ -2399,7 +2399,7 @@ function getFilteredTemples(filter) {
 function getTempleCardHtml(temple, idx) {
   const animationDelay = Math.min(idx, 7) * 0.06;
   return `
-    <div class="temple-card" onclick="showTempleDetailsPage('${temple.id}')" style="animation-delay:${animationDelay}s; background:${temple.gradient}; --temple-color:${temple.color};">
+    <div class="temple-card" onclick="showTempleDetailsPage('${temple.id}')" style="animation-delay:${animationDelay}s; --card-accent-gradient:${temple.gradient}; --temple-color:${temple.color};">
       <div class="temple-card-top">
         <div class="temple-emoji-badge">${temple.emoji}</div>
         <div class="temple-type-badge">${getTempleTypeLabel(temple.type)}</div>
@@ -2680,7 +2680,7 @@ function getFilteredFestivals(filter) {
 
 function getFestivalCardHtml(festival, idx) {
   return `
-    <div class="temple-card" onclick="showFestivalDetailsPage('${festival.id}')" style="animation-delay:${idx * 0.06}s; background:${festival.gradient}; --temple-color:${festival.color};">
+    <div class="temple-card" onclick="showFestivalDetailsPage('${festival.id}')" style="animation-delay:${idx * 0.06}s; --card-accent-gradient:${festival.gradient}; --temple-color:${festival.color};">
       <div class="temple-card-top">
         <div class="temple-emoji-badge">${festival.emoji}</div>
         <div class="temple-type-badge">${festival.type}</div>
